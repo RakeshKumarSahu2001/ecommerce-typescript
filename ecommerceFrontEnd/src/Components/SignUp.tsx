@@ -1,5 +1,5 @@
 // import { useState } from "react";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form"
 import { useECommerceStoreDispatch } from "../EcommerceStore/ecommerceStoreHooks";
 import { signUpApi } from "../EcommerceStore/SignUpApi";
@@ -13,13 +13,13 @@ type inputData = {
 
 function SignUp() {
   const { register, handleSubmit, watch, formState: { errors, isSubmitting }, reset } = useForm<inputData>();
-  const dispatch=useECommerceStoreDispatch()
-  const navigate=useNavigate();
-  const onSubmit: SubmitHandler<inputData> = ({email,password}) => {
-      dispatch(signUpApi({email:email,password:password}))
+  const dispatch = useECommerceStoreDispatch()
+  const navigate = useNavigate();
+  const onSubmit: SubmitHandler<inputData> = ({ email, password }) => {
+    dispatch(signUpApi({ email: email, password: password }))
     // console.log(data)
-    // reset()
-    // navigate("/shopnow/login")
+    reset()
+    navigate("/shopnow/login")
   };
 
 
@@ -82,9 +82,9 @@ function SignUp() {
                     value: 8,
                     message: "Password must be at least 8 characters"
                   },
-                  pattern:{
-                    value:/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm,
-                    message:"The password must contain at least one upper case latter, one lower case latter,one number and 1 special character"
+                  pattern: {
+                    value: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm,
+                    message: "The password must contain at least one upper case latter, one lower case latter,one number and 1 special character"
                   }
                 })}
                 autoComplete="off"
@@ -110,9 +110,9 @@ function SignUp() {
                 type="text"
                 {...register("confirmPassword", {
                   required: "Confirm password is required",
-                  pattern:{
-                    value:/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm,
-                    message:"The password must contain at least one upper case latter, one lower case latter,one number and 1 special character"
+                  pattern: {
+                    value: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm,
+                    message: "The password must contain at least one upper case latter, one lower case latter,one number and 1 special character"
                   },
                   validate: (value) => value === watch("password") || "Confirm password must be same as password"
                 })}
