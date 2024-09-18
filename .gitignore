@@ -1,0 +1,44 @@
+# Ignore node_modules in both backend and frontend
+/backend/node_modules/
+/frontend/node_modules/
+
+# Ignore environment files
+/backend/.env
+/frontend/.env
+
+# Ignore log files
+/backend/logs
+/frontend/logs
+*.log
+
+# Ignore build directories
+/backend/dist/
+/frontend/dist/
+/frontend/build/
+
+# Ignore lock files (if you use them)
+# For npm:
+backend/package-lock.json
+frontend/package-lock.json
+
+# For yarn:
+backend/yarn.lock
+frontend/yarn.lock
+
+# Ignore IDE/editor-specific files
+.vscode/
+.idea/
+
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db
+
+# Ignore compiled TypeScript files (if you're using TypeScript)
+**/*.tsbuildinfo
+
+# Ignore temporary files
+*.tmp
+*.swp
+
+# Ignore other specific files or directories
+# Add more based on your project structure
