@@ -1,6 +1,12 @@
 # Ignore node_modules in both ecommerceBackend and ecommerceFrontEnd
+# Ignore node_modules in both ecommerceBackend and ecommerceFrontEnd
 /ecommerceBackend/node_modules/
 /ecommerceFrontEnd/node_modules/
+
+# Ignore lock files
+/ecommerceBackend/package-lock.json
+/ecommerceFrontEnd/package-lock.json
+
 
 # Ignore environment files
 /ecommerceBackend/.env
@@ -16,10 +22,6 @@
 /ecommerceFrontEnd/dist/
 /ecommerceFrontEnd/build/
 
-# Ignore lock files (if you use them)
-# For npm:
-ecommerceBackend/package-lock.json
-ecommerceFrontEnd/package-lock.json
 
 # For yarn:
 ecommerceBackend/yarn.lock
