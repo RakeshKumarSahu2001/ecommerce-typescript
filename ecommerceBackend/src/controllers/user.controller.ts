@@ -1,41 +1,59 @@
-import { RowDataPacket } from "mysql2";
-import dbConnection from "../dbConnection";
-import { Request, Response } from "express";
+import asyncHandler from "../utils/asyncHandler";
 import bcrypt from "bcrypt";
+import ApiErrorHandler from "../utils/ApiErrorHandler";
+import dbConnection from "../db/dbConnection";
+import { RowDataPacket } from "mysql2";
 
-export const SignUp = async (req: Request, res: Response) => {
-    try {
-        // collect user request
-        const { email, password } = req.body;
-        const connectionPool = await dbConnection();
-        const connection = await connectionPool.getConnection()
-        if (!connection) {
-            return res.status(500).json({ error: "Database not connected yet",msg:"Database Connection error" });
-        }
-        console.log("Database connection exists");
 
-         //Query to check tables exist or not
-        const [tablesRow] = await connection.query<RowDataPacket[]>("SHOW TABLES;")
-        if (tablesRow.length === 0) {
-            return res.status(500).json({ error: "Table 'authtable' does not exist" });
-        }
-
-        // check user has already registered
-        let sql = "SELECT authId,email FROM `authtable` WHERE `email` = ?";
-        const [isUserExist] = await connection.execute<RowDataPacket[]>(sql, [email]);
-
-        if (isUserExist.length > 0) {
-            return res.status(409).json({ error: "already registered user", message: "User already exists." })
-        }
-
-        //Hash the password before inserting into the db
-        const hash=await bcrypt.hash(password,10)
-        let insert="INSERT INTO `authtable` (`email`,`password`) VALUES (?,?)";
-        const [result,field]=await connection.execute(insert,[email,hash]);
-
-        return res.status(201).json({data: {result,field}, msg: "Data inserted successfully"})
-    } catch (err) {
-        // console.error("Error occurred: ", err);
-        res.status(500).json({ error: "Failed to register",msg:"Server issue please try again." });
+// User Signup
+export const SignUp = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+    // console.log("email and password", email, password);
+    if ([email, password].some((value) => value?.trim() === "")) {
+        throw new ApiErrorHandler({ statusCode: 400, errors: ["All field are nessary"], message: "All fieldes are required" })
     }
-};
+
+    const pool = await dbConnection()
+    const connection = await pool.getConnection()
+    if(!connection){
+        throw new ApiErrorHandler({statusCode:500,errors:["Database connection not found"],message:"Database connnection error"})
+    }
+
+    try{
+    //check the user exist or not
+    const checkUserExist = 'SELECT email FROM `authtable` WHERE `email` = ?';
+    const [rows] = await connection.execute<RowDataPacket[]>(checkUserExist, [email]);
+    // console.log("rows=", rows);
+    if (rows.length > 0) {
+        throw new ApiErrorHandler({ statusCode: 409, errors: ["User already exist."], message: "You have already registered berfore." })
+        // return res.status(409).json({ error: "already registered user", message: "User already exists." })
+    }
+
+    // hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    //insert into database
+    const insertQuery = 'INSERT INTO `authtable`(`email`, `password`) VALUES (?, ?)';
+    const [result, fields] = await connection.execute(insertQuery, [email,hashedPassword]);
+
+    // console.log("result after insertion",result,fields)
+
+    return res.status(200).json({
+        message: "User registered successfully",
+        success:true,
+        data:result
+    })
+
+}finally{
+    connection.release()
+}
+})
+
+
+// User Login
+
+export const Login=asyncHandler(async(req,res)=>{
+    
+})
+
+
+

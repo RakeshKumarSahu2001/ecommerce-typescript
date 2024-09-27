@@ -1,18 +1,15 @@
-import express from "express";
-import bodyParser from "body-parser";
 import dotenv from "dotenv";
-import route from "./routes/routes";
+import dbConnection from "./db/dbConnection";
+import app from "./app";
 
-dotenv.config({ path: "./.env" });
+dotenv.config({path:"./.env"});
 
-const app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:true}))
-
-app.use("/ecommerce",route)
-
-
-const port = process.env.SERVER_PORT || 3000;
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
+dbConnection()
+.then(()=>{
+    app.listen(process.env.SERVER_PORT || 3000,()=>{
+        console.log("listening port")
+    })
+})
+.catch((err)=>{
+    console.log("Database connection error",err)
+})

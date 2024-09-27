@@ -1,4 +1,3 @@
-// import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form"
 import { useECommerceStoreDispatch } from "../EcommerceStore/ecommerceStoreHooks";
@@ -17,9 +16,9 @@ function SignUp() {
   const navigate = useNavigate();
   const onSubmit: SubmitHandler<inputData> = ({ email, password }) => {
     dispatch(signUpApi({ email: email, password: password }))
-    // console.log(data)
-    reset()
-    navigate("/shopnow/login")
+
+    // reset()
+    // navigate("/shopnow/login")
   };
 
 

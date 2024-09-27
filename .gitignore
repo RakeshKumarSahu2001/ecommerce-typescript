@@ -1,29 +1,29 @@
-# Ignore node_modules in both backend and frontend
-/backend/node_modules/
-/frontend/node_modules/
+# Ignore node_modules in both ecommerceBackend and ecommerceFrontEnd
+/ecommerceBackend/node_modules/
+/ecommerceFrontEnd/node_modules/
 
 # Ignore environment files
-/backend/.env
-/frontend/.env
+/ecommerceBackend/.env
+/ecommerceFrontEnd/.env
 
 # Ignore log files
-/backend/logs
-/frontend/logs
+/ecommerceBackend/logs
+/ecommerceFrontEnd/logs
 *.log
 
 # Ignore build directories
-/backend/dist/
-/frontend/dist/
-/frontend/build/
+/ecommerceBackend/dist/
+/ecommerceFrontEnd/dist/
+/ecommerceFrontEnd/build/
 
 # Ignore lock files (if you use them)
 # For npm:
-backend/package-lock.json
-frontend/package-lock.json
+ecommerceBackend/package-lock.json
+ecommerceFrontEnd/package-lock.json
 
 # For yarn:
-backend/yarn.lock
-frontend/yarn.lock
+ecommerceBackend/yarn.lock
+ecommerceFrontEnd/yarn.lock
 
 # Ignore IDE/editor-specific files
 .vscode/
