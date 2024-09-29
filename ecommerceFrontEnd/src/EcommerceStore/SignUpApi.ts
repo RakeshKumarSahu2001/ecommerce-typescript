@@ -5,8 +5,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export const signUpApi = createAsyncThunk("users/createNewUser", async (data: userAuthData, { rejectWithValue }) => {
     try {
-        const response = await axios.post("/ecommerce/v1/reg", data)
-        console.log("response in the signup api",response);
+        const response = await axios.post("/api/v1/users/register", data)
+        console.log("response in the signup api", response);
         return response.data;
     } catch (err) {
         throw err;

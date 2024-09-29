@@ -3,8 +3,9 @@ import { userAuthData } from "../utils/types";
 import axios from "axios";
 
 export const loginApi = createAsyncThunk("user/loginUser", async (data: userAuthData, { rejectWithValue }) => {
+    console.log(data)
     try {
-        const response = await axios.get(`http://localhost:3000/users?email=${data.email}`)
+        const response = await axios.post(`/api/v1/users/login`,data)
         if (response.data) {
             // const res = response.data[0];
             // console.log(res)

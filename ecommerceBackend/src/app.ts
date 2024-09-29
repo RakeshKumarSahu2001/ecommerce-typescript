@@ -9,6 +9,7 @@ app.use(cors({
     origin:process.env.ALLOWED_URL,
     credentials:true,
 }))
+
 app.use(express.json({
     limit:"15kb",
 }))
