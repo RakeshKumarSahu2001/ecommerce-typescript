@@ -3,6 +3,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { loginApi } from '../EcommerceStore/LoginApi';
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from '../EcommerceStore/ecommerceStoreHooks';
 import { useEffect } from 'react';
+import logo from "../assets/images/logo.png"
 
 type inputData = {
   email: string,
@@ -30,8 +31,8 @@ function Login() {
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
           alt="Your Company"
-          src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-          className="mx-auto h-10 w-auto"
+          src={`${logo}`}
+          className="mx-auto h-24 w-auto"
         />
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Sign in to your account
@@ -53,6 +54,7 @@ function Login() {
                     message: "Please enter a valid email"
                   }
                 })}
+                placeholder='Email address'
                 type="email"
                 autoComplete="off"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -81,6 +83,7 @@ function Login() {
                     message: "Password must contain at least 8 characters"
                   }
                 })}
+                placeholder='Enter Password'
                 type="text"
                 autoComplete="off"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"

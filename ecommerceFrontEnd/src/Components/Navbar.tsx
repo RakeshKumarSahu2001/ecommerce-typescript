@@ -7,6 +7,7 @@ import {
 } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
+import logo from "../assets/images/logo.png";
 
 // cart items
 const products = [
@@ -73,12 +74,12 @@ function Navbar() {
             <div className="hidden lg:flex lg:items-center lg:space-x-10">
               <Link to="/shopnow/allproduct" title="" className="text-base font-medium text-black">
                 {" "}
-                Products{" "}
+                Home{" "}
               </Link>
 
               <a href="#" title="" className="text-base font-medium text-black">
                 {" "}
-                Solutions{" "}
+                Products{" "}
               </a>
 
               <a href="#" title="" className="text-base font-medium text-black">
@@ -96,9 +97,9 @@ function Navbar() {
               <div className="flex-shrink-0">
                 <a href="#" title="" className="flex">
                   <img
-                    className="w-auto h-8 lg:h-10"
-                    src="https://cdn.rareblocks.xyz/collection/celebration/images/logo.svg"
-                    alt=""
+                    className="w-auto h-8 lg:h-16"
+                    src={logo}
+                    alt="brand logo"
                   />
                 </a>
               </div>

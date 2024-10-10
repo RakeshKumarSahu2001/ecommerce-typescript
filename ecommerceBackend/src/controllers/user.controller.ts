@@ -2,7 +2,7 @@ import asyncHandler from "../utils/asyncHandler";
 import bcrypt from "bcrypt";
 import ApiErrorHandler from "../utils/ApiErrorHandler";
 import dbConnection from "../db/dbConnection";
-import { RowDataPacket } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 import jwt, { Algorithm } from "jsonwebtoken";
 
 // User Signup
@@ -33,14 +33,12 @@ export const SignUp = asyncHandler(async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         //insert into database
         const insertQuery = 'INSERT INTO `authtable`(`email`, `password`) VALUES (?, ?)';
-        const [result] = await connection.execute(insertQuery, [email, hashedPassword]);
-
-        // console.log("result after insertion",result,fields)
+        const [result] = await connection.execute<ResultSetHeader>(insertQuery, [email, hashedPassword]);
 
         return res.status(200).json({
             message: "User registered successfully",
             success: true,
-            data: result
+            data: { id: result.insertId, email: email }
         })
 
     } finally {
@@ -50,13 +48,13 @@ export const SignUp = asyncHandler(async (req, res) => {
 
 
 //generate cookie
-async function ServerCookieGenerator(id: string | number, email: string) {
+async function ServerCookieGenerator(_id: string | number, email: string) {
     try {
-        const refreshToken = await jwt.sign({ id: id },
+        const refreshToken = await jwt.sign({ id: _id, email: email },
             String(process.env.REFRESH_TOKEN_SECRETE),
             { expiresIn: process.env.REFRESH_TOKEN_EXPIRY, algorithm: process.env.TOKEN_ALGO_TYPE as Algorithm })
 
-        const accessToken = await jwt.sign({ id: id, email: email }, String(process.env.ACCESS_TOKEN_SECRETE), { expiresIn: process.env.REFRESH_TOKEN_EXPIRY, algorithm: process.env.TOKEN_ALGO_TYPE as Algorithm })
+        const accessToken = await jwt.sign({ id: _id, email: email }, String(process.env.ACCESS_TOKEN_SECRETE), { expiresIn: process.env.REFRESH_TOKEN_EXPIRY, algorithm: process.env.TOKEN_ALGO_TYPE as Algorithm })
 
         return { refreshToken, accessToken }
     } catch (err) {
@@ -68,7 +66,7 @@ async function ServerCookieGenerator(id: string | number, email: string) {
 
 export const Login = asyncHandler(async (req, res) => {
     const body = req.body;
-    console.log("body=", body);
+    // console.log("body=", body);
 
     //check email and password is present or not
     if (body.email?.trim() === "" || body.password.trim() === "") {
@@ -91,7 +89,7 @@ export const Login = asyncHandler(async (req, res) => {
         //fetch the records if user exist
         const userInfoQuery = "SELECT * FROM `authtable` WHERE `email` = ?";
         const [rows] = await connection.query<RowDataPacket[]>(userInfoQuery, [body.email]);
-        console.log(typeof (rows[0]._id))
+
         // Check if user exists
         if (rows.length === 0) {
             throw new ApiErrorHandler({
@@ -101,34 +99,91 @@ export const Login = asyncHandler(async (req, res) => {
             });
         }
 
+
         //Check the user validation
         const isValid = await bcrypt.compare(body.password, String(rows[0].password))
         if (!isValid) {
             throw new ApiErrorHandler({ statusCode: 401, errors: ["Invalid user"], message: "Invalid username and password" })
         }
         // generate cookie
-        console.log("user is valid yuppy")
         const { refreshToken, accessToken } = await ServerCookieGenerator(rows[0]._id, rows[0].email)
-        console.log("Access and Refresh Token", refreshToken, accessToken)
+        // console.log("Access and Refresh Token", refreshToken, accessToken)
 
         //insert refresh token in db
         const tokenInsertionQuery = "UPDATE authtable SET refreshtoken = ? WHERE email = ?"
-        const [result] = await connection.query<RowDataPacket[]>(tokenInsertionQuery, [refreshToken,rows[0].email])
-        console.log("After insertion of token", result)
+        await connection.query<ResultSetHeader>(tokenInsertionQuery, [refreshToken, rows[0].email])
 
         return res.cookie("refreshToken", refreshToken, { secure: true, httpOnly: true, })
-        .cookie("accessToken", accessToken, { secure: true, httpOnly: true }).status(200).json({
-            success: true,
-            message: "user found"
-        })
+            .cookie("accessToken", accessToken, { secure: true, httpOnly: true }).status(200).json({
+                success: true,
+                message: "user found",
+                data: {
+                    email: rows[0].email
+                }
+            })
     } finally {
         connection.release()
     }
 })
 
+// User Logout
+export const Logout = asyncHandler(async (req, res) => {
+    const user = req.user
+    console.log("logout", user)
+    //update the refreshtoken field
+    //delete the cookies
+    const pool = await dbConnection();
+    const connection = await pool.getConnection();
 
-export const Logout=asyncHandler(async(req,res)=>{
+    if (!connection) {
+        throw new ApiErrorHandler({ statusCode: 500, errors: ["Database connection not found while logout"], message: "Database connnection error" })
+
+    }
+
+    try {
+        const updateRefreshTokenQuery = "UPDATE `authtable` SET refreshtoken = ? WHERE `_id`=?";
+        await connection.execute(updateRefreshTokenQuery, [null, user?._id]);
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+        return res.status(200).clearCookie("refreshToken", options).clearCookie("accessToken", options).json({ message: "got the res" })
+    } finally {
+        connection.release()
+    }
+})
+
+export const refreshAccessToken = asyncHandler(async (req, res) => {
+    const incomingRefreshToken = req.cookies?.refreshToken || req.header("Authorization")?.split(" ")[1];
+
+    console.log(incomingRefreshToken)
+    if (!refreshAccessToken) {
+        throw new ApiErrorHandler({ statusCode: 401, errors: ["unautherized request at refresh token"], message: "Unauthorzed request" })
+    }
+    const info = jwt.verify(incomingRefreshToken, String(process.env.REFRESH_TOKEN_SECRETE))
+    console.log(info)
+    if (!info) {
+        throw new ApiErrorHandler({ statusCode: 401, errors: ["unautherized request at refresh token"], message: "Cant generate token no user info" })
+    }
+
+    const pool = await dbConnection();
+    const connection = await pool.getConnection();
+    if (!connection) {
+        throw new ApiErrorHandler({ statusCode: 500, errors: [], message: "" })
+    }
+
+    try {
+        const userFindQuery="SELECT `email` FROM `authtable` WHERE _id=?"
+        const [rows,fields]=await connection.execute(userFindQuery,info)
+        if(!rows){
+            throw new ApiErrorHandler({statusCode:401,errors:["user not exist"],message:"user not exist"})
+        }
+
+    } finally {
+        connection.release()
+    }
 
 })
+
 
 

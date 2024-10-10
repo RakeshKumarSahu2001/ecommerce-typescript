@@ -3,4 +3,3 @@ export interface ApiErrorType{
     errors:string[],
     message?:string
 }
-

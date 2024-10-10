@@ -1,26 +1,26 @@
 # Ignore node_modules in both ecommerceBackend and ecommerceFrontEnd
 # Ignore node_modules in both ecommerceBackend and ecommerceFrontEnd
-/ecommerceBackend/node_modules/
-/ecommerceFrontEnd/node_modules/
+./ecommerceBackend/node_modules/
+./ecommerceFrontEnd/node_modules/
 
 # Ignore lock files
-/ecommerceBackend/package-lock.json
-/ecommerceFrontEnd/package-lock.json
+./ecommerceBackend/package-lock.json
+./ecommerceFrontEnd/package-lock.json
 
 
 # Ignore environment files
-/ecommerceBackend/.env
-/ecommerceFrontEnd/.env
+./ecommerceBackend/.env
+./ecommerceFrontEnd/.env
 
 # Ignore log files
-/ecommerceBackend/logs
-/ecommerceFrontEnd/logs
+./ecommerceBackend/logs
+./ecommerceFrontEnd/logs
 *.log
 
 # Ignore build directories
-/ecommerceBackend/dist/
-/ecommerceFrontEnd/dist/
-/ecommerceFrontEnd/build/
+./ecommerceBackend/dist/
+./ecommerceFrontEnd/dist/
+./ecommerceFrontEnd/build/
 
 
 # For yarn:

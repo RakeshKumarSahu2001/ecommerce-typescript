@@ -2,6 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form"
 import { useECommerceStoreDispatch } from "../EcommerceStore/ecommerceStoreHooks";
 import { signUpApi } from "../EcommerceStore/SignUpApi";
+import logo from "../assets/images/logo.png"
+
 
 type inputData = {
   email: string,
@@ -28,8 +30,9 @@ function SignUp() {
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
           alt="Your Company"
-          src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-          className="mx-auto h-10 w-auto"
+          src={`${logo}`}
+          className="mx-auto h-24 w-auto"
+
         />
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Create Your account
@@ -55,6 +58,7 @@ function SignUp() {
                     message: "Please enter a valid email"
                   }
                 })}
+                placeholder="Email address"
                 autoComplete="off"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
@@ -86,6 +90,7 @@ function SignUp() {
                     message: "The password must contain at least one upper case latter, one lower case latter,one number and 1 special character"
                   }
                 })}
+                placeholder="Enter Password"
                 autoComplete="off"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
@@ -115,6 +120,7 @@ function SignUp() {
                   },
                   validate: (value) => value === watch("password") || "Confirm password must be same as password"
                 })}
+                placeholder="Confirm Your Password"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 autoComplete="off"
               />

@@ -172,7 +172,7 @@ export default function Product() {
           </div>
         </Dialog>
 
-        <main className="mx-auto max-w-[160rem] px-4 sm:px-6 lg:px-8">
+        <main className="mx-auto max-w-[160rem] sm:px-6 lg:px-8">
           <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-4">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900">
               New Arrivals
@@ -304,16 +304,16 @@ export default function Product() {
               {/* Product grid */}
               <div className="lg:col-span-6">
                 <div className="bg-white">
-                  <div className="mx-auto max-w-2xl px-4 py-4 sm:px-6 sm:py-2 lg:max-w-[120rem] lg:px-4">
+                  <div className="mx-auto max-w-2xl md:px-4 md:py-4 sm:px-6 sm:py-2 lg:max-w-[120rem] lg:px-4">
                     <h2 className="text-2xl font-bold tracking-tight text-gray-900">
                       Customers also purchased
                     </h2>
 
-                    <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+                    <div className="mt-6 grid grid-cols-2 md:gap-x-6 md:gap-y-8 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
                       {/* product mapped here */}
                       {products.map((product) => (
                         <Link to={`/shopnow/productDetail/${product.id}`} key={product.id}>
-                          <div key={product.id} className="group relative border-solid border-2 border-r-gray-200 rounded-md p-2">
+                          <div key={product.id} className="group relative border-solid border-2 min-h-[21.5rem] border-r-gray-200 rounded-md p-2">
                             <div className=" min-h-60 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-72">
                               <img
                                 alt={product.title}
@@ -327,7 +327,7 @@ export default function Product() {
                                   <a href={product.thumbnail}>
                                     <span
                                       aria-hidden="true"
-                                      className="absolute inset-0"
+                                      className="absolute inset-0 text-xs md:text-base"
                                     />
                                     {product.title}
                                   </a>
