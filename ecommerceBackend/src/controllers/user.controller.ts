@@ -3,7 +3,10 @@ import bcrypt from "bcrypt";
 import ApiErrorHandler from "../utils/ApiErrorHandler";
 import dbConnection from "../db/dbConnection";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import jwt, { Algorithm } from "jsonwebtoken";
+import jwt, { Algorithm, JwtPayload } from "jsonwebtoken";
+
+
+const secureCookieOption = { secure: true, httpOnly: true, }
 
 // User Signup
 export const SignUp = asyncHandler(async (req, res) => {
@@ -113,8 +116,8 @@ export const Login = asyncHandler(async (req, res) => {
         const tokenInsertionQuery = "UPDATE authtable SET refreshtoken = ? WHERE email = ?"
         await connection.query<ResultSetHeader>(tokenInsertionQuery, [refreshToken, rows[0].email])
 
-        return res.cookie("refreshToken", refreshToken, { secure: true, httpOnly: true, })
-            .cookie("accessToken", accessToken, { secure: true, httpOnly: true }).status(200).json({
+        return res.cookie("refreshToken", refreshToken, secureCookieOption)
+            .cookie("accessToken", accessToken, secureCookieOption).status(200).json({
                 success: true,
                 message: "user found",
                 data: {
@@ -153,15 +156,21 @@ export const Logout = asyncHandler(async (req, res) => {
     }
 })
 
+
+//Update token
 export const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies?.refreshToken || req.header("Authorization")?.split(" ")[1];
 
-    console.log(incomingRefreshToken)
-    if (!refreshAccessToken) {
+    console.log("incoming refreshtoken", incomingRefreshToken)
+
+    if (!incomingRefreshToken) {
         throw new ApiErrorHandler({ statusCode: 401, errors: ["unautherized request at refresh token"], message: "Unauthorzed request" })
     }
+
     const info = jwt.verify(incomingRefreshToken, String(process.env.REFRESH_TOKEN_SECRETE))
-    console.log(info)
+
+    console.log("info", info)
+
     if (!info) {
         throw new ApiErrorHandler({ statusCode: 401, errors: ["unautherized request at refresh token"], message: "Cant generate token no user info" })
     }
@@ -169,16 +178,42 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     const pool = await dbConnection();
     const connection = await pool.getConnection();
     if (!connection) {
-        throw new ApiErrorHandler({ statusCode: 500, errors: [], message: "" })
+        throw new ApiErrorHandler({ statusCode: 500, errors: ["Database connection failed while refreshing the tokens."], message: "Database connection failed while refreshing the tokens." })
     }
 
+
     try {
-        const userFindQuery="SELECT `email` FROM `authtable` WHERE _id=?"
-        const [rows,fields]=await connection.execute(userFindQuery,info)
-        if(!rows){
-            throw new ApiErrorHandler({statusCode:401,errors:["user not exist"],message:"user not exist"})
+        const userFindQuery = "SELECT `email` FROM `authtable` WHERE _id=?"
+        const [rows] = await connection.execute<RowDataPacket[]>(userFindQuery, [String((info as JwtPayload).id)])
+
+        console.log("rows =", rows[0]?.email)
+
+
+        if (!rows || rows[0]?.email != (info as JwtPayload)?.email) {
+            throw new ApiErrorHandler({ statusCode: 401, errors: ["user not exist"], message: "user not exist" })
         }
 
+        const refreshQuery = "SELECT `refreshtoken` FROM `authtable` WHERE `_id` = ?"
+        const [dbrefreshtoken] = await connection.execute<RowDataPacket[]>(refreshQuery, [String((info as JwtPayload).id)])
+        // console.log("dbrefreshtoken", dbrefreshtoken[0].refreshtoken);
+
+        if (!dbrefreshtoken || dbrefreshtoken.length === 0 || dbrefreshtoken[0].refreshtoken != incomingRefreshToken) {
+            throw new ApiErrorHandler({
+                statusCode: 401,
+                errors: ["invalid user tries to refresh the token.", "Refresh token is expired or used"],
+                message: "invalid user tries to refresh the token."
+            })
+        }
+
+        const { refreshToken, accessToken } = await ServerCookieGenerator((info as JwtPayload).id, (info as JwtPayload).email);
+        console.log("updated token",refreshToken)
+        //update refresh token in the database
+        const updateRefreshTokenQuery = "UPDATE `authtable` SET `refreshtoken` = ? WHERE `_id` = ?";
+
+        await connection.execute(updateRefreshTokenQuery, [refreshToken, (info as JwtPayload).id])
+
+        return res.cookie("refreshToken", refreshToken, secureCookieOption)
+            .cookie("accessToken", accessToken, secureCookieOption).json({message:"Token Updated Successfully."})
     } finally {
         connection.release()
     }

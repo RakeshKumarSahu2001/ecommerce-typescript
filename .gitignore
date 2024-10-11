@@ -1,46 +1,23 @@
-# Ignore node_modules in both ecommerceBackend and ecommerceFrontEnd
-# Ignore node_modules in both ecommerceBackend and ecommerceFrontEnd
-./ecommerceBackend/node_modules/
-./ecommerceFrontEnd/node_modules/
-
-# Ignore lock files
-./ecommerceBackend/package-lock.json
-./ecommerceFrontEnd/package-lock.json
-
-
-# Ignore environment files
-./ecommerceBackend/.env
-./ecommerceFrontEnd/.env
-
-# Ignore log files
-./ecommerceBackend/logs
-./ecommerceFrontEnd/logs
-*.log
-
-# Ignore build directories
-./ecommerceBackend/dist/
-./ecommerceFrontEnd/dist/
-./ecommerceFrontEnd/build/
-
-
-# For yarn:
-ecommerceBackend/yarn.lock
-ecommerceFrontEnd/yarn.lock
-
-# Ignore IDE/editor-specific files
-.vscode/
-.idea/
-
-# Ignore OS-generated files
+# Common
+node_modules/
+npm-debug.log
+yarn-error.log
 .DS_Store
-Thumbs.db
 
-# Ignore compiled TypeScript files (if you're using TypeScript)
-**/*.tsbuildinfo
+# Backend (ecommerceBackend)
+ecommerceBackend/node_modules/
+ecommerceBackend/.env
+ecommerceBackend/logs/
+ecommerceBackend/dist/
+ecommerceBackend/coverage/
 
-# Ignore temporary files
-*.tmp
-*.swp
-
-# Ignore other specific files or directories
-# Add more based on your project structure
+# Frontend (ecommerceFrontend)
+ecommerceFrontend/node_modules/
+ecommerceFrontend/.env
+ecommerceFrontend/build/
+ecommerceFrontend/dist/
+ecommerceFrontend/coverage/
+ecommerceFrontend/.env.local
+ecommerceFrontend/.env.development.local
+ecommerceFrontend/.env.test.local
+ecommerceFrontend/.env.production.local
