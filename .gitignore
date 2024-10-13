@@ -11,13 +11,13 @@ ecommerceBackend/logs/
 ecommerceBackend/dist/
 ecommerceBackend/coverage/
 
-# Frontend (ecommerceFrontend)
-ecommerceFrontend/node_modules/
-ecommerceFrontend/.env
-ecommerceFrontend/build/
-ecommerceFrontend/dist/
-ecommerceFrontend/coverage/
-ecommerceFrontend/.env.local
-ecommerceFrontend/.env.development.local
-ecommerceFrontend/.env.test.local
-ecommerceFrontend/.env.production.local
+# Frontend (ecommerceFrontEnd)
+ecommerceFrontEnd/node_modules/
+ecommerceFrontEnd/.env
+ecommerceFrontEnd/build/
+ecommerceFrontEnd/dist/
+ecommerceFrontEnd/coverage/
+ecommerceFrontEnd/.env.local
+ecommerceFrontEnd/.env.development.local
+ecommerceFrontEnd/.env.test.local
+ecommerceFrontEnd/.env.production.local

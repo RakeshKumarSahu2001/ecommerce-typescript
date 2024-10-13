@@ -26,6 +26,10 @@ import userRouter from "./routes/user.routes";
 import ApiErrorHandler from "./utils/ApiErrorHandler";
 app.use("/api/v1/users", userRouter)
 
+// adminroutes
+import adminRouter from "./routes/admin.routes"
+app.use("/api/v1/admin",adminRouter)
+
 
 
 
