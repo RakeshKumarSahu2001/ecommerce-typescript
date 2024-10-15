@@ -1,7 +1,10 @@
 import mysql from "mysql2/promise";
-import { authTableCreationQuery, dbCreationQuery } from "../models/user.model";
+import { authTableCreationQuery, dbCreationQuery,productTableCreationQuery } from "../models/user.model";
+
+
 
 const dbConnection = async () => {
+
     try {
         const pool = mysql.createPool({
             host: process.env.DB_HOST,
@@ -18,6 +21,9 @@ const dbConnection = async () => {
 
         // Create table if it doesn't exist
         await connection.query(authTableCreationQuery);
+
+        // Create table if it doesn't exist
+        await connection.query(productTableCreationQuery)
 
         // relese the connection
         connection.release()
