@@ -1,70 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogBackdrop,
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { UserCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import logo from "../assets/images/logo.png";
-
-// cart items
-const products = [
-  {
-    id: 1,
-    name: "Throwback Hip Bag",
-    href: "#",
-    color: "Salmon",
-    price: "$90.00",
-    quantity: 1,
-    thumbnail:
-      "https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg",
-    title:
-      "Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.",
-  },
-  {
-    id: 2,
-    name: "Medium Stuff Satchel",
-    href: "#",
-    color: "Blue",
-    price: "$32.00",
-    quantity: 1,
-    thumbnail:
-      "https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg",
-    title:
-      "Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.",
-  },
-  {
-    id: 3,
-    name: "Throwback Hip Bag",
-    href: "#",
-    color: "Salmon",
-    price: "$90.00",
-    quantity: 1,
-    thumbnail:
-      "https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg",
-    title:
-      "Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.",
-  },
-  {
-    id: 4,
-    name: "Medium Stuff Satchel",
-    href: "#",
-    color: "Blue",
-    price: "$32.00",
-    quantity: 1,
-    thumbnail:
-      "https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg",
-    title:
-      "Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.",
-  },
-  // More products...
-];
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { useECommerceStoreSelector } from "../EcommerceStore/ecommerceStoreHooks";
 
 function Navbar() {
   const [toggle, setToggle] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
+
+  const cartProducts = useECommerceStoreSelector((state) => state.userCartProducts.userSelectedProduct[0])
+  // console.log("all products on user item cart",products)
+  const [products, setProducts] = useState(cartProducts)
+
+  useEffect(() => {
+    setProducts(cartProducts)
+  }, [cartProducts])
+
 
   return (
     <header className="z-20 fixed w-screen">
@@ -149,7 +108,43 @@ function Navbar() {
               </svg>
             </button>
 
+
+            {/* dorp down */}
+
+
             <div className="hidden lg:flex lg:items-center lg:space-x-10">
+              <Menu as="div" className="relative inline-block text-left">
+                <div>
+                  <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                    <UserCircleIcon aria-hidden="true" className="-mr-1 h-5 w-5 text-gray-400" />
+                  </MenuButton>
+                </div>
+
+                <MenuItems
+                  transition
+                  className="absolute right-0 z-10 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                >
+                  <div className="py-1">
+                    <MenuItem>
+                      <a
+                        href="#"
+                        className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                      >
+                        Edit
+                      </a>
+                    </MenuItem>
+                  </div>
+
+                  <div className="py-1">
+                    <MenuItem>
+                      <Link to="/shopnow/signup" title="" className="text-base font-medium text-black">
+                        {" "}
+                        Sign out{" "}
+                      </Link>
+                    </MenuItem>
+                  </div>
+                </MenuItems>
+              </Menu>
               <Link to="/shopnow/signup" title="" className="text-base font-medium text-black">
                 {" "}
                 Sign up{" "}
@@ -165,11 +160,7 @@ function Navbar() {
                 href="#"
                 title=""
                 className="flex items-center justify-center w-10 h-10 text-white bg-black rounded-full"
-                onClick={() => {
-                  console.log("before click", open);
-                  setOpen(true);
-                  console.log("after click", open);
-                }}
+                onClick={() => setOpen(true)}
               >
                 <svg
                   className="w-6 h-6"
@@ -228,12 +219,12 @@ function Navbar() {
                                   role="list"
                                   className="-my-6 divide-y divide-gray-200"
                                 >
-                                  {products.map((product) => (
+                                  {products && products.map((product) => (
                                     <li key={product.id} className="flex py-6">
                                       <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                                         <img
                                           alt={product.title}
-                                          src={product.thumbnail}
+                                          src={product.images[0]}
                                           className="h-full w-full object-cover object-center"
                                         />
                                       </div>
@@ -243,7 +234,7 @@ function Navbar() {
                                           <div className="flex justify-between text-base font-medium text-gray-900">
                                             <h3>
                                               <a href={product.thumbnail}>
-                                                {product.name}
+                                                {product.title}
                                               </a>
                                             </h3>
                                             <p className="ml-4">
@@ -263,7 +254,7 @@ function Navbar() {
                                               Qty
                                             </label>{" "}
                                             <select>
-                                              <option>1</option>
+                                              <option value="">1</option>
                                               <option value="">2</option>
                                               <option value="">3</option>
                                               <option value="">4</option>
@@ -324,6 +315,9 @@ function Navbar() {
                 </div>
               </Dialog>
             </div>
+
+
+
           </nav>
         </div>
       </div>

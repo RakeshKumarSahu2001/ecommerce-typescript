@@ -67,7 +67,7 @@ const initialState: initialStateType = {
     loadingStatus: false,
     loadingError: false,
     productInfo: {
-        id: 0,
+        id: '',
         title: '',
         description: '',
         category: '',

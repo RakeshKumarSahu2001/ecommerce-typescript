@@ -8,10 +8,14 @@ import Product from "./Components/ProductList.tsx";
 import ProductDetail from "./Components/ProductDetail.tsx";
 import Testing from "./Components/Testing.tsx";
 import Protected from "./Hooks/Protected.tsx";
+import { useEffect } from "react";
+import { useECommerceStoreDispatch, useECommerceStoreSelector } from "./EcommerceStore/ecommerceStoreHooks.ts";
+import { fetchCartProductByUserId } from "./EcommerceStore/FetchUserCartProducts.ts";
 
 
 
 function App() {
+  
   const router = createBrowserRouter([
     {
       path: "/",
@@ -20,13 +24,13 @@ function App() {
       children: [
         {
           path: "/shopnow/allproduct",
-          // element: <Protected><Product /></Protected>
-          element:<Product />
+          element: <Protected><Product /></Protected>
+          // element:<Product />
         },
         {
           path: "/shopnow/productDetail/:id",
-          // element: <Protected><ProductDetail /></Protected>
-          element:<ProductDetail />
+          element: <Protected><ProductDetail /></Protected>
+          // element:<ProductDetail />
         },
         // {
         //   path: "/shopnow/cart",
@@ -44,14 +48,25 @@ function App() {
     },
     {
       path: "/shopnow/cart",
-      // element: <Protected><CartPage /></Protected>,
-      element:<CartPage />
+      element: <Protected><CartPage /></Protected>,
+      // element:<CartPage />
     },
     {
       path: "/testing",
       element: <Testing />
     }
   ]);
+
+  const user=useECommerceStoreSelector((state)=>state.checkLoginUser)
+  const dispatch=useECommerceStoreDispatch()
+  // console.log("hello from the app.tsx file",user.loggedInUser)
+  
+  useEffect(()=>{
+    if(user &&  user.loggedInUser?.id){
+      dispatch(fetchCartProductByUserId(user.loggedInUser.id))
+    }
+  },[user, dispatch])
+
   return (
     <>
       <RouterProvider router={router} />

@@ -3,24 +3,26 @@ import { userAuthData } from "../utils/types";
 import axios from "axios";
 
 export const loginApi = createAsyncThunk("user/loginUser", async (data: userAuthData, { rejectWithValue }) => {
-    console.log(data)
+    // console.log(data)
     try {
-        const response = await axios.post(`/api/v1/users/login`,data)
+        const response = await axios.post(`/api/v1/users/login`, data)
+        // console.log("response result=", response)
         if (response.data) {
             // const res = response.data[0];
-            // console.log(res)
-            return response.data[0];
+            // console.log("response valuue  on line no 12",response.data.data)
+            return response.data.data;
         } else {
             return rejectWithValue("User doesn't exist")
         }
     } catch (err) {
+        // console.log("errors", err)
         throw (err);
     }
 })
 
 type initialStateType = {
     isUserExist: boolean,
-    loggedInUser: userAuthData | null
+    loggedInUser: { id: string, email: string } | null
 }
 
 const initialState: initialStateType = {
@@ -36,6 +38,7 @@ export const checkLoginUser = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(loginApi.fulfilled, (state, action) => {
+            // console.log("action.payload  on line no 40",action.payload)
             state.isUserExist = true,
                 state.loggedInUser = action.payload
         })

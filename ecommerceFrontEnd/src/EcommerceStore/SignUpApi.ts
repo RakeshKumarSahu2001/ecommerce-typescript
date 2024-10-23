@@ -4,6 +4,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 
 export const signUpApi = createAsyncThunk("users/createNewUser", async (data: userAuthData, { rejectWithValue }) => {
+    console.log("data on line no 7 of signup api",data)
     try {
         const response = await axios.post("/api/v1/users/register", data)
         console.log("response in the signup api", response);

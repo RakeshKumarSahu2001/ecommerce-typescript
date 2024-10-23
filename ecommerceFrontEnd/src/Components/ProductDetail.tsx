@@ -4,77 +4,9 @@ import { StarIcon } from '@heroicons/react/20/solid'
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from '../EcommerceStore/ecommerceStoreHooks'
 import { FetchProductDetailsApi } from '../EcommerceStore/FetchProductDetailsApi'
 import { useParams } from 'react-router-dom'
+import { CartApi } from '../EcommerceStore/CartApi'
+import { product } from '../utils/types'
 
-// const product = {
-//   name: 'Basic Tee 6-Pack',
-//   price: '$192',
-//   thumbnail: '#',
-//   breadcrumbs: [
-//     { id: 1, name: 'Men', href: '#' },
-//     { id: 2, name: 'Clothing', href: '#' },
-//   ],
-//   images: [
-//     {
-//       src: 'https://tailwindui.com/img/ecommerce-images/product-page-02-secondary-product-shot.jpg',
-//       alt: 'Two each of gray, white, and black shirts laying flat.',
-//     },
-//     {
-//       src: 'https://tailwindui.com/img/ecommerce-images/product-page-02-tertiary-product-shot-01.jpg',
-//       alt: 'Model wearing plain black basic tee.',
-//     },
-//     {
-//       src: 'https://tailwindui.com/img/ecommerce-images/product-page-02-tertiary-product-shot-02.jpg',
-//       alt: 'Model wearing plain gray basic tee.',
-//     },
-//     {
-//       src: 'https://tailwindui.com/img/ecommerce-images/product-page-02-featured-product-shot.jpg',
-//       alt: 'Model wearing plain white basic tee.',
-//     },
-//   ],
-
-//   description:
-//     'The Basic Tee 6-Pack allows you to fully express your vibrant personality with three grayscale options. Feeling adventurous? Put on a heather gray tee. Want to be a trendsetter? Try our exclusive colorway: "Black". Need to add an extra pop of color to your outfit? Our white tee has you covered.',
-//   highlights: [
-//     'Hand cut and sewn locally',
-//     'Dyed with our proprietary colors',
-//     'Pre-washed & pre-shrunk',
-//     'Ultra-soft 100% cotton',
-//   ],
-//   details:
-//     'The 6-Pack includes two black, two white, and two heather gray Basic Tees. Sign up for our subscription service and be the first to get new, exciting colors, like our upcoming "Charcoal Gray" limited release.',
-//     sizes : [
-//       { name: 'XXS', inStock: false },
-//       { name: 'XS', inStock: true },
-//       { name: 'S', inStock: true },
-//       { name: 'M', inStock: true },
-//       { name: 'L', inStock: true },
-//       { name: 'XL', inStock: true },
-//       { name: '2XL', inStock: true },
-//       { name: '3XL', inStock: true },
-//     ],
-//     colors :[
-//       { name: 'White', class: 'bg-white', selectedClass: 'ring-gray-400' },
-//       { name: 'Gray', class: 'bg-gray-200', selectedClass: 'ring-gray-400' },
-//       { name: 'Black', class: 'bg-gray-900', selectedClass: 'ring-gray-900' },
-//     ]
-//   }
-
-
-// const colors = [
-//   { name: 'White', class: 'bg-white', selectedClass: 'ring-gray-400' },
-//   { name: 'Gray', class: 'bg-gray-200', selectedClass: 'ring-gray-400' },
-//   { name: 'Black', class: 'bg-gray-900', selectedClass: 'ring-gray-900' },
-// ]
-// const sizes = [
-//   { name: 'XXS', inStock: false },
-//   { name: 'XS', inStock: true },
-//   { name: 'S', inStock: true },
-//   { name: 'M', inStock: true },
-//   { name: 'L', inStock: true },
-//   { name: 'XL', inStock: true },
-//   { name: '2XL', inStock: true },
-//   { name: '3XL', inStock: true },
-// ]
 const reviews = { href: '#', average: 4, totalCount: 117 }
 
 function classNames(...classes: (string | boolean | undefined | null)[]): string {
@@ -85,6 +17,7 @@ export default function ProductDetail() {
   // fetching product details
   const { id } = useParams()
   const dispatch = useECommerceStoreDispatch()
+
   useEffect(() => {
     if (id) {
       dispatch(FetchProductDetailsApi(Number(id)))
@@ -92,7 +25,9 @@ export default function ProductDetail() {
   }, [dispatch, id])
   let product = useECommerceStoreSelector((state) => state.productDetails.productInfo)
   const [selectedImg, setSelectedImg] = useState(product?.images?.[0])
+  const user=useECommerceStoreSelector((state)=>state.checkLoginUser.loggedInUser)
   // const [selectedSize, setSelectedSize] = useState(sizes[2])
+  
   useEffect(() => {
     if (product?.images?.length) {
       setSelectedImg(product.images[0])
@@ -101,8 +36,9 @@ export default function ProductDetail() {
 
 
   // add to cart start
-  const handleAddToCart=()=>{
-    
+  const handleAddToCart=(e:React.MouseEvent<HTMLButtonElement>,product:product)=>{
+    e.preventDefault()
+    dispatch(CartApi({...product,quantity:1,userId:user?.id}))
   }
 
 
@@ -158,8 +94,8 @@ export default function ProductDetail() {
               </div>
             </div>
             <div className='flex flex-row gap-4 justify-center'>
-              <button onClick={handleAddToCart}>
-                <a href="" className="flex items-center text-white bg-[#ff9f00] border border-[#ff9f00] py-2 px-6 gap-2 rounded inline-flex items-center">
+              <button onClick={(e) => handleAddToCart(e, product)}>
+                <a href="" className="flex items-center text-white bg-[#ff9f00] border border-[#ff9f00] py-2 px-6 gap-2 rounded">
                   <span>
                     Add To Cart
                   </span>
@@ -171,7 +107,7 @@ export default function ProductDetail() {
               </button>
 
               <button>
-                <a href="" className="flex items-center text-white bg-[#fb641b] border border-[#fb641b] py-2 px-6 gap-2 rounded inline-flex items-center">
+                <a href="" className="flex items-center text-white bg-[#fb641b] border border-[#fb641b] py-2 px-6 gap-2 rounded ">
                   <span>
                     Buy Now
                   </span>
@@ -348,6 +284,5 @@ export default function ProductDetail() {
 
       </div>
     </div>
-    // <div>hello</div>
   )
 }

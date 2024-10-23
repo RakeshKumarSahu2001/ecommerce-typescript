@@ -3,6 +3,8 @@ import { ProductSlice } from "./ProductApi";
 import { ProductDetailsSlice } from "./FetchProductDetailsApi";
 import { createNewUserSlice } from "./SignUpApi";
 import { checkLoginUser } from "./LoginApi";
+import { cartSlice } from "./CartApi";
+import { userCartSlice } from "./FetchUserCartProducts";
 
 
 const ecommerceStore = configureStore({
@@ -10,7 +12,9 @@ const ecommerceStore = configureStore({
         products: ProductSlice.reducer,
         productDetails: ProductDetailsSlice.reducer,
         createNewUser: createNewUserSlice.reducer,
-        checkLoginUser:checkLoginUser.reducer
+        checkLoginUser:checkLoginUser.reducer,
+        addProductsToCart:cartSlice.reducer,
+        userCartProducts:userCartSlice.reducer,
     }
 })
 

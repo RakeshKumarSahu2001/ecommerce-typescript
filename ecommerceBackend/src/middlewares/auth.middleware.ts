@@ -3,12 +3,6 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import ApiErrorHandler from "../utils/ApiErrorHandler";
 import asyncHandler from "../utils/asyncHandler";
 
-// interface userRequest extends Request{
-//     user?:{
-//         id:number,
-//         email:string
-//     }
-// }
 
 export const verifyJWT = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
@@ -30,7 +24,7 @@ export const verifyJWT = asyncHandler(async (req: Request, res: Response, next: 
 
         // Attach user info to req
         req.user = {
-            _id: tokenInfo.id,
+            id: tokenInfo.id,
             email: tokenInfo.email
         };
 

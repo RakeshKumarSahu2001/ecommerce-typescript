@@ -19,8 +19,8 @@ function SignUp() {
   const onSubmit: SubmitHandler<inputData> = ({ email, password }) => {
     dispatch(signUpApi({ email: email, password: password }))
 
-    // reset()
-    // navigate("/shopnow/login")
+    reset()
+    navigate("/shopnow/login")
   };
 
 

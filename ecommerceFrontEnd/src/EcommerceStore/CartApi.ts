@@ -3,7 +3,7 @@ import axios from "axios";
 import { product } from "../utils/types";
 
 
-export const CartApi=createAsyncThunk("cart/addToCart",async(itemData)=>{
+export const CartApi=createAsyncThunk("cart/addToCart",async(itemData:(product & {quantity : number,userId : string}))=>{
     try{
         const response=await axios.post(`http://localhost:3000/cart`,itemData);
         return response.data;
@@ -15,15 +15,13 @@ export const CartApi=createAsyncThunk("cart/addToCart",async(itemData)=>{
 type initialStateType={
     isAdded:boolean,
     isError:boolean,
-    userSelectedProduct:product & {userId:string}
+    userSelectedProduct:(product & {quantity : number,userId : string})[]
 }
 
-const initialState={
+const initialState:initialStateType={
     isAdded:false,
     isError:false,
-    userSelectedProduct:{
-        
-    }
+    userSelectedProduct:[]
 }
 
 export const cartSlice=createSlice({
@@ -33,6 +31,21 @@ export const cartSlice=createSlice({
         
     },
     extraReducers:(builder)=>{
-        builder.addCase()
+        builder.addCase(CartApi.pending,(state)=>{
+            state.isAdded=false;
+        })
+        builder.addCase(CartApi.fulfilled,(state,action)=>{
+            console.log("on line no 38",action.payload)
+            state.isAdded=true;
+            // state.userSelectedProduct.push()
+        })
+        builder.addCase(CartApi.rejected,(state)=>{
+            state.isAdded=false;
+            state.isError=true;
+        })
     }
 })
+
+
+
+
