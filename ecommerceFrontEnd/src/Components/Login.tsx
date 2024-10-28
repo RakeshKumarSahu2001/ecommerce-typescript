@@ -12,14 +12,14 @@ type inputData = {
 
 
 function Login() {
-  const { register,reset, handleSubmit, formState: { errors, isSubmitting } } = useForm<inputData>();
-  const dispatch=useECommerceStoreDispatch()
+  const { register, reset, handleSubmit, formState: { errors, isSubmitting } } = useForm<inputData>();
+  const dispatch = useECommerceStoreDispatch()
 
-  const user=useECommerceStoreSelector((state)=>state.checkLoginUser.isUserExist)
-  const navigate=useNavigate()
+  const user = useECommerceStoreSelector((state) => state.checkLoginUser.isUserExist)
+  const navigate = useNavigate()
 
-  const onSubmit: SubmitHandler<inputData> = ({email,password}) => {
-    dispatch(loginApi({email:email,password:password}))
+  const onSubmit: SubmitHandler<inputData> = ({ email, password }) => {
+    dispatch(loginApi({ email: email, password: password }))
     reset();
   }
 

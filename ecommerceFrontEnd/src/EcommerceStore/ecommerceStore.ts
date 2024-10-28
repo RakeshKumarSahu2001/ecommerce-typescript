@@ -5,6 +5,7 @@ import { createNewUserSlice } from "./SignUpApi";
 import { checkLoginUser } from "./LoginApi";
 import { cartSlice } from "./CartApi";
 import { userCartSlice } from "./FetchUserCartProducts";
+import { createNewAddProductSlice } from "./AddNewProductApi";
 
 
 const ecommerceStore = configureStore({
@@ -12,9 +13,10 @@ const ecommerceStore = configureStore({
         products: ProductSlice.reducer,
         productDetails: ProductDetailsSlice.reducer,
         createNewUser: createNewUserSlice.reducer,
-        checkLoginUser:checkLoginUser.reducer,
-        addProductsToCart:cartSlice.reducer,
-        userCartProducts:userCartSlice.reducer,
+        checkLoginUser: checkLoginUser.reducer,
+        addProductsToCart: cartSlice.reducer,
+        userCartProducts: userCartSlice.reducer,
+        addNewProductsInTheWeb: createNewAddProductSlice.reducer,
     }
 })
 

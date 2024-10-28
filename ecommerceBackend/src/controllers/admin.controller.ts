@@ -7,8 +7,8 @@ import asyncHandler from "../utils/asyncHandler";
 
 export const addNewProduct = asyncHandler(async (req, res) => {
 
-  const { productName, productDescription, productRating, productPrice, discount, stock } = req.body
-  const requiredFields = [productName, productDescription, productRating, productPrice, discount, stock];
+  const { productName, productDescription, brand, productRating, productPrice, discount, stock } = req.body
+  const requiredFields = [productName, productDescription, brand, productRating, productPrice, discount, stock];
   const fieldNames = ['Product Name', 'Product Description', 'Product Rating', 'Product Price', 'Discount', 'Stock'];
 
   // console.log("fields are ",requiredFields)
@@ -18,12 +18,20 @@ export const addNewProduct = asyncHandler(async (req, res) => {
     .filter(field => field !== null);
 
   // console.log("fields",missingFields)
-  if ([productName, productDescription, productRating, productPrice, discount, stock].some((value) => value?.trim() === "")) {
-    throw new ApiErrorHandler({ statusCode: 400, errors: [`${missingFields.join(", ")} are nessary`], message: "All product information fields are required" })
+  if ([productName, productDescription, brand, productRating, productPrice, discount, stock].some((value) => value?.trim() === "")) {
+    throw new ApiErrorHandler({
+      statusCode: 400,
+      errors: [`${missingFields.join(", ")} are nessary`],
+      message: "All product information fields are required"
+    })
   }
 
   if (productRating > 5 || productRating < 1) {
-    throw new ApiErrorHandler({ statusCode: 400, errors: ["rating can't excid 5"], message: "rating must be in the range of 1-5" })
+    throw new ApiErrorHandler({
+      statusCode: 400,
+      errors: ["rating can't excid 5"],
+      message: "rating must be in the range of 1-5"
+    })
   }
 
   const thumbNailImage = req.files?.thumbNailImage?.[0]?.path;
@@ -36,14 +44,22 @@ export const addNewProduct = asyncHandler(async (req, res) => {
     throw new ApiErrorHandler({ statusCode: 400, errors: ["ThumbNailImage is required"], message: "ThumbNailImage is required" })
   }
   if (images && images?.length > 3) {
-    throw new ApiErrorHandler({ statusCode: 400, errors: ["Can send only 3 images"], message: "Can send only 3 images" })
+    throw new ApiErrorHandler({
+      statusCode: 400,
+      errors: ["Can send only 3 images"],
+      message: "Can send only 3 images"
+    })
   }
 
   // after getting the cloudnairy image links store it in the database
   const pool = await dbConnection();
   const connection = await pool.getConnection();
   if (!connection) {
-    throw new ApiErrorHandler({ statusCode: 500, errors: ["Database connection problem in the add new prodct section"], message: "Database connection error." })
+    throw new ApiErrorHandler({
+      statusCode: 500,
+      errors: ["Database connection probl7 in the add new prodct section"],
+      message: "Database connection error."
+    })
   }
 
   try {
@@ -55,11 +71,21 @@ export const addNewProduct = asyncHandler(async (req, res) => {
       productImages.push(imgLink)
     }
 
-    const values = [productName, productDescription, thumbNail?.secure_url, JSON.stringify(productImages.map(img => img?.secure_url)), productRating, productPrice, discount, stock];
+    const values = [
+      productName,
+      productDescription,
+      productRating,
+      productPrice,
+      discount,
+      stock,
+      brand,
+      thumbNail?.secure_url,
+      JSON.stringify(productImages.map(img => img?.secure_url))
+    ];
     console.log("values are", values)
 
     //insert product information in the database
-    const productInsertQuery = "INSERT INTO products (name, description, thumbnail , images, rating, price, discount, stock) VALUES (?,?,?,?,?,?,?,?)";
+    const productInsertQuery = "INSERT INTO products (ProductName, Description, Rating, Price, Discount, StockQuantity, Brand, ThumbnailImage, Images) VALUES (?,?,?,?,?,?,?,?,?)";
     const [result] = await connection.execute<RowDataPacket[]>(productInsertQuery, values);
 
     console.log("results", result);

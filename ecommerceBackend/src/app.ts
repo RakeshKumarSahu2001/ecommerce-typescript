@@ -9,6 +9,8 @@ app.use(cors({
     origin: process.env.ALLOWED_URL,
     credentials: true,
 }))
+console.log(process.env.ALLOWED_URL)
+
 
 app.use(express.json({
     limit: "15kb",
@@ -28,7 +30,7 @@ app.use("/api/v1/users", userRouter)
 
 // adminroutes
 import adminRouter from "./routes/admin.routes"
-app.use("/api/v1/admin",adminRouter)
+app.use("/api/v1/admin", adminRouter)
 
 
 

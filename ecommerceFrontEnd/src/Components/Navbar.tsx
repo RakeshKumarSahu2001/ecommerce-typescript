@@ -9,21 +9,29 @@ import { UserCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import { useECommerceStoreSelector } from "../EcommerceStore/ecommerceStoreHooks";
+// import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../EcommerceStore/ecommerceStoreHooks";
+import { logoutApi } from "../EcommerceStore/LoginApi"
 
 function Navbar() {
   const [toggle, setToggle] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
 
   const cartProducts = useECommerceStoreSelector((state) => state.userCartProducts.userSelectedProduct[0])
+  const dispatch = useECommerceStoreDispatch()
   // console.log("all products on user item cart",products)
   const [products, setProducts] = useState(cartProducts)
+
 
   useEffect(() => {
     setProducts(cartProducts)
   }, [cartProducts])
 
+  const handleLogout = async () => {
+
+      dispatch(logoutApi())
+
+  }
 
   return (
     <header className="z-20 fixed w-screen">
@@ -122,13 +130,13 @@ function Navbar() {
 
                 <MenuItems
                   transition
-                  className="absolute right-0 z-10 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                  className="absolute -right-12 z-10 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
                 >
                   <div className="py-1">
                     <MenuItem>
                       <a
                         href="#"
-                        className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                        className="block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
                       >
                         Edit
                       </a>
@@ -137,10 +145,12 @@ function Navbar() {
 
                   <div className="py-1">
                     <MenuItem>
-                      <Link to="/shopnow/signup" title="" className="text-base font-medium text-black">
+                      <button
+                        onClick={handleLogout}
+                        className="block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900">
                         {" "}
                         Sign out{" "}
-                      </Link>
+                      </button>
                     </MenuItem>
                   </div>
                 </MenuItems>

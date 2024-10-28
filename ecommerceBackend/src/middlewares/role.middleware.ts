@@ -14,7 +14,7 @@ export const isAuthenicateToAccessTheRoute=asyncHandler(async(req,res,next)=>{
         throw new ApiErrorHandler({ statusCode: 500, errors: ["Database connection failed during role validation."], message: "Database connnection error" })
     }
     try {
-        const sql = 'SELECT role FROM `authtable` WHERE `id` = ? ';
+        const sql = 'SELECT Role FROM `authtable` WHERE `ID` = ? ';
       
         const [rows, fields] = await connection.execute<RowDataPacket[]>(sql, [user?.id]);
         console.log("on role middleware",rows);
@@ -22,7 +22,7 @@ export const isAuthenicateToAccessTheRoute=asyncHandler(async(req,res,next)=>{
         // if(user?.email=="lucifer@gmail.com"){
         //     throw new ApiErrorHandler({statusCode:400,errors:["hi lucifer u cant access this route"],message:"hi lucifer u cant access this route"})
         // }
-        if(rows[0].role!=="admin"){
+        if(rows[0].Role!=="admin"){
             throw new ApiErrorHandler({statusCode:400,errors:["Not Autherized to access this route."],message:"Access Denied."})
         }
         next()

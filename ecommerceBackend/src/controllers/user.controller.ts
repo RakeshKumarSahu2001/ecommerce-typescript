@@ -24,7 +24,7 @@ export const SignUp = asyncHandler(async (req, res) => {
 
     try {
         //check the user exist or not
-        const checkUserExist = 'SELECT email FROM `authtable` WHERE `email` = ?';
+        const checkUserExist = 'SELECT Email FROM `authtable` WHERE `Email` = ?';
         const [rows] = await connection.execute<RowDataPacket[]>(checkUserExist, [email]);
         // console.log("rows=", rows);
         if (rows.length > 0) {
@@ -35,7 +35,7 @@ export const SignUp = asyncHandler(async (req, res) => {
         // hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
         //insert into database
-        const insertQuery = 'INSERT INTO `authtable`(`email`, `password`) VALUES (?, ?)';
+        const insertQuery = 'INSERT INTO `authtable`(`Email`, `Password`) VALUES (?, ?)';
         const [result] = await connection.execute<ResultSetHeader>(insertQuery, [email, hashedPassword]);
 
         return res.status(200).json({
@@ -51,9 +51,9 @@ export const SignUp = asyncHandler(async (req, res) => {
 
 
 //generate cookie
-async function ServerCookieGenerator(id: string , email: string, role:string) {
+async function ServerCookieGenerator(id: string, email: string, role: string) {
     try {
-        const refreshToken = await jwt.sign({ id: id, email: email, role:role },
+        const refreshToken = await jwt.sign({ id: id, email: email, role: role },
             String(process.env.REFRESH_TOKEN_SECRETE),
             { expiresIn: process.env.REFRESH_TOKEN_EXPIRY, algorithm: process.env.TOKEN_ALGO_TYPE as Algorithm })
 
@@ -72,16 +72,24 @@ export const Login = asyncHandler(async (req, res) => {
 
     //check email and password is present or not
     if (body.email?.trim() === "" || body.password.trim() === "") {
-        throw new ApiErrorHandler({ statusCode: 400, errors: ["all fields are required for login"], message: "For Login You Have To Add Your Email and Password In The Input Field" })
+        throw new ApiErrorHandler({
+            statusCode: 400,
+            errors: ["all fields are required for login"],
+            message: "For Login You Have To Add Your Email and Password In The Input Field"
+        })
     }
     const pool = await dbConnection();
     const connection = await pool.getConnection();
     if (!connection) {
-        throw new ApiErrorHandler({ statusCode: 500, errors: ["Database connection not found while login"], message: "Database connnection error" })
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while login"],
+            message: "Database connnection error"
+        })
     }
     try {
         //Check user exist or not
-        const checkUserExist = "SELECT email FROM `authtable` WHERE `email` = ?";
+        const checkUserExist = "SELECT Email FROM `authtable` WHERE `Email` = ?";
         const [user] = await connection.query<RowDataPacket[]>(checkUserExist, [body.email]);
         // console.log("user=", user)
         if (user.length === 0) {
@@ -89,9 +97,9 @@ export const Login = asyncHandler(async (req, res) => {
         }
 
         //fetch the records if user exist
-        const userInfoQuery = "SELECT * FROM `authtable` WHERE `email` = ?";
+        const userInfoQuery = "SELECT * FROM `authtable` WHERE `Email` = ?";
         const [rows] = await connection.query<RowDataPacket[]>(userInfoQuery, [body.email]);
-
+        // console.log("line no 94", rows)
         // Check if user exists
         if (rows.length === 0) {
             throw new ApiErrorHandler({
@@ -105,28 +113,35 @@ export const Login = asyncHandler(async (req, res) => {
 
 
         //Check the user validation
-        const isValid = await bcrypt.compare(body.password, String(rows[0].password))
+        const isValid = await bcrypt.compare(body.password, String(rows[0].Password))
         if (!isValid) {
-            throw new ApiErrorHandler({ statusCode: 401, errors: ["Invalid user"], message: "Invalid username and password" })
+            throw new ApiErrorHandler({
+                statusCode: 401,
+                errors: ["Invalid user"],
+                message: "Invalid username and password"
+            })
         }
 
         // generate cookie
-        const { refreshToken, accessToken } = await ServerCookieGenerator(rows[0].id, rows[0].email,rows[0].role)
+        const { refreshToken, accessToken } = await ServerCookieGenerator(rows[0].ID, rows[0].Email, rows[0].Role)
         // console.log("Access and Refresh Token", refreshToken, accessToken)
 
         //insert refresh token in db
-        const tokenInsertionQuery = "UPDATE authtable SET refreshtoken = ? WHERE email = ?"
-        await connection.query<ResultSetHeader>(tokenInsertionQuery, [refreshToken, rows[0].email])
+        const tokenInsertionQuery = "UPDATE authtable SET RefreshToken = ? WHERE Email = ?"
+        await connection.query<ResultSetHeader>(tokenInsertionQuery, [refreshToken, rows[0].Email])
 
-        return res.cookie("refreshToken", refreshToken, secureCookieOption)
-            .cookie("accessToken", accessToken, secureCookieOption).status(200).json({
+        return res.cookie("RefreshToken", refreshToken, secureCookieOption)
+            .cookie("AccessToken", accessToken, secureCookieOption)
+            .status(200)
+            .json({
                 success: true,
                 message: "user found",
                 data: {
-                    id:rows[0].id,
-                    email: rows[0].email
+                    id: rows[0].ID,
+                    email: rows[0].Email
                 }
             })
+
     } finally {
         connection.release()
     }
@@ -134,8 +149,9 @@ export const Login = asyncHandler(async (req, res) => {
 
 // User Logout
 export const Logout = asyncHandler(async (req, res) => {
+    console.log("server hello")
     const user = req.user
-    // console.log("logout", user)
+    console.log("logout", user)
     //update the refreshtoken field
     //delete the cookies
     const pool = await dbConnection();
@@ -146,13 +162,13 @@ export const Logout = asyncHandler(async (req, res) => {
     }
 
     try {
-        const updateRefreshTokenQuery = "UPDATE `authtable` SET refreshtoken = ? WHERE `id`=?";
+        const updateRefreshTokenQuery = "UPDATE `authtable` SET RefreshToken = ? WHERE `ID`=?";
         await connection.execute(updateRefreshTokenQuery, [null, user?.id]);
         const options = {
             httpOnly: true,
             secure: true
         }
-        return res.status(200).clearCookie("refreshToken", options).clearCookie("accessToken", options).json({ message: "got the res" })
+        return res.status(200).clearCookie("RefreshToken", options).clearCookie("AccessToken", options).json({ message: "got the res" })
     } finally {
         connection.release()
     }
@@ -161,7 +177,7 @@ export const Logout = asyncHandler(async (req, res) => {
 
 //Update token
 export const refreshAccessToken = asyncHandler(async (req, res) => {
-    const incomingRefreshToken = req.cookies?.refreshToken || req.header("Authorization")?.split(" ")[1];
+    const incomingRefreshToken = req.cookies?.RefreshToken || req.header("Authorization")?.split(" ")[1];
 
     // console.log("incoming refreshtoken", incomingRefreshToken)
 
@@ -185,21 +201,21 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 
 
     try {
-        const userFindQuery = "SELECT `email` FROM `authtable` WHERE id=?"
+        const userFindQuery = "SELECT `Email` FROM `authtable` WHERE ID=?"
         const [rows] = await connection.execute<RowDataPacket[]>(userFindQuery, [String((info as JwtPayload).id)])
 
-        // console.log("rows =", rows[0]?.email)
+        // console.log("rows =", rows[0]?.Email)
 
 
-        if (!rows || rows[0]?.email != (info as JwtPayload)?.email) {
+        if (!rows || rows[0]?.Email != (info as JwtPayload)?.email) {
             throw new ApiErrorHandler({ statusCode: 401, errors: ["user not exist"], message: "user not exist" })
         }
 
-        const refreshQuery = "SELECT `refreshtoken` FROM `authtable` WHERE `id` = ?"
+        const refreshQuery = "SELECT `RefreshToken` FROM `authtable` WHERE `ID` = ?"
         const [dbrefreshtoken] = await connection.execute<RowDataPacket[]>(refreshQuery, [String((info as JwtPayload).id)])
-        // console.log("dbrefreshtoken", dbrefreshtoken[0].refreshtoken);
+        // console.log("dbrefreshtoken", dbrefreshtoken[0].RefreshToken);
 
-        if (!dbrefreshtoken || dbrefreshtoken.length === 0 || dbrefreshtoken[0].refreshtoken != incomingRefreshToken) {
+        if (!dbrefreshtoken || dbrefreshtoken.length === 0 || dbrefreshtoken[0].RefreshToken != incomingRefreshToken) {
             throw new ApiErrorHandler({
                 statusCode: 401,
                 errors: ["invalid user tries to refresh the token.", "Refresh token is expired or used"],
@@ -207,20 +223,100 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
             })
         }
 
-        const { refreshToken, accessToken } = await ServerCookieGenerator((info as JwtPayload).id, (info as JwtPayload).email,(info as JwtPayload).role);
+        const { refreshToken, accessToken } = await ServerCookieGenerator((info as JwtPayload).id, (info as JwtPayload).email, (info as JwtPayload).role);
         // console.log("updated token",refreshToken)
         //update refresh token in the database
-        const updateRefreshTokenQuery = "UPDATE `authtable` SET `refreshtoken` = ? WHERE `id` = ?";
+        const updateRefreshTokenQuery = "UPDATE `authtable` SET `RefreshToken` = ? WHERE `ID` = ?";
 
         await connection.execute(updateRefreshTokenQuery, [refreshToken, (info as JwtPayload).id])
 
-        return res.cookie("refreshToken", refreshToken, secureCookieOption)
-            .cookie("accessToken", accessToken, secureCookieOption).json({message:"Token Updated Successfully."})
+        return res.cookie("RefreshToken", refreshToken, secureCookieOption)
+            .cookie("accessToken", accessToken, secureCookieOption).json({ message: "Token Updated Successfully." })
     } finally {
         connection.release()
     }
 
 })
 
+// Edit user profile
+// export const editUserProfile=asyncHandler(async(req,res)=>{
+
+// })
+
+
+// Fetch all products
+export const fetchAllProducts = asyncHandler(async (req, res) => {
+    const pool = await dbConnection();
+    const connection = await pool.getConnection();
+    if (!connection) {
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while signup"],
+            message: "Database connnection error"
+        })
+    }
+
+    try {
+        const fetchAllProductRecordQuery = "SELECT * FROM `products`;";
+        const [allProductRecords] = await connection.execute<RowDataPacket[]>(fetchAllProductRecordQuery)
+        if (allProductRecords.length === 0) {
+            throw new ApiErrorHandler({ statusCode: 404, errors: ["No product record present"], message: "No product record present" })
+        }
+        return res.status(200).json({
+            success: true,
+            message: "Products records fetched successfully",
+            data: {
+                products: allProductRecords
+            }
+        })
+    } finally {
+        connection.release()
+    }
+})
+
+// Fetch product by id
+export const fetchProductById = asyncHandler(async (req, res) => {
+    const params = req.params
+    if (!params) {
+        throw new ApiErrorHandler({ statusCode: 400, errors: ["Params is not present."], message: "Params is not present." })
+    }
+    const pool = await dbConnection();
+    const connection = await pool.getConnection();
+    if (!connection) {
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while signup"],
+            message: "Database connnection error"
+        });
+    }
+
+    try {
+        const fetchProductUsingIdQuery = "SELECT * FROM `products` WHERE `ProductID`=?;"
+        const productId = params.id
+        // console.log("line no 296",productId)
+        const [rows] = await connection.execute<RowDataPacket[]>(fetchProductUsingIdQuery, [productId])
+
+        // console.log("fetched product details on line no 300", rows)
+        if (!rows || rows.length === 0) {
+            throw new ApiErrorHandler({
+                statusCode: 404,
+                errors: ["Product record not found"],
+                message: "Product record not found"
+            })
+        }
+
+        // console.log("rows information=", rows)
+        return res.status(200)
+            .json({
+                success: true,
+                message: "Product record found.",
+                data: {
+                    product: rows
+                }
+            })
+    } finally {
+        connection.release()
+    }
+})
 
 

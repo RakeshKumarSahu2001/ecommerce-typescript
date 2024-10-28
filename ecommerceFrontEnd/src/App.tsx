@@ -11,6 +11,7 @@ import Protected from "./Hooks/Protected.tsx";
 import { useEffect } from "react";
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from "./EcommerceStore/ecommerceStoreHooks.ts";
 import { fetchCartProductByUserId } from "./EcommerceStore/FetchUserCartProducts.ts";
+import AddNewProduct from "./Components/AddNewProduct.tsx";
 
 
 
@@ -54,6 +55,10 @@ function App() {
     {
       path: "/testing",
       element: <Testing />
+    },
+    {
+      path:"/add-product",
+      element:<AddNewProduct />
     }
   ]);
 
