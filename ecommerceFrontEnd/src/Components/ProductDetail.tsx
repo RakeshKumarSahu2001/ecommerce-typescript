@@ -25,7 +25,7 @@ export default function ProductDetail() {
   }, [dispatch, id])
   let product = useECommerceStoreSelector((state) => state.productDetails.productInfo)
   const [selectedImg, setSelectedImg] = useState(product?.images?.[0])
-  const user=useECommerceStoreSelector((state)=>state.checkLoginUser.loggedInUser)
+  const user=useECommerceStoreSelector((state)=>state.authSlice.loggedInUser)
   // const [selectedSize, setSelectedSize] = useState(sizes[2])
   
   useEffect(() => {

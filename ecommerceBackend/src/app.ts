@@ -9,7 +9,6 @@ app.use(cors({
     origin: process.env.ALLOWED_URL,
     credentials: true,
 }))
-console.log(process.env.ALLOWED_URL)
 
 
 app.use(express.json({

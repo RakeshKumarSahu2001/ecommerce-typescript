@@ -22,7 +22,7 @@ export const loginApi = createAsyncThunk("user/loginUser", async (data: userAuth
 })
 
 
-export const logoutApi = createAsyncThunk("user/loginUser", async () => {
+export const logoutApi = createAsyncThunk("user/logoutUser", async () => {
     try {
         await axios.post("/api/v1/users/logout")
         console.log("logout successfully")
@@ -43,21 +43,31 @@ const initialState: initialStateType = {
     loggedInUser: null
 }
 
-export const checkLoginUser = createSlice({
-    name: "authenticateUser",
+export const authSlice = createSlice({
+    name: "authSlice",
     initialState,
-    reducers: {},
+    reducers: {
+        setUserFromLocalStorage: (state, action) => {
+            state.isUserExist = true;
+            state.loggedInUser = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder.addCase(loginApi.fulfilled, (state, action) => {
-            console.log("action.payload  on line no 40", action.payload)
-            state.isUserExist = true
-            state.loggedInUser = action.payload
+            state.isUserExist = true;
+            state.loggedInUser = action.payload;
+            localStorage.setItem("loginUserInfo", JSON.stringify(action.payload));
         })
-
         builder.addCase(loginApi.rejected, (state) => {
             state.isUserExist = false
         })
-
-        
+        builder.addCase(logoutApi.fulfilled, (state) => {
+            state.isUserExist = false
+            state.loggedInUser = null
+            localStorage.removeItem("loginUserInfo")
+        })
+        builder.addCase(logoutApi.rejected, (state) => {
+            console.log("Logout failed");
+        });
     }
 })

@@ -30,7 +30,7 @@ export const verifyJWT = asyncHandler(async (req: Request, res: Response, next: 
 
         next();
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         throw new ApiErrorHandler({
             statusCode: 401,
             errors: [],

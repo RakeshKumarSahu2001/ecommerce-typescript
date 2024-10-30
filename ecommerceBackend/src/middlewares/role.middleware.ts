@@ -7,7 +7,7 @@ import asyncHandler from "../utils/asyncHandler";
 
 export const isAuthenicateToAccessTheRoute=asyncHandler(async(req,res,next)=>{
     const user = req.user
-    console.log("user info",user)
+    // console.log("user info",user)
     const pool=await dbConnection();
     const connection=await pool.getConnection()
     if(!connection){
@@ -17,8 +17,8 @@ export const isAuthenicateToAccessTheRoute=asyncHandler(async(req,res,next)=>{
         const sql = 'SELECT Role FROM `authtable` WHERE `ID` = ? ';
       
         const [rows, fields] = await connection.execute<RowDataPacket[]>(sql, [user?.id]);
-        console.log("on role middleware",rows);
-        console.log("on role middleware",fields);
+        // console.log("on role middleware",rows);
+        // console.log("on role middleware",fields);
         // if(user?.email=="lucifer@gmail.com"){
         //     throw new ApiErrorHandler({statusCode:400,errors:["hi lucifer u cant access this route"],message:"hi lucifer u cant access this route"})
         // }
