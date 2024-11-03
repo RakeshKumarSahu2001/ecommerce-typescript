@@ -9,8 +9,7 @@ import { UserCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-// import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../EcommerceStore/ecommerceStoreHooks";
+import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../Hooks/ecommerceStoreHooks";
 import { logoutApi } from "../EcommerceStore/LoginApi"
 
 function Navbar() {
@@ -29,7 +28,7 @@ function Navbar() {
 
   const handleLogout = async () => {
 
-      dispatch(logoutApi())
+    dispatch(logoutApi())
 
   }
 
@@ -134,12 +133,12 @@ function Navbar() {
                 >
                   <div className="py-1">
                     <MenuItem>
-                      <a
-                        href="#"
+                      <Link
+                        to="/shopnow/user-info"
                         className="block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
                       >
-                        Edit
-                      </a>
+                        Profile
+                      </Link>
                     </MenuItem>
                   </div>
 

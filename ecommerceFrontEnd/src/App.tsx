@@ -9,9 +9,10 @@ import ProductDetail from "./Components/ProductDetail.tsx";
 import Testing from "./Components/Testing.tsx";
 import Protected from "./Hooks/Protected.tsx";
 import { useEffect } from "react";
-import { useECommerceStoreDispatch, useECommerceStoreSelector } from "./EcommerceStore/ecommerceStoreHooks.ts";
+import { useECommerceStoreDispatch, useECommerceStoreSelector } from "./Hooks/ecommerceStoreHooks.ts";
 import { fetchCartProductByUserId } from "./EcommerceStore/FetchUserCartProducts.ts";
 import AddNewProduct from "./Components/AddNewProduct.tsx";
+import UserInfoPage from "./Pages/UserInfoPage.tsx";
 
 
 
@@ -53,6 +54,10 @@ function App() {
       // element:<CartPage />
     },
     {
+      path:"/shopnow/user-info",
+      element:<Protected><UserInfoPage /></Protected>
+    },
+    {
       path: "/testing",
       element: <Testing />
     },
@@ -62,7 +67,7 @@ function App() {
     }
   ]);
 
-  const user=useECommerceStoreSelector((state)=>state.checkLoginUser)
+  const user=useECommerceStoreSelector((state)=>state.authSlice)
   const dispatch=useECommerceStoreDispatch()
   // console.log("hello from the app.tsx file",user.loggedInUser)
   

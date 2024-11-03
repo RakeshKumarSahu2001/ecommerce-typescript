@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form"
-import { useECommerceStoreDispatch } from "../EcommerceStore/ecommerceStoreHooks";
+import { useECommerceStoreDispatch } from "../Hooks/ecommerceStoreHooks";
 import { signUpApi } from "../EcommerceStore/SignUpApi";
 import logo from "../assets/images/logo.png"
 

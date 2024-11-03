@@ -11,7 +11,7 @@ export const addNewProduct = asyncHandler(async (req, res) => {
   const requiredFields = [productName, productDescription, brand, productRating, productPrice, discount, stock];
   const fieldNames = ['Product Name', 'Product Description', 'Product Rating', 'Product Price', 'Discount', 'Stock'];
 
-  // console.log("fields are ",requiredFields)
+  // console.log("fields are ", requiredFields)
 
   const missingFields = requiredFields
     .map((value, index) => (value?.trim() === "" ? fieldNames[index] : null))

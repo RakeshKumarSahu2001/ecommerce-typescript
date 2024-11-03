@@ -5,7 +5,7 @@ import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon, StarI
 // import { useDispatch, useSelector } from "react-redux";
 // import { ecommerceStoreState } from "../EcommerceStore/ecommerceStore";
 import { ProductApi } from "../EcommerceStore/ProductApi";
-import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../EcommerceStore/ecommerceStoreHooks";
+import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../Hooks/ecommerceStoreHooks";
 import { Link } from "react-router-dom";
 // import { ProductSlice } from "../EcommerceStore/ProductApi";
 

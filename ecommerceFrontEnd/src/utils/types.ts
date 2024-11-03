@@ -1,11 +1,10 @@
 export type userAuthData = {
-    email: string,
-    password: string,
-  }
-
+  email: string,
+  password: string,
+}
 
 // product details
-export interface product{
+export interface product {
   id: number,
   title: string,
   description: string,
@@ -19,3 +18,4 @@ export interface product{
   images: string[],
   deleted: boolean
 }
+

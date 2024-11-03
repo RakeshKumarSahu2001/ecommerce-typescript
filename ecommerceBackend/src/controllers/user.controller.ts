@@ -28,8 +28,11 @@ export const SignUp = asyncHandler(async (req, res) => {
         const [rows] = await connection.execute<RowDataPacket[]>(checkUserExist, [email]);
         // console.log("rows=", rows);
         if (rows.length > 0) {
-            throw new ApiErrorHandler({ statusCode: 409, errors: ["User already exist."], message: "You have already registered berfore." })
-            // return res.status(409).json({ error: "already registered user", message: "User already exists." })
+            throw new ApiErrorHandler({
+                statusCode: 409,
+                errors: ["User already exist."],
+                message: "You have already registered berfore."
+            })
         }
 
         // hash the password
@@ -92,8 +95,12 @@ export const Login = asyncHandler(async (req, res) => {
         const checkUserExist = "SELECT Email FROM `authtable` WHERE `Email` = ?";
         const [user] = await connection.query<RowDataPacket[]>(checkUserExist, [body.email]);
         // console.log("user=", user)
-        if (user.length === 0) {
-            throw new ApiErrorHandler({ statusCode: 404, errors: ["User not found"], message: "User not found" })
+        if (!user || user.length === 0) {
+            throw new ApiErrorHandler({
+                statusCode: 404,
+                errors: ["User not found"],
+                message: "User not found"
+            })
         }
 
         //fetch the records if user exist
@@ -238,11 +245,6 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 
 })
 
-// Edit user profile
-// export const editUserProfile=asyncHandler(async(req,res)=>{
-
-// })
-
 
 // Fetch all products
 export const fetchAllProducts = asyncHandler(async (req, res) => {
@@ -260,7 +262,11 @@ export const fetchAllProducts = asyncHandler(async (req, res) => {
         const fetchAllProductRecordQuery = "SELECT * FROM `products`;";
         const [allProductRecords] = await connection.execute<RowDataPacket[]>(fetchAllProductRecordQuery)
         if (allProductRecords.length === 0) {
-            throw new ApiErrorHandler({ statusCode: 404, errors: ["No product record present"], message: "No product record present" })
+            throw new ApiErrorHandler({
+                statusCode: 404,
+                errors: ["No product record present"],
+                message: "No product record present"
+            })
         }
         return res.status(200).json({
             success: true,
@@ -319,4 +325,116 @@ export const fetchProductById = asyncHandler(async (req, res) => {
     }
 })
 
+// Fetch user profile
+export const fetchUserProfileById = asyncHandler(async (req, res) => {
+    const id = req.params
+    console.log("user id", id)
+    if (!id) {
+        throw new ApiErrorHandler({
+            statusCode: 403,
+            errors: ["Params is not present."],
+            message: "Params is not present."
+        })
+    }
+
+    const pool = await dbConnection();
+    const connection = await pool.getConnection()
+    if (!connection) {
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while fetching the user information."],
+            message: "Database connnection error"
+        })
+    }
+
+    try {
+        const fetchUserProfileUsingForeignKey = "SELECT * FROM `authtable` INNER JOIN `user` WHERE authtable.ID=user.AuthID;";
+        const [rows] = await connection.execute<RowDataPacket[]>(fetchUserProfileUsingForeignKey, [id])
+        if (!rows || rows.length == 0) {
+            throw new ApiErrorHandler({
+                statusCode: 404,
+                errors: ["User record not found"],
+                message: "User record not found"
+            })
+        }
+
+        return res.status(200)
+            .json({
+                success: true,
+                message: "User record found.",
+                data: {
+                    userInfo: rows
+                }
+            })
+    } finally {
+        connection.release()
+    }
+})
+
+// insert user profile
+export const insertUserProfileById = asyncHandler(async (req, res) => {
+    const { FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender } = req.body;
+    console.log("user id", req.body)
+    // if (!id) {
+    //     throw new ApiErrorHandler({
+    //         statusCode: 403,
+    //         errors: ["Params is not present."],
+    //         message: "Params is not present."
+    //     })
+    // }
+
+    const pool = await dbConnection();
+    const connection = await pool.getConnection();
+
+    if (!connection) {
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while fetching the user information."],
+            message: "Database connnection error"
+        })
+    }
+
+    try {
+        // const updateUserInfo = "INSERT INTO `user` (`FullName`,`Phone`,`Street`,`City`,`State`,`Country`,`PostalCode`,`DateOfBirth`,`Gender`) VALUES (?,?,?,?,?,?,?,?,?);";
+        // const [rows] = await connection.execute<RowDataPacket[]>(updateUserInfo, [FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender]);
+
+        // console.log("response ", rows)
+    return res.status(200).json({
+        message: "Data inserted successfully",
+        success: true,
+        data: { FullName,Phone,Street,City,State,Country,PostalCode,DateOfBirth,Gender }
+    })
+    } finally {
+        connection.release()
+    }
+})
+
+
+export const insertUserInfoById=asyncHandler(async(req,res)=>{
+    const { FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender }=req.body;
+
+    console.log("body value =",req.body);
+
+    const pool=await dbConnection();
+    const connection=await pool.getConnection();
+    
+    if(!connection){
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while fetching the user information."],
+            message: "Database connnection error"
+        })  
+    }
+
+    try {
+        return res.status(200).json({
+            message: "Data inserted successfully",
+            success: true,
+            data: { FullName,Phone,Street,City,State,Country,PostalCode,DateOfBirth,Gender }
+        })
+    } finally {
+        connection.release()
+    }
+
+})
 

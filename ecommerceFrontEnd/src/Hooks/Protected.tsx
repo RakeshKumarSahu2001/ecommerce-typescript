@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useECommerceStoreDispatch, useECommerceStoreSelector } from '../EcommerceStore/ecommerceStoreHooks';
+import { useECommerceStoreDispatch, useECommerceStoreSelector } from './ecommerceStoreHooks';
 import { Navigate } from 'react-router-dom';
 import { authSlice } from '../EcommerceStore/LoginApi';
 

@@ -14,6 +14,7 @@ app.use(cors({
 app.use(express.json({
     limit: "15kb",
 }))
+
 app.use(express.urlencoded({
     limit: "15kb",
     extended: true
@@ -25,11 +26,11 @@ app.use(cookieParser())
 // routes
 import userRouter from "./routes/user.routes";
 import ApiErrorHandler from "./utils/ApiErrorHandler";
-app.use("/api/v1/users", userRouter)
+app.use("/api/v1/users", userRouter);
 
 // adminroutes
-import adminRouter from "./routes/admin.routes"
-app.use("/api/v1/admin", adminRouter)
+import adminRouter from "./routes/admin.routes";
+app.use("/api/v1/admin", adminRouter);
 
 
 

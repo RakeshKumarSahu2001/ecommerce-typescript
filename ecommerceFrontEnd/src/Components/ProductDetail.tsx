@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { StarIcon } from '@heroicons/react/20/solid'
 // import { Radio, RadioGroup } from '@headlessui/react'
-import { useECommerceStoreDispatch, useECommerceStoreSelector } from '../EcommerceStore/ecommerceStoreHooks'
+import { useECommerceStoreDispatch, useECommerceStoreSelector } from '../Hooks/ecommerceStoreHooks'
 import { FetchProductDetailsApi } from '../EcommerceStore/FetchProductDetailsApi'
 import { useParams } from 'react-router-dom'
 import { CartApi } from '../EcommerceStore/CartApi'
