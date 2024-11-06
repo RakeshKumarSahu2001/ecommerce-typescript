@@ -11,7 +11,7 @@ const secureCookieOption = { secure: true, httpOnly: true, }
 // User Signup
 export const SignUp = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-    // console.log("email and password", email, password);
+    console.log("email and password", email, password);
     if ([email, password].some((value) => value?.trim() === "")) {
         throw new ApiErrorHandler({ statusCode: 400, errors: ["All field are nessary for signup"], message: "For Signup You Have To Add Your Email and Password In The Input Field" })
     }
@@ -51,7 +51,6 @@ export const SignUp = asyncHandler(async (req, res) => {
         connection.release()
     }
 })
-
 
 //generate cookie
 async function ServerCookieGenerator(id: string, email: string, role: string) {
@@ -181,7 +180,6 @@ export const Logout = asyncHandler(async (req, res) => {
     }
 })
 
-
 //Update token
 export const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies?.RefreshToken || req.header("Authorization")?.split(" ")[1];
@@ -244,7 +242,6 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 
 })
-
 
 // Fetch all products
 export const fetchAllProducts = asyncHandler(async (req, res) => {
@@ -325,6 +322,45 @@ export const fetchProductById = asyncHandler(async (req, res) => {
     }
 })
 
+// insert user profile
+export const insertUserInfoById = asyncHandler(async (req, res) => {
+    const id = req.params.id
+    const { FullName, Phone, Street, PostalCode, City, State, Country, DateOfBirth, Gender } = req.body;
+
+    // console.log("body value =", FullName, Phone, Street, PostalCode, City, State, Country, DateOfBirth, Gender, id);
+    const pool = await dbConnection();
+    const connection = await pool.getConnection();
+
+    if (!connection) {
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while fetching the user information."],
+            message: "Database connnection error"
+        })
+    }
+
+    try {
+        try {
+
+            const updateUserInfo = "INSERT INTO `user` (`FullName`,`Phone`,`Street`,`City`,`State`,`Country`,`PostalCode`,`DateOfBirth`,`Gender`,`AuthID`) VALUES (?,?,?,?,?,?,?,?,?,?);";
+            const [rows] = await connection.execute<RowDataPacket[]>(updateUserInfo, [FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender, id]);
+
+            console.log("response ", rows)
+        } catch (error) {
+            console.log(error)
+        }
+
+        return res.status(200).json({
+            message: "Data inserted successfully",
+            success: true,
+            data: { FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender }
+        })
+    } finally {
+        connection.release()
+    }
+
+})
+
 // Fetch user profile
 export const fetchUserProfileById = asyncHandler(async (req, res) => {
     const id = req.params
@@ -348,7 +384,7 @@ export const fetchUserProfileById = asyncHandler(async (req, res) => {
     }
 
     try {
-        const fetchUserProfileUsingForeignKey = "SELECT * FROM `authtable` INNER JOIN `user` WHERE authtable.ID=user.AuthID;";
+        const fetchUserProfileUsingForeignKey = "SELECT FullName,Phone,State,Street,Country,PostalCode,DateOfBirth FROM user  INNER JOIN authtable ON user.AuthID=authtable.ID;";
         const [rows] = await connection.execute<RowDataPacket[]>(fetchUserProfileUsingForeignKey, [id])
         if (!rows || rows.length == 0) {
             throw new ApiErrorHandler({
@@ -363,78 +399,10 @@ export const fetchUserProfileById = asyncHandler(async (req, res) => {
                 success: true,
                 message: "User record found.",
                 data: {
-                    userInfo: rows
+                    data: rows
                 }
             })
     } finally {
         connection.release()
     }
 })
-
-// insert user profile
-export const insertUserProfileById = asyncHandler(async (req, res) => {
-    const { FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender } = req.body;
-    console.log("user id", req.body)
-    // if (!id) {
-    //     throw new ApiErrorHandler({
-    //         statusCode: 403,
-    //         errors: ["Params is not present."],
-    //         message: "Params is not present."
-    //     })
-    // }
-
-    const pool = await dbConnection();
-    const connection = await pool.getConnection();
-
-    if (!connection) {
-        throw new ApiErrorHandler({
-            statusCode: 500,
-            errors: ["Database connection not found while fetching the user information."],
-            message: "Database connnection error"
-        })
-    }
-
-    try {
-        // const updateUserInfo = "INSERT INTO `user` (`FullName`,`Phone`,`Street`,`City`,`State`,`Country`,`PostalCode`,`DateOfBirth`,`Gender`) VALUES (?,?,?,?,?,?,?,?,?);";
-        // const [rows] = await connection.execute<RowDataPacket[]>(updateUserInfo, [FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender]);
-
-        // console.log("response ", rows)
-    return res.status(200).json({
-        message: "Data inserted successfully",
-        success: true,
-        data: { FullName,Phone,Street,City,State,Country,PostalCode,DateOfBirth,Gender }
-    })
-    } finally {
-        connection.release()
-    }
-})
-
-
-export const insertUserInfoById=asyncHandler(async(req,res)=>{
-    const { FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender }=req.body;
-
-    console.log("body value =",req.body);
-
-    const pool=await dbConnection();
-    const connection=await pool.getConnection();
-    
-    if(!connection){
-        throw new ApiErrorHandler({
-            statusCode: 500,
-            errors: ["Database connection not found while fetching the user information."],
-            message: "Database connnection error"
-        })  
-    }
-
-    try {
-        return res.status(200).json({
-            message: "Data inserted successfully",
-            success: true,
-            data: { FullName,Phone,Street,City,State,Country,PostalCode,DateOfBirth,Gender }
-        })
-    } finally {
-        connection.release()
-    }
-
-})
-

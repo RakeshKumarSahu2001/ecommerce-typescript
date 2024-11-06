@@ -29,28 +29,22 @@ export const productTableCreationQuery = `CREATE TABLE IF NOT EXISTS shopnow.pro
   CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (ProductID),
-  UNIQUE INDEX id_UNIQUE (ProductID ASC) VISIBLE
+  UNIQUE INDEX id_UNIQUE (ProductID ASC)
 );`
 
-
-export const userTableCreationQuery = `CREATE TABLE shopnow.user (
-  UserID CHAR(36) NOT NULL,
-  FullName VARCHAR(200) NOT NULL,
-  Phone VARCHAR(15) NOT NULL,
-  Street VARCHAR(100),
-  City VARCHAR(50),
-  State VARCHAR(50),
-  Country VARCHAR(50),
-  PostalCode VARCHAR(20),
-  DateOfBirth DATE,
-  Gender ENUM('male', 'female', 'other'),
-  CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  UpdatedAt TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-  PRIMARY KEY (UserID),
-  UNIQUE INDEX UserID_UNIQUE (UserID ASC),
-  CONSTRAINT AuthID
-    FOREIGN KEY (UserID)
-    REFERENCES shopnow.authtable (ID)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+export const userTableCreationQuery=`CREATE TABLE shopnow.user (
+    UserID VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT (UUID()),
+    FullName VARCHAR(200) NOT NULL,
+    Phone VARCHAR(15) NOT NULL,
+    Street VARCHAR(100),
+    City VARCHAR(50),
+    State VARCHAR(50),
+    Country VARCHAR(50),
+    PostalCode VARCHAR(20),
+    DateOfBirth DATE,
+    Gender ENUM('male','female','other'),
+    CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    AuthID VARCHAR(40) NOT NULL,
+    FOREIGN KEY (AuthID) REFERENCES authtable(ID)
 );`

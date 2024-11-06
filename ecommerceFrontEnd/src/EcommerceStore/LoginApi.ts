@@ -3,15 +3,24 @@ import { userAuthData } from "../utils/types";
 import axios from "axios";
 // import { LogoutUser } from "./LogoutApi";
 
+type userDataType = {
+    id: string;
+    email: string;
+}
+
 export const loginApi = createAsyncThunk("user/loginUser", async (data: userAuthData, { rejectWithValue }) => {
     // console.log(data)
     try {
         const response = await axios.post(`/api/v1/users/login`, data)
-        console.log("response result=", response)
+
+        const userData: userDataType = {
+            id: response.data.data.id,
+            email: response.data.data.email
+        }
         if (response.data) {
             // const res = response.data[0];
             // console.log("response valuue  on line no 12",response.data.data)
-            return response.data.data;
+            return userData;
         } else {
             return rejectWithValue("User doesn't exist")
         }
@@ -32,10 +41,14 @@ export const logoutApi = createAsyncThunk("user/logoutUser", async () => {
         throw error
     }
 })
+type loggedInUserType = {
+    id: string;
+    email: string;
+}
 
 type initialStateType = {
     isUserExist: boolean,
-    loggedInUser: { id: string, email: string } | null
+    loggedInUser: loggedInUserType | null
 }
 
 const initialState: initialStateType = {
@@ -56,6 +69,7 @@ export const authSlice = createSlice({
         builder.addCase(loginApi.fulfilled, (state, action) => {
             state.isUserExist = true;
             state.loggedInUser = action.payload;
+            console.log("before storing user into localstorage", typeof (state.loggedInUser), state.loggedInUser);
             localStorage.setItem("loginUserInfo", JSON.stringify(action.payload));
         })
         builder.addCase(loginApi.rejected, (state) => {
@@ -66,7 +80,7 @@ export const authSlice = createSlice({
             state.loggedInUser = null
             localStorage.removeItem("loginUserInfo")
         })
-        builder.addCase(logoutApi.rejected, (state) => {
+        builder.addCase(logoutApi.rejected, () => {
             console.log("Logout failed");
         });
     }

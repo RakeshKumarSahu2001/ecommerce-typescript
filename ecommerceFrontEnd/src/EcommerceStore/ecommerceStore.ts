@@ -6,6 +6,7 @@ import { authSlice } from "./LoginApi";
 import { cartSlice } from "./CartApi";
 import { userCartSlice } from "./FetchUserCartProducts";
 import { createNewAddProductSlice } from "./AddNewProductApi";
+import { AddUserProfInfoSlice } from "./ManageUserProfInfoApi";
 
 const ecommerceStore = configureStore({
     reducer: {
@@ -16,6 +17,7 @@ const ecommerceStore = configureStore({
         addProductsToCart: cartSlice.reducer,
         userCartProducts: userCartSlice.reducer,
         addNewProductsInTheWeb: createNewAddProductSlice.reducer,
+        AddUserProfInfoSlice:AddUserProfInfoSlice.reducer
     }
 });
 

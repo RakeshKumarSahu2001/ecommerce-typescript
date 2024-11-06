@@ -17,8 +17,9 @@ function Navbar() {
   const [open, setOpen] = useState(false);
 
   const cartProducts = useECommerceStoreSelector((state) => state.userCartProducts.userSelectedProduct[0])
+  const userinfo=useECommerceStoreSelector(state=>state.authSlice.loggedInUser);
+  // console.log("user id",typeof(userinfo),userinfo);
   const dispatch = useECommerceStoreDispatch()
-  // console.log("all products on user item cart",products)
   const [products, setProducts] = useState(cartProducts)
 
 
@@ -27,7 +28,6 @@ function Navbar() {
   }, [cartProducts])
 
   const handleLogout = async () => {
-
     dispatch(logoutApi())
 
   }
@@ -134,7 +134,7 @@ function Navbar() {
                   <div className="py-1">
                     <MenuItem>
                       <Link
-                        to="/shopnow/user-info"
+                        to={`/shopnow/user-info/${userinfo?.id}`}
                         className="block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
                       >
                         Profile

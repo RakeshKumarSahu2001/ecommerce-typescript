@@ -9,21 +9,21 @@ type childrenType={
 
 function Protected({ children }:childrenType) {
     const user = useECommerceStoreSelector((state) => state.authSlice.loggedInUser);
-    const dispatch=useECommerceStoreDispatch();
-    const [loading,setLoading]=useState(true)
+    // const dispatch=useECommerceStoreDispatch();
+    // const [loading,setLoading]=useState(true)
 
-    useEffect(()=>{
-        const userInfo=localStorage.getItem("loginUserInfo")
-        console.log(userInfo)
-        if(userInfo){
-            dispatch(authSlice.actions.setUserFromLocalStorage(userInfo))
-        }
-        setLoading(false)
-    },[dispatch])
+    // useEffect(()=>{
+    //     const userInfo=localStorage.getItem("loginUserInfo")
+    //     // console.log(userInfo)
+    //     if(userInfo){
+    //         dispatch(authSlice.actions.setUserFromLocalStorage(userInfo))
+    //     }
+    //     setLoading(false)
+    // },[dispatch])
 
-    if(loading){
-        return <div>Loading....</div>
-    }
+    // if(loading){
+    //     return <div>Loading....</div>
+    // }
 
     return user ? <>{children}</> : <Navigate to="/shopnow/login" replace={true} />;
 }

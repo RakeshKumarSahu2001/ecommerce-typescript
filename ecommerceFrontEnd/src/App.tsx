@@ -54,12 +54,8 @@ function App() {
       // element:<CartPage />
     },
     {
-      path:"/shopnow/user-info",
+      path:"/shopnow/user-info/:id",
       element:<Protected><UserInfoPage /></Protected>
-    },
-    {
-      path: "/testing",
-      element: <Testing />
     },
     {
       path:"/add-product",
