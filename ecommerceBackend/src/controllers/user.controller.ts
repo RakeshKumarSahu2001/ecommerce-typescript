@@ -89,6 +89,7 @@ export const Login = asyncHandler(async (req, res) => {
             message: "Database connnection error"
         })
     }
+
     try {
         //Check user exist or not
         const checkUserExist = "SELECT Email FROM `authtable` WHERE `Email` = ?";
@@ -105,7 +106,7 @@ export const Login = asyncHandler(async (req, res) => {
         //fetch the records if user exist
         const userInfoQuery = "SELECT * FROM `authtable` WHERE `Email` = ?";
         const [rows] = await connection.query<RowDataPacket[]>(userInfoQuery, [body.email]);
-        // console.log("line no 94", rows)
+        console.log("line no 94", rows)
         // Check if user exists
         if (rows.length === 0) {
             throw new ApiErrorHandler({
@@ -144,7 +145,8 @@ export const Login = asyncHandler(async (req, res) => {
                 message: "user found",
                 data: {
                     id: rows[0].ID,
-                    email: rows[0].Email
+                    email: rows[0].Email,
+                    Role: rows[0].Role
                 }
             })
 
@@ -155,7 +157,6 @@ export const Login = asyncHandler(async (req, res) => {
 
 // User Logout
 export const Logout = asyncHandler(async (req, res) => {
-    console.log("server hello")
     const user = req.user
     console.log("logout", user)
     //update the refreshtoken field
@@ -164,7 +165,11 @@ export const Logout = asyncHandler(async (req, res) => {
     const connection = await pool.getConnection();
 
     if (!connection) {
-        throw new ApiErrorHandler({ statusCode: 500, errors: ["Database connection not found while logout"], message: "Database connnection error" })
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while logout"],
+            message: "Database connnection error"
+        })
     }
 
     try {
@@ -174,7 +179,10 @@ export const Logout = asyncHandler(async (req, res) => {
             httpOnly: true,
             secure: true
         }
-        return res.status(200).clearCookie("RefreshToken", options).clearCookie("AccessToken", options).json({ message: "got the res" })
+        return res.status(200)
+            .clearCookie("RefreshToken", options)
+            .clearCookie("AccessToken", options)
+            .json({ message: "got the res" })
     } finally {
         connection.release()
     }
@@ -258,7 +266,7 @@ export const fetchAllProducts = asyncHandler(async (req, res) => {
     try {
         const fetchAllProductRecordQuery = "SELECT * FROM `products`;";
         const [allProductRecords] = await connection.execute<RowDataPacket[]>(fetchAllProductRecordQuery)
-        if (allProductRecords.length === 0) {
+        if (!allProductRecords || allProductRecords.length === 0) {
             throw new ApiErrorHandler({
                 statusCode: 404,
                 errors: ["No product record present"],
@@ -340,21 +348,30 @@ export const insertUserInfoById = asyncHandler(async (req, res) => {
     }
 
     try {
-        try {
-
-            const updateUserInfo = "INSERT INTO `user` (`FullName`,`Phone`,`Street`,`City`,`State`,`Country`,`PostalCode`,`DateOfBirth`,`Gender`,`AuthID`) VALUES (?,?,?,?,?,?,?,?,?,?);";
-            const [rows] = await connection.execute<RowDataPacket[]>(updateUserInfo, [FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender, id]);
-
-            console.log("response ", rows)
-        } catch (error) {
-            console.log(error)
+        const checkUserHasProfInfoQuery = "SELECT `FullName`,`Phone`,`Street`,`City`,`State` FROM `user` WHERE AuthID = ?;";
+        const [checkUserHasProfInfo] = await connection.execute<RowDataPacket[]>(checkUserHasProfInfoQuery, [id])
+        // update user profile info if user already exist
+        // console.log("checkUserHasProfInfo on line no 347", checkUserHasProfInfo);
+        if (checkUserHasProfInfo.length > 0) {
+            throw new ApiErrorHandler({
+                statusCode: 400,
+                errors: ["User info alredy exist."],
+                message: "User info alredy exist."
+            })
         }
 
-        return res.status(200).json({
-            message: "Data inserted successfully",
-            success: true,
-            data: { FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender }
-        })
+
+        const updateUserInfo = "INSERT INTO `user` (`FullName`,`Phone`,`Street`,`City`,`State`,`Country`,`PostalCode`,`DateOfBirth`,`Gender`,`AuthID`) VALUES (?,?,?,?,?,?,?,?,?,?);";
+        const [rows] = await connection.execute<RowDataPacket[]>(updateUserInfo, [FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender, id]);
+
+        console.log("response ", rows)
+
+        return res.status(200)
+            .json({
+                message: "Data inserted successfully",
+                success: true,
+                data: { FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender }
+            })
     } finally {
         connection.release()
     }
@@ -363,7 +380,7 @@ export const insertUserInfoById = asyncHandler(async (req, res) => {
 
 // Fetch user profile
 export const fetchUserProfileById = asyncHandler(async (req, res) => {
-    const id = req.params
+    const id = req.params;
     console.log("user id", id)
     if (!id) {
         throw new ApiErrorHandler({
@@ -384,7 +401,7 @@ export const fetchUserProfileById = asyncHandler(async (req, res) => {
     }
 
     try {
-        const fetchUserProfileUsingForeignKey = "SELECT FullName,Phone,State,Street,Country,PostalCode,DateOfBirth FROM user  INNER JOIN authtable ON user.AuthID=authtable.ID;";
+        const fetchUserProfileUsingForeignKey = "SELECT FullName,Phone,State,Street,City,Country,Gender,PostalCode,DateOfBirth FROM user  INNER JOIN authtable ON user.AuthID=authtable.ID;";
         const [rows] = await connection.execute<RowDataPacket[]>(fetchUserProfileUsingForeignKey, [id])
         if (!rows || rows.length == 0) {
             throw new ApiErrorHandler({
@@ -398,11 +415,99 @@ export const fetchUserProfileById = asyncHandler(async (req, res) => {
             .json({
                 success: true,
                 message: "User record found.",
-                data: {
-                    data: rows
-                }
+                data: rows[0]
             })
     } finally {
         connection.release()
     }
 })
+
+//add product to cart
+export const addProductToCart = asyncHandler(async (req, res) => {
+    const Ids = req.params;
+
+    console.log("IDs =", Ids);
+
+    if (!Ids) {
+        throw new ApiErrorHandler({
+            statusCode: 404,
+            message: "No ids selected",
+            errors: ["No ids selected"]
+        })
+    }
+
+    const pool = await dbConnection();
+    const connection = await pool.getConnection()
+    if (!connection) {
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while adding the product into the cart."],
+            message: "Database connnection error"
+        })
+    }
+
+    try {
+        const theProductExistInUserCartQuery = "SELECT * FROM cart WHERE ProductID=? AND UserID=?;";
+        const [theProductExistInUserCart] = await connection.execute<RowDataPacket[]>(theProductExistInUserCartQuery, [Ids]);
+
+        if (theProductExistInUserCart.length > 0) {
+            //change quantity or throw error
+        }
+
+        res.status(200)
+            .json({
+                success: true,
+                message: "Data fetched successfullt.",
+                data: {}
+            })
+    } finally {
+        connection.release();
+    }
+
+})
+
+//delete product from cart
+export const deleteProductFromCart = asyncHandler(async (req, res) => {
+    const id = req.params;
+    if (!id) {
+        throw new ApiErrorHandler({
+            statusCode: 400,
+            errors: ["params have not sent."],
+            message: "params have not sent."
+        })
+    }
+
+    const pool = await dbConnection();
+    const connection = await pool.getConnection();
+    if (!connection) {
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection probl7 in the add new prodct section"],
+            message: "Database connection error."
+        })
+    }
+
+    try {
+        const productPresentInCartQuery = "SELECT * FROM cart WHERE CartID=?;";
+        const [productPresentInCart] = await connection.execute<RowDataPacket[]>(productPresentInCartQuery, [id]);
+        if (!productPresentInCart || productPresentInCart.length === 0) {
+            throw new ApiErrorHandler({
+                statusCode: 404,
+                errors: ["Product is not present in cart."],
+                message: "Product is not present in cart."
+            })
+        }
+
+        const deleteProductFromCartQuery = "DELETE FROM cart WHERE CartID=?;";
+        const [deleteProductFromCart] = await connection.execute<RowDataPacket[]>(deleteProductFromCartQuery, [id]);
+        return res.status(200)
+            .json({
+                success: true,
+                message: "Product is deleted successfully.",
+                data: deleteProductFromCart
+            })
+    } finally {
+        connection.release();
+    }
+})
+

@@ -6,18 +6,18 @@ import SignUpPage from "./Pages/SignUpPage.tsx";
 import CartPage from "./Pages/CartPage.tsx";
 import Product from "./Components/ProductList.tsx";
 import ProductDetail from "./Components/ProductDetail.tsx";
-import Testing from "./Components/Testing.tsx";
 import Protected from "./Hooks/Protected.tsx";
 import { useEffect } from "react";
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from "./Hooks/ecommerceStoreHooks.ts";
 import { fetchCartProductByUserId } from "./EcommerceStore/FetchUserCartProducts.ts";
 import AddNewProduct from "./Components/AddNewProduct.tsx";
 import UserInfoPage from "./Pages/UserInfoPage.tsx";
+import AdminOnly from "./Hooks/AdminOnly.tsx";
 
 
 
 function App() {
-  
+
   const router = createBrowserRouter([
     {
       path: "/",
@@ -54,24 +54,31 @@ function App() {
       // element:<CartPage />
     },
     {
-      path:"/shopnow/user-info/:id",
-      element:<Protected><UserInfoPage /></Protected>
+      path: "/shopnow/user-info/:id",
+      element: <Protected><UserInfoPage /></Protected>
     },
     {
-      path:"/add-product",
-      element:<AddNewProduct />
+      path: "/add-product",
+      element: (
+        <Protected>
+          <AdminOnly>
+            <AddNewProduct />
+          </AdminOnly>
+        </Protected>
+      ),
     }
+
   ]);
 
-  const user=useECommerceStoreSelector((state)=>state.authSlice)
-  const dispatch=useECommerceStoreDispatch()
+  const user = useECommerceStoreSelector((state) => state.authSlice)
+  const dispatch = useECommerceStoreDispatch()
   // console.log("hello from the app.tsx file",user.loggedInUser)
-  
-  useEffect(()=>{
-    if(user &&  user.loggedInUser?.id){
+
+  useEffect(() => {
+    if (user && user.loggedInUser?.id) {
       dispatch(fetchCartProductByUserId(user.loggedInUser.id))
     }
-  },[user, dispatch])
+  }, [user, dispatch])
 
   return (
     <>

@@ -1,7 +1,6 @@
-import { useState } from "react"
-import { SubmitHandler, useFieldArray, useForm } from "react-hook-form"
-// import { useECommerceStoreDispatch } from "../EcommerceStore/ecommerceStoreHooks"
-// import { AddNewProductApi } from "../EcommerceStore/AddNewProductApi"
+import { SubmitHandler, useForm } from "react-hook-form"
+import { AddNewProductApi } from "../EcommerceStore/productsOpt/AddNewProductApi"
+import { useECommerceStoreDispatch } from "../Hooks/ecommerceStoreHooks"
 
 type inputDataType = {
   productName: string,
@@ -12,34 +11,19 @@ type inputDataType = {
   stock: string,
   brand: string,
   productCategory: string,
-  thumbnailImage: FileList,
+  thumbNailImage: FileList,
   images: FileList[]
 }
 
 function AddNewProduct() {
   const { reset, register, control, handleSubmit, formState: { errors, isSubmitted } } = useForm<inputDataType>()
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "images"
-  })
-  // const dispatch = useECommerceStoreDispatch()
 
-  // const [imageFiles, setImageFiles] = useState<FileList[]>([]);
+  const dispatch = useECommerceStoreDispatch()
 
-  // const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setImageFiles((imgs) => [...imgs, e.target.value])
-  // }
-
-  // const handleRemoveImage = (index: number) => {
-  //   console.log(typeof (index))
-  //   setImageFiles((prev) => prev.filter((img, i) => i !== index))
-  // }
 
   const onSubmit: SubmitHandler<inputDataType> = (data: inputDataType) => {
-    // dispatch(AddNewProductApi({ productName, productDescription, productRating, productPrice, discount, stock, brand, productCategory }))
-
-    console.log("product information", data)
-    // console.log("filelist", imageFiles)
+    // console.log("inputDatatypes",data)
+    dispatch(AddNewProductApi(data))
   }
 
 
@@ -170,10 +154,10 @@ function AddNewProduct() {
           {errors.productCategory && <p className="text-red-600">{errors.productCategory.message}</p>}
         </div>
         <div className="">
-          <label htmlFor="thumbnailImage">ThumbnailImage</label><br></br>
+          <label htmlFor="thumbNailImage">ThumbNailImage</label><br></br>
           <input
             {
-            ...register("thumbnailImage", {
+            ...register("thumbNailImage", {
               required: {
                 value: true,
                 message: "Thumbnail Image is required"
@@ -181,67 +165,23 @@ function AddNewProduct() {
             })
             }
             type="file"
-            multiple
             placeholder="Insert thumbnail"
             className="w-[100%] rounded-md"
           />
         </div>
-        {
-          /* <div className="">
-            <label htmlFor="images">Images</label><br></br>
-            <input
-              type="file"
-              onChange={handleImageUpload}
-              className="w-[100%] rounded-md" />
-            <ul>
-              {
-                imageFiles.length > 0 && imageFiles.map((imgfile, index) => {
-                  return <li key={index} className="flex justify-between items-center">
-                    {imgfile}
-                    <button
-                      onClick={() => handleRemoveImage(index)}>
-                      removefile
-                    </button>
-                  </li>
-                })
-              }
-            </ul>
-          </div> */
-        }
 
-        <div className="">
-          <label htmlFor="images">Images</label><br></br>
-          {/* <input
+        <div>
+          <label htmlFor="images">Image 1</label><br />
+          <input
             type="file"
+            id="primary-image"
             multiple
-            {...register("images", {
-              required: {
-                value: true,
-                message: "Images are required"
-              }
-            })}
-          /> */}
-          {errors.images && <p className="text-red-600">{errors.images.message}</p>}
-          <ul>
             {
-              fields.map((field, index) => {
-                return <li key={field.id}>
-                  <input
-                    type="file"
-                    multiple
-                    {...register(`images.${index}`)} />
-                  {index > 0 && <button
-                    type="button"
-                    onClick={() => remove(index)}>Delete</button>}
-                </li>
-              })
+            ...register("images",{
+              required:true
+            })
             }
-          </ul>
-          <button
-            onClick={() => append({})}
-          >
-            Add File
-          </button>
+          />
         </div>
 
         <div className="col-span-2">

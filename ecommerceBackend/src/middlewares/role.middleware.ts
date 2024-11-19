@@ -5,31 +5,34 @@ import asyncHandler from "../utils/asyncHandler";
 
 
 
-export const isAuthenicateToAccessTheRoute=asyncHandler(async(req,res,next)=>{
-    const user = req.user
-    // console.log("user info",user)
-    const pool=await dbConnection();
-    const connection=await pool.getConnection()
-    if(!connection){
-        throw new ApiErrorHandler({ statusCode: 500, errors: ["Database connection failed during role validation."], message: "Database connnection error" })
-    }
-    try {
-        const sql = 'SELECT Role FROM `authtable` WHERE `ID` = ? ';
-      
-        const [rows, fields] = await connection.execute<RowDataPacket[]>(sql, [user?.id]);
-        // console.log("on role middleware",rows);
-        // console.log("on role middleware",fields);
-        // if(user?.email=="lucifer@gmail.com"){
-        //     throw new ApiErrorHandler({statusCode:400,errors:["hi lucifer u cant access this route"],message:"hi lucifer u cant access this route"})
-        // }
-        if(rows[0].Role!=="admin"){
-            throw new ApiErrorHandler({statusCode:400,errors:["Not Autherized to access this route."],message:"Access Denied."})
-        }
-        next()
+export const isAuthenicateToAccessTheRoute = asyncHandler(async (req, res, next) => {
+  const user = req.user
+  // console.log("user info",user)
+  const pool = await dbConnection();
+  const connection = await pool.getConnection()
+  if (!connection) {
+    throw new ApiErrorHandler({ statusCode: 500, errors: ["Database connection failed during role validation."], message: "Database connnection error" })
+  }
+  try {
+    const sql = 'SELECT Role FROM `authtable` WHERE `ID` = ? ';
 
-      }finally{
-        connection.release()
-      }
+    const [rows] = await connection.execute<RowDataPacket[]>(sql, [user?.id]);
+    // console.log("is admin", rows);
+
+    if (rows[0].Role !== "admin") {
+      throw new ApiErrorHandler({ statusCode: 400, errors: ["Not Autherized to access this route."], message: "Access Denied." })
+    }
+    next()
+
+  } catch (err) {
+    throw new ApiErrorHandler({
+      statusCode: 401,
+      message: "Normal user can't access this route",
+      errors: ["Normal user can't access this route"]
+    })
+  } finally {
+    connection.release()
+  }
 
 })
 

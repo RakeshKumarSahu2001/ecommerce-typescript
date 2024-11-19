@@ -2,6 +2,7 @@ import multer from "multer"
 import fs from "fs";
 import path from "path";
 
+
 const tempDir=path.join(__dirname,"../public/temp")
 
 // Check if the directory exists, and if not, create it
@@ -15,7 +16,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
 
-    // console.log("multer middleware req", req)
+    // console.log("multer middleware req", req.body)
     // console.log("multer middleware file", file)
 
     const uniqueSuffix = Date.now() + '-' + file.fieldname + '-' + file.originalname

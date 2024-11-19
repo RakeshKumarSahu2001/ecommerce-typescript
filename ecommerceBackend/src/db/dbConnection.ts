@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import { authTableCreationQuery, dbCreationQuery,productTableCreationQuery } from "../models/user.model";
+import { authTableCreationQuery, cartTableCreationQuery, dbCreationQuery,productTableCreationQuery } from "../models/user.model";
 
 
 
@@ -25,6 +25,9 @@ const dbConnection = async () => {
         // Create table if it doesn't exist
         await connection.query(productTableCreationQuery)
 
+        //create Cart table
+        await connection.query(cartTableCreationQuery);
+        
         // relese the connection
         connection.release()
         return pool;

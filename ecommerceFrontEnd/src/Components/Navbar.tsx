@@ -10,15 +10,14 @@ import { Link } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../Hooks/ecommerceStoreHooks";
-import { logoutApi } from "../EcommerceStore/LoginApi"
+import { authSlice, logoutApi } from "../EcommerceStore/LoginApi"
 
 function Navbar() {
   const [toggle, setToggle] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
 
   const cartProducts = useECommerceStoreSelector((state) => state.userCartProducts.userSelectedProduct[0])
-  const userinfo=useECommerceStoreSelector(state=>state.authSlice.loggedInUser);
-  // console.log("user id",typeof(userinfo),userinfo);
+  const userinfo = useECommerceStoreSelector(state => state.authSlice.loggedInUser);
   const dispatch = useECommerceStoreDispatch()
   const [products, setProducts] = useState(cartProducts)
 
@@ -29,7 +28,7 @@ function Navbar() {
 
   const handleLogout = async () => {
     dispatch(logoutApi())
-
+    dispatch(authSlice.actions.clearLoginUserInfoFromLocalStorage())
   }
 
   return (
@@ -48,10 +47,11 @@ function Navbar() {
                 Products{" "}
               </a>
 
-              <a href="#" title="" className="text-base font-medium text-black">
+              <Link
+                to="/add-product" className="text-base font-medium text-black">
                 {" "}
                 Resources{" "}
-              </a>
+              </Link>
 
               <a href="#" title="" className="text-base font-medium text-black">
                 {" "}
@@ -324,9 +324,6 @@ function Navbar() {
                 </div>
               </Dialog>
             </div>
-
-
-
           </nav>
         </div>
       </div>
@@ -381,14 +378,13 @@ function Navbar() {
                 Solutions{" "}
               </a>
 
-              <a
-                href="#"
-                title=""
+              <Link
+                to="/add-product"
                 className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
               >
                 {" "}
                 Resources{" "}
-              </a>
+              </Link>
 
               <a
                 href="#"

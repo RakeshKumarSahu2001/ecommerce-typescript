@@ -1,6 +1,6 @@
 import { SubmitHandler, useForm } from "react-hook-form"
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../Hooks/ecommerceStoreHooks"
-import { AddUserProfInfoById } from "../EcommerceStore/ManageUserProfInfoApi";
+import { AddUserProfInfoById, fetchUserProfInfoById } from "../EcommerceStore/ManageUserProfInfoApi";
 import { useEffect, useState } from "react";
 
 enum Gender {
@@ -25,18 +25,19 @@ function UserInfo() {
     const [userInfoExist, setUserInfoExist] = useState<boolean>(false)
     const { handleSubmit, register } = useForm<inputDataType>()
     const user = useECommerceStoreSelector((state) => state.authSlice.loggedInUser)
-    // console.log("user info", user)
+    // console.log("user info on line 28", user);
+    const userInfo = useECommerceStoreSelector(state => state.AddUserProfInfoSlice.userProfileInfo);
+    console.log("user info", userInfo);
     const dispatch = useECommerceStoreDispatch();
 
     const onSubmit: SubmitHandler<inputDataType> = (formData) => {
-        // console.log(Fullname, Phone, Street, PostalCode, City, State, Country, DateOfBirth, Gender)
         dispatch(AddUserProfInfoById({ data: formData, id: user?.id }));
         setUserInfoExist(false)
     }
 
-    // useEffect(()=>{
-    //     dispatch()
-    // },[])
+    useEffect(() => {
+        dispatch(fetchUserProfInfoById(user?.id))
+    }, [])
 
     return (
         userInfoExist ?
@@ -49,6 +50,7 @@ function UserInfo() {
                         <input
                             placeholder="Enter Your Full Name"
                             type="text"
+                            value={userInfo?.FullName}
                             {
                             ...register("FullName", {
                                 required: {
@@ -64,6 +66,7 @@ function UserInfo() {
                         <input
                             placeholder="Enter Your Phone"
                             type="number"
+                            value={userInfo?.Phone}
                             {
                             ...register("Phone", {
                                 required: {
@@ -79,6 +82,7 @@ function UserInfo() {
                         <input
                             placeholder="Enter Your Street"
                             type="text"
+                            value={userInfo?.Street}
                             {
                             ...register("Street", {
                                 required: false
@@ -91,6 +95,7 @@ function UserInfo() {
                         <input
                             placeholder="Enter Your PostalCode"
                             type="number"
+                            value={userInfo?.PostalCode}
                             {
                             ...register("PostalCode", {
                                 required: false
@@ -103,6 +108,7 @@ function UserInfo() {
                         <input
                             placeholder="Enter Your City"
                             type="text"
+                            value={userInfo?.City}
                             {
                             ...register("City", {
                                 required: false
@@ -115,6 +121,7 @@ function UserInfo() {
                         <input
                             placeholder="Enter Your State"
                             type="text"
+                            value={userInfo?.State}
                             {
                             ...register("State", {
                                 required: false
@@ -127,6 +134,7 @@ function UserInfo() {
                         <input
                             placeholder="Enter Your Country"
                             type="text"
+                            value={userInfo?.Country}
                             {
                             ...register("Country", {
                                 required: false
@@ -171,42 +179,42 @@ function UserInfo() {
                 <div className="user-info-card grid grid-cols-2 grid-rows-5 gap-4">
                     <div>
                         <label htmlFor="FullName">Full name</label><br />
-                        <p>Name</p>
+                        <p>{userInfo?.FullName}</p>
                     </div>
                     <div>
                         <label htmlFor="Phone">Phone</label><br />
-                        <p>Phone</p>
+                        <p>{userInfo?.Phone}</p>
                     </div>
                     <div>
                         <label htmlFor="Street">Street</label><br />
-                        <p>Street</p>
+                        <p>{userInfo?.Street}</p>
                     </div>
                     <div>
                         <label htmlFor="PostalCode">Pincode</label><br />
-                        <p>Pincode</p>
+                        <p>{userInfo?.PostalCode}</p>
                     </div>
                     <div>
                         <label htmlFor="City">City</label><br />
-                        <p>City</p>
+                        <p>{userInfo?.City}</p>
                     </div>
                     <div>
                         <label htmlFor="State">State</label><br />
-                        <p>State</p>
+                        <p>{userInfo?.State}</p>
                     </div>
                     <div>
                         <label htmlFor="Country">Country</label><br />
-                        <p>Country</p>
+                        <p>{userInfo?.Country}</p>
                     </div>
                     <div>
                         <label htmlFor="DateOfBirth">DOB</label><br />
-                        <p>DOB</p>
+                        <p>{userInfo?.DateOfBirth}</p>
                     </div>
                     <div>
                         <label htmlFor="Gender">Gender</label><br />
-                        <p>Gender</p>
+                        <p>{userInfo?.Gender}</p>
                     </div>
                     <br />
-                    <button onClick={()=>setUserInfoExist(true)}>Edit</button>
+                    <button onClick={() => setUserInfoExist(true)}>Edit</button>
                 </div>
             </div>
     )

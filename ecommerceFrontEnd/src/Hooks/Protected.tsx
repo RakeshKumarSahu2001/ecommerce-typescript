@@ -8,7 +8,9 @@ type childrenType={
 }
 
 function Protected({ children }:childrenType) {
-    const user = useECommerceStoreSelector((state) => state.authSlice.loggedInUser);
+    // const user = useECommerceStoreSelector((state) => state.authSlice.loggedInUser);
+    const user=localStorage.getItem("Id");
+    // console.log(user)
     // const dispatch=useECommerceStoreDispatch();
     // const [loading,setLoading]=useState(true)
 

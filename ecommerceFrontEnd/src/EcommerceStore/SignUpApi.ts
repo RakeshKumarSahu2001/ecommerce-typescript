@@ -4,7 +4,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 
 export const signUpApi = createAsyncThunk("users/createNewUser", async (data: userAuthData, { rejectWithValue }) => {
-    console.log("data on line no 7 of signup api",data)
+    console.log("data on line no 7 of signup api", data)
     try {
         const response = await axios.post("/api/v1/users/register", data)
         console.log("response in the signup api", response);
@@ -34,8 +34,8 @@ export const createNewUserSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(signUpApi.pending, (state) => {
-            state.isUserCreated = true,
-                state.userCreationError = false
+            state.isUserCreated = true
+            state.userCreationError = false
         }),
             builder.addCase(signUpApi.fulfilled, (state, action) => {
                 state.isUserCreated = false,

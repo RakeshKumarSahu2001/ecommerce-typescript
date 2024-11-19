@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogBackdrop, DialogPanel, Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems, } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { EllipsisVerticalIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon, StarIcon } from "@heroicons/react/20/solid";
 // import { useDispatch, useSelector } from "react-redux";
 // import { ecommerceStoreState } from "../EcommerceStore/ecommerceStore";
 import { ProductApi } from "../EcommerceStore/ProductApi";
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../Hooks/ecommerceStoreHooks";
 import { Link } from "react-router-dom";
+import isAdmin from "../Hooks/isAdmin";
 // import { ProductSlice } from "../EcommerceStore/ProductApi";
 
 const sortOptions = [
@@ -68,6 +69,7 @@ function classNames(...classes: (string | boolean | undefined | null)[]): string
 
 export default function Product() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const isAdminObj = new isAdmin();
   const dispatch = useECommerceStoreDispatch()
   useEffect(() => {
     dispatch(ProductApi())
@@ -314,6 +316,45 @@ export default function Product() {
                       {products.map((product) => (
                         <Link to={`/shopnow/productDetail/${product.id}`} key={product.id}>
                           <div key={product.id} className="group relative border-solid border-2 min-h-[21.5rem] border-r-gray-200 rounded-md p-2">
+                            {isAdminObj.access &&
+
+                              <Menu as="div" className="absolute z-20 h-8 right-1">
+                                <div>
+                                  <MenuButton className="relative w-[100%] h-8 gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm">
+                                    <EllipsisVerticalIcon aria-hidden="true" className="absolute z-20 h-8 top-0 right-0" />
+                                  </MenuButton>
+                                </div>
+
+                                <MenuItems
+                                  transition
+                                  className="absolute -right-12 z-10 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                                >
+                                  <div className="py-1">
+                                    <MenuItem>
+                                      <Link
+                                        to="sdhd"
+                                        className="block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                                      >
+                                        Edit
+                                      </Link>
+                                    </MenuItem>
+                                  </div>
+
+                                  <div className="py-1">
+                                    <MenuItem>
+                                      <Link
+                                        to="sdhd"
+                                        className="block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                                      >
+                                        Edit
+                                      </Link>
+                                    </MenuItem>
+                                  </div>
+                                </MenuItems>
+                              </Menu>
+                            }
+
+
                             <div className=" min-h-60 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-72">
                               <img
                                 alt={product.title}

@@ -4,13 +4,46 @@ import uploadOnCloudinary from "../services/cloudinary";
 import ApiErrorHandler from "../utils/ApiErrorHandler";
 import asyncHandler from "../utils/asyncHandler";
 
+//Fetch product
+export const fetchAllProducts = asyncHandler(async (req, res) => {
+  const pool = await dbConnection();
+  const connection = await pool.getConnection();
+  if (!connection) {
+    throw new ApiErrorHandler({
+      statusCode: 500,
+      errors: ["Database connection probl7 in the add new prodct section"],
+      message: "Database connection error."
+    })
+  }
 
+  try {
+    const selectAllProductQuery = "SELECT * FROM products;";
+    const [selectAllProduct] = await connection.execute<RowDataPacket[]>(selectAllProductQuery);
+    if (!selectAllProduct || selectAllProduct.length === 0) {
+      throw new ApiErrorHandler({
+        statusCode: 404,
+        errors: ["No product Present."],
+        message: "No product Present."
+      })
+    }
+
+    return res.status(200)
+      .json({
+        success: true,
+        message: "Products fetched successfully.",
+        data: selectAllProduct
+      })
+  } finally {
+    connection.release();
+  }
+})
+
+//Add product
 export const addNewProduct = asyncHandler(async (req, res) => {
-
-  const { productName, productDescription, brand, productRating, productPrice, discount, stock } = req.body
-  const requiredFields = [productName, productDescription, brand, productRating, productPrice, discount, stock];
-  const fieldNames = ['Product Name', 'Product Description', 'Product Rating', 'Product Price', 'Discount', 'Stock'];
-
+  // console.log("hello",req.files)
+  const { productName, productDescription, brand, productRating, productPrice, productCategory, discount, stock } = req.body
+  const requiredFields = [productName, productDescription, brand, productRating, productPrice, productCategory, discount, stock];
+  const fieldNames = ['Product Name', 'Product Description', 'Product Rating', 'Product Price', 'Product Category', 'Discount', 'Stock'];
   // console.log("fields are ", requiredFields)
 
   const missingFields = requiredFields
@@ -18,7 +51,7 @@ export const addNewProduct = asyncHandler(async (req, res) => {
     .filter(field => field !== null);
 
   // console.log("fields",missingFields)
-  if ([productName, productDescription, brand, productRating, productPrice, discount, stock].some((value) => value?.trim() === "")) {
+  if ([productName, productDescription, brand, productRating, productPrice, productCategory, discount, stock].some((value) => value?.trim() === "")) {
     throw new ApiErrorHandler({
       statusCode: 400,
       errors: [`${missingFields.join(", ")} are nessary`],
@@ -39,9 +72,14 @@ export const addNewProduct = asyncHandler(async (req, res) => {
 
   // console.log("files", images?.[0])
 
-  // console.log("mainimage", thumbNailImage)
+  // console.log("mainimage", req)
+
   if (!thumbNailImage) {
-    throw new ApiErrorHandler({ statusCode: 400, errors: ["ThumbNailImage is required"], message: "ThumbNailImage is required" })
+    throw new ApiErrorHandler({
+      statusCode: 400,
+      errors: ["ThumbNailImage is required"],
+      message: "ThumbNailImage is required"
+    })
   }
   if (images && images?.length > 3) {
     throw new ApiErrorHandler({
@@ -70,27 +108,120 @@ export const addNewProduct = asyncHandler(async (req, res) => {
       const imgLink = await uploadOnCloudinary(image)
       productImages.push(imgLink)
     }
-
     const values = [
       productName,
       productDescription,
       productRating,
-      productPrice,
+      parseInt(productPrice),
+      productCategory,
       discount,
       stock,
       brand,
       thumbNail?.secure_url,
       JSON.stringify(productImages.map(img => img?.secure_url))
     ];
-    console.log("values are", values)
+
+    // console.log("values are", values)
 
     //insert product information in the database
-    const productInsertQuery = "INSERT INTO products (ProductName, Description, Rating, Price, Discount, StockQuantity, Brand, ThumbnailImage, Images) VALUES (?,?,?,?,?,?,?,?,?)";
+    const productInsertQuery = "INSERT INTO products (ProductName, Description, Rating, Price,Category, Discount, StockQuantity, Brand, ThumbnailImage, Images) VALUES (?,?,?,?,?,?,?,?,?,?)";
     const [result] = await connection.execute<RowDataPacket[]>(productInsertQuery, values);
 
     console.log("results", result);
-    return res.status(200).json({ message: "successfull" })
+    return res.status(200)
+      .json({ message: "successfull" })
   } finally {
     connection.release()
+  }
+})
+
+//Delete product
+export const deleteProduct = asyncHandler(async (req, res) => {
+  const id = req.params;
+  if (!id) {
+    throw new ApiErrorHandler({
+      statusCode: 400,
+      errors: ["params have not sent."],
+      message: "params have not sent."
+    })
+  }
+
+  const pool = await dbConnection();
+  const connection = await pool.getConnection();
+  if (!connection) {
+    throw new ApiErrorHandler({
+      statusCode: 500,
+      errors: ["Database connection probl7 in the add new prodct section"],
+      message: "Database connection error."
+    })
+  }
+  try {
+    const checkProductPresentInDBQuery = "SELECT * FROM products WHERE ProductID= ?;";
+    const [checkProductPresentInDB] = await connection.execute<RowDataPacket[]>(checkProductPresentInDBQuery, [id]);
+    if (!checkProductPresentInDB || checkProductPresentInDB.length === 0) {
+      throw new ApiErrorHandler({
+        statusCode: 404,
+        errors: ["Product not found."],
+        message: "Product not found."
+      })
+    }
+
+    const deleteProductQuery = "DELETE FROM products WHERE ProductID= ?;";
+    const deleteProduct = await connection.execute<RowDataPacket[]>(deleteProductQuery, [id]);
+    return res.status(200)
+      .json({
+        success: true,
+        message: "Product deleted successfully.",
+        data: deleteProduct
+      })
+
+  } finally {
+    connection.release()
+  }
+})
+
+//Edit product
+export const editProduct = asyncHandler(async (req, res) => {
+  const id = req.params;
+  if (!id) {
+    throw new ApiErrorHandler({
+      statusCode: 400,
+      errors: ["params have not sent."],
+      message: "params have not sent."
+    })
+  }
+
+  const pool = await dbConnection();
+  const connection = await pool.getConnection();
+  if (!connection) {
+    throw new ApiErrorHandler({
+      statusCode: 500,
+      errors: ["Database connection probl7 in the add new prodct section"],
+      message: "Database connection error."
+    })
+  }
+
+  try {
+    const checkProductPresentInDBQuery = "SELECT * FROM products WHERE ProductID= ?;";
+    const [checkProductPresentInDB] = await connection.execute<RowDataPacket[]>(checkProductPresentInDBQuery, [id]);
+    if (!checkProductPresentInDB || checkProductPresentInDB.length === 0) {
+      throw new ApiErrorHandler({
+        statusCode: 404,
+        errors: ["Product not found."],
+        message: "Product not found."
+      })
+    }
+
+    const updateProductInfoQuery = "UPDATE productS SET ProductName=?, Description=?, Rating=?, Price=?, Discount=?, StockQuantity=?, Brand=? WHERE ProductID= ?;";
+    const updateProductInfo = await connection.execute<RowDataPacket[]>(updateProductInfoQuery, []);
+
+    return res.status(200)
+      .json({
+        success: true,
+        message: "Product information Updated successfully.",
+        data: updateProductInfo
+      })
+  } finally {
+    connection.release();
   }
 })

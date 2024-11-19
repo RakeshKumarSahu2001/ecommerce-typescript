@@ -14,15 +14,15 @@ export const authTableCreationQuery = `CREATE TABLE IF NOT EXISTS shopnow.authta
     UNIQUE INDEX IDX_EMAIL_UNIQUE (Email ASC)
 );`;
 
-
 export const productTableCreationQuery = `CREATE TABLE IF NOT EXISTS shopnow.products (
   ProductID VARCHAR(36) NOT NULL DEFAULT (UUID()),
   ProductName VARCHAR(100) NOT NULL,
   Description TEXT NOT NULL,
   Rating DECIMAL(2,1) NOT NULL,
-  Price DECIMAL(10,2) NOT NULL,
+  Price BIGINT NOT NULL,
+  Category VARCHAR(100) NOT NULL,
   Discount DECIMAL(5,2) NOT NULL,
-  StockQuantity INT NOT NULL,
+  StockQuantity BIGINT NOT NULL,
   Brand VARCHAR(100) NOT NULL,
   ThumbnailImage VARCHAR(512) NOT NULL,
   Images JSON NOT NULL,
@@ -30,9 +30,9 @@ export const productTableCreationQuery = `CREATE TABLE IF NOT EXISTS shopnow.pro
   UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (ProductID),
   UNIQUE INDEX id_UNIQUE (ProductID ASC)
-);`
+);`;
 
-export const userTableCreationQuery=`CREATE TABLE shopnow.user (
+export const userTableCreationQuery=`CREATE TABLE IF NOT EXISTS shopnow.user (
     UserID VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT (UUID()),
     FullName VARCHAR(200) NOT NULL,
     Phone VARCHAR(15) NOT NULL,
@@ -47,4 +47,13 @@ export const userTableCreationQuery=`CREATE TABLE shopnow.user (
     UpdatedAt TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     AuthID VARCHAR(40) NOT NULL,
     FOREIGN KEY (AuthID) REFERENCES authtable(ID)
-);`
+);`;
+
+export const cartTableCreationQuery=`CREATE TABLE IF NOT EXISTS shopnow.cart(
+CartID VARCHAR(40) NOT NULL DEFAULT (UUID()) UNIQUE PRIMARY KEY,
+Quantity INT,
+ProductID VARCHAR(40) NOT NULL,
+FOREIGN KEY(ProductID) REFERENCES products(ProductID),
+UserID VARCHAR(40) NOT NULL,
+FOREIGN KEY(UserID) REFERENCES user(UserID)
+);`;

@@ -14,13 +14,14 @@ export const AddUserProfInfoById = createAsyncThunk("user/addUserProfileInfo", a
     }
 })
 
-export const fetchUserProfInfoById= createAsyncThunk("user/fetchUserProfileInfo",async(id)=>{
+export const fetchUserProfInfoById = createAsyncThunk("user/fetchUserProfileInfo", async (id) => {
+    // console.log("id on line no 18",id)
     try {
-        const response= await axios.get(`/api/v1/user/fetch-user-profile-info/${id}`);
-        console.log("response =",response)
+        const response = await axios.get(`/api/v1/users/fetch-user-profile-info/${id}`);
+        // console.log("response =",response)
         return response.data.data;
     } catch (error) {
-        console.log("error on line no 21 of manage user profile info",error);
+        console.log("error on line no 21 of manage user profile info", error);
         throw error;
     }
 })
@@ -32,7 +33,7 @@ enum Gender {
 }
 
 interface initialStateType {
-    isProfileDatainserted: boolean,
+    isProfileDataInserted: boolean,
     userProfileInfo: {
         FullName: string,
         Phone: number,
@@ -48,7 +49,7 @@ interface initialStateType {
 }
 
 const initialState: initialStateType = {
-    isProfileDatainserted: false,
+    isProfileDataInserted: false,
     userProfileInfo: null,
     profileDataInsertionError: false
 }
@@ -61,17 +62,34 @@ export const AddUserProfInfoSlice = createSlice({
         builder.addCase(AddUserProfInfoById.pending, (state) => {
             state.profileDataInsertionError = false
             state.userProfileInfo = null
-            state.isProfileDatainserted = false
+            state.isProfileDataInserted = false
         })
         builder.addCase(AddUserProfInfoById.fulfilled, (state, action) => {
-            state.isProfileDatainserted = true
+            state.isProfileDataInserted = true
             state.userProfileInfo = action.payload
             state.profileDataInsertionError = false
         })
         builder.addCase(AddUserProfInfoById.rejected, (state) => {
-            state.isProfileDatainserted = true
+            state.isProfileDataInserted = true
             state.userProfileInfo = null
             state.profileDataInsertionError = false
+        })
+
+
+        builder.addCase(fetchUserProfInfoById.pending,(state)=>{
+            state.isProfileDataInserted=false,
+            state.profileDataInsertionError=false,
+            state.userProfileInfo=null
+        })
+        builder.addCase(fetchUserProfInfoById.rejected,(state)=>{
+            state.isProfileDataInserted=false,
+            state.userProfileInfo=null,
+            state.profileDataInsertionError=false
+        })
+        builder.addCase(fetchUserProfInfoById.fulfilled,(state,action)=>{
+            state.isProfileDataInserted=false,
+            state.userProfileInfo=action.payload,
+            state.profileDataInsertionError=false 
         })
     }
 })

@@ -6,6 +6,7 @@ import axios from "axios";
 type userDataType = {
     id: string;
     email: string;
+    Role:string
 }
 
 export const loginApi = createAsyncThunk("user/loginUser", async (data: userAuthData, { rejectWithValue }) => {
@@ -15,7 +16,8 @@ export const loginApi = createAsyncThunk("user/loginUser", async (data: userAuth
 
         const userData: userDataType = {
             id: response.data.data.id,
-            email: response.data.data.email
+            email: response.data.data.email,
+            Role:response.data.data.Role
         }
         if (response.data) {
             // const res = response.data[0];
@@ -44,6 +46,7 @@ export const logoutApi = createAsyncThunk("user/logoutUser", async () => {
 type loggedInUserType = {
     id: string;
     email: string;
+    
 }
 
 type initialStateType = {
@@ -63,14 +66,20 @@ export const authSlice = createSlice({
         setUserFromLocalStorage: (state, action) => {
             state.isUserExist = true;
             state.loggedInUser = action.payload;
+        },
+        clearLoginUserInfoFromLocalStorage:()=>{
+            //  console.log(localStorage.getItem("loginUserInfo"))
+             localStorage.clear()
         }
     },
     extraReducers: (builder) => {
         builder.addCase(loginApi.fulfilled, (state, action) => {
             state.isUserExist = true;
             state.loggedInUser = action.payload;
-            console.log("before storing user into localstorage", typeof (state.loggedInUser), state.loggedInUser);
-            localStorage.setItem("loginUserInfo", JSON.stringify(action.payload));
+            // console.log("before storing user into localstorage", state.loggedInUser);
+            localStorage.setItem("Id", action.payload.id);
+            localStorage.setItem("Email", action.payload.email);
+            localStorage.setItem("Role", action.payload.Role);
         })
         builder.addCase(loginApi.rejected, (state) => {
             state.isUserExist = false

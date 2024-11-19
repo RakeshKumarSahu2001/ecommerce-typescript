@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { ProductSlice } from "./ProductApi";
-import { ProductDetailsSlice } from "./FetchProductDetailsApi";
+import { ProductDetailsSlice } from "./productsOpt/FetchProductDetailsApi";
 import { createNewUserSlice } from "./SignUpApi";
 import { authSlice } from "./LoginApi";
 import { cartSlice } from "./CartApi";
 import { userCartSlice } from "./FetchUserCartProducts";
-import { createNewAddProductSlice } from "./AddNewProductApi";
+import { createNewAddProductSlice } from "./productsOpt/AddNewProductApi";
 import { AddUserProfInfoSlice } from "./ManageUserProfInfoApi";
 
 const ecommerceStore = configureStore({
