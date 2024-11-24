@@ -288,6 +288,7 @@ export const fetchAllProducts = asyncHandler(async (req, res) => {
 // Fetch product by id
 export const fetchProductById = asyncHandler(async (req, res) => {
     const params = req.params
+    // console.log("params",params);
     if (!params) {
         throw new ApiErrorHandler({ statusCode: 400, errors: ["Params is not present."], message: "Params is not present." })
     }
@@ -304,7 +305,6 @@ export const fetchProductById = asyncHandler(async (req, res) => {
     try {
         const fetchProductUsingIdQuery = "SELECT * FROM `products` WHERE `ProductID`=?;"
         const productId = params.id
-        // console.log("line no 296",productId)
         const [rows] = await connection.execute<RowDataPacket[]>(fetchProductUsingIdQuery, [productId])
 
         // console.log("fetched product details on line no 300", rows)
@@ -332,7 +332,7 @@ export const fetchProductById = asyncHandler(async (req, res) => {
 
 // insert user profile
 export const insertUserInfoById = asyncHandler(async (req, res) => {
-    const id = req.params.id
+    const { id } = req.params;
     const { FullName, Phone, Street, PostalCode, City, State, Country, DateOfBirth, Gender } = req.body;
 
     // console.log("body value =", FullName, Phone, Street, PostalCode, City, State, Country, DateOfBirth, Gender, id);
@@ -360,7 +360,6 @@ export const insertUserInfoById = asyncHandler(async (req, res) => {
             })
         }
 
-
         const updateUserInfo = "INSERT INTO `user` (`FullName`,`Phone`,`Street`,`City`,`State`,`Country`,`PostalCode`,`DateOfBirth`,`Gender`,`AuthID`) VALUES (?,?,?,?,?,?,?,?,?,?);";
         const [rows] = await connection.execute<RowDataPacket[]>(updateUserInfo, [FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender, id]);
 
@@ -380,8 +379,7 @@ export const insertUserInfoById = asyncHandler(async (req, res) => {
 
 // Fetch user profile
 export const fetchUserProfileById = asyncHandler(async (req, res) => {
-    const id = req.params;
-    console.log("user id", id)
+    const { id } = req.params;
     if (!id) {
         throw new ApiErrorHandler({
             statusCode: 403,
@@ -401,8 +399,9 @@ export const fetchUserProfileById = asyncHandler(async (req, res) => {
     }
 
     try {
-        const fetchUserProfileUsingForeignKey = "SELECT FullName,Phone,State,Street,City,Country,Gender,PostalCode,DateOfBirth FROM user  INNER JOIN authtable ON user.AuthID=authtable.ID;";
+        const fetchUserProfileUsingForeignKey = "SELECT FullName,Phone,State,Street,City,Country,Gender,PostalCode,DateOfBirth FROM user  INNER JOIN authtable ON user.AuthID=authtable.ID WHERE authtable.ID=?;";
         const [rows] = await connection.execute<RowDataPacket[]>(fetchUserProfileUsingForeignKey, [id])
+
         if (!rows || rows.length == 0) {
             throw new ApiErrorHandler({
                 statusCode: 404,
@@ -410,7 +409,6 @@ export const fetchUserProfileById = asyncHandler(async (req, res) => {
                 message: "User record not found"
             })
         }
-
         return res.status(200)
             .json({
                 success: true,
@@ -419,6 +417,66 @@ export const fetchUserProfileById = asyncHandler(async (req, res) => {
             })
     } finally {
         connection.release()
+    }
+})
+
+//Edit user info by id
+export const editUserInfoById = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { 
+        FullName,
+        Phone=null,
+        Street=null,
+        PostalCode=null,
+        City=null,
+        State=null,
+        Country=null,
+        DateOfBirth=null,
+        Gender=null } = req.body;
+
+    if (!id) {
+        throw new ApiErrorHandler({
+            statusCode: 403,
+            errors: ["Params is not present."],
+            message: "Params is not present."
+        })
+    }
+    console.log("line no 446", id)
+
+    const pool = await dbConnection();
+    const connection = await pool.getConnection()
+    if (!connection) {
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while fetching the user information."],
+            message: "Database connnection error"
+        })
+    }
+    try {
+        const fetchUserInfoByIdQuery = "SELECT * FROM shopnow.user WHERE UserID=?;";
+        const [userInfo] = await connection.execute<RowDataPacket[]>(fetchUserInfoByIdQuery, [id]);
+        console.log("user info", userInfo)
+        if (!userInfo) {
+            throw new ApiErrorHandler({
+                statusCode: 404,
+                errors: ["User profile information not found."],
+                message: "User profile information not found."
+            })
+        }
+
+        const updateUserInfoByIdQuery = "UPDATE shopnow.user SET FullName=?,Phone=?,Street=?,City=?,State=?,Country=?,PostalCode=?,DateOfBirth=?,Gender=? WHERE AuthID=?";
+        const [updateUserInfoById] = await connection.execute<RowDataPacket[]>(updateUserInfoByIdQuery, [FullName,Phone,Street,City,State,Country,PostalCode,DateOfBirth,Gender,id]);
+        console.log("updated data", updateUserInfoById);
+
+        return res.status(200)
+            .json({
+                success: true,
+                message: "Successfully updated the user info.",
+                data: userInfo
+            })
+
+    } finally {
+        connection.release();
     }
 })
 

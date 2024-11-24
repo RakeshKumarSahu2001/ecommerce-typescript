@@ -4,18 +4,52 @@ export type userAuthData = {
 }
 
 // product details
+
 export interface product {
-  id: number,
-  title: string,
-  description: string,
-  price: number,
-  discountPercentage: number,
-  rating: number,
-  stock: number,
-  brand: string,
-  category: string,
-  thumbnail: string,
-  images: string[],
-  deleted: boolean
+  ProductID: string,
+  ProductName: string,
+  Description: string,
+  Price: number,
+  Discount: number,
+  Rating: string,
+  StockQuantity: number,
+  Brand: string,
+  Category: string,
+  ThumbnailImage: string,
+  Images: string[],
 }
+
+//updated product info
+
+export interface updatedProductInfoType {
+  productName?: string,
+  productDescription?: string,
+  productRating?: string,
+  productPrice?: string,
+  discount?: string,
+  stock?: string,
+  brand?: string,
+  productCategory?: string
+
+}
+
+//user Info
+enum Gender {
+  Male = "male",
+  Female = "female",
+  Other = "other"
+}
+
+export interface userProfileInfoType{
+  FullName: string,
+  Phone: number,
+  Street: string,
+  PostalCode: number,
+  City: string,
+  State: string,
+  Country: string,
+  DateOfBirth: Date,
+  Gender: Gender
+}
+
 

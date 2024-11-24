@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { userAuthData } from "../utils/types";
+import { userAuthData } from "../../utils/types";
 import axios from "axios";
 // import { LogoutUser } from "./LogoutApi";
 

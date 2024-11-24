@@ -1,9 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler } from "react-hook-form";
-import { loginApi } from '../EcommerceStore/LoginApi';
-import { useECommerceStoreDispatch, useECommerceStoreSelector } from '../Hooks/ecommerceStoreHooks';
+import { useECommerceStoreDispatch, useECommerceStoreSelector } from '../../Hooks/ecommerceStoreHooks';
 import { useEffect } from 'react';
-import logo from "../assets/images/logo.png"
+import logo from "../../assets/images/logo.png"
+import { loginApi } from '../../EcommerceStore/authOpt/LoginApi';
 
 type inputData = {
   email: string,

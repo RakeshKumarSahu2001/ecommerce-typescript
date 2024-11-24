@@ -23,13 +23,13 @@ router.route("/add-new-product").post(verifyJWT,
     addNewProduct);
 
 //delete product by id
-router.route("/delete-product").delete(verifyJWT,
+router.route("/delete-product/:id").delete(verifyJWT,
     isAuthenicateToAccessTheRoute,
     deleteProduct
 )
 
 //edit product by id
-router.route("/edit-product-by-id").put(verifyJWT,
+router.route("/edit-product-by-id/:id").put(verifyJWT,
     isAuthenicateToAccessTheRoute,
     editProduct
 )

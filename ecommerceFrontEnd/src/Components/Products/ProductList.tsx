@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { Dialog, DialogBackdrop, DialogPanel, Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems, } from "@headlessui/react";
 import { EllipsisVerticalIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon, StarIcon } from "@heroicons/react/20/solid";
-// import { useDispatch, useSelector } from "react-redux";
-// import { ecommerceStoreState } from "../EcommerceStore/ecommerceStore";
-import { ProductApi } from "../EcommerceStore/ProductApi";
-import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../Hooks/ecommerceStoreHooks";
+import { ProductApi } from "../../EcommerceStore/productsOpt/ProductApi";
+import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../../Hooks/ecommerceStoreHooks";
 import { Link } from "react-router-dom";
-import isAdmin from "../Hooks/isAdmin";
+import isAdmin from "../../Hooks/isAdmin";
+import { DeleteSpecificProductApi } from "../../EcommerceStore/productsOpt/DeleteSpecificProductById";
 // import { ProductSlice } from "../EcommerceStore/ProductApi";
 
 const sortOptions = [
@@ -70,12 +69,16 @@ function classNames(...classes: (string | boolean | undefined | null)[]): string
 export default function Product() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const isAdminObj = new isAdmin();
-  const dispatch = useECommerceStoreDispatch()
+  const dispatch = useECommerceStoreDispatch();
+  const handleDeleteProduct = (id: string) => {
+    console.log("id value", id)
+    dispatch(DeleteSpecificProductApi(id))
+  }
   useEffect(() => {
     dispatch(ProductApi())
   }, [dispatch])
   const products = useECommerceStoreSelector((state) => state.products.allProducts)
-  // console.log(products)
+
 
 
   return (
@@ -313,9 +316,9 @@ export default function Product() {
 
                     <div className="mt-6 grid grid-cols-2 md:gap-x-6 md:gap-y-8 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
                       {/* product mapped here */}
-                      {products.map((product) => (
-                        <Link to={`/shopnow/productDetail/${product.id}`} key={product.id}>
-                          <div key={product.id} className="group relative border-solid border-2 min-h-[21.5rem] border-r-gray-200 rounded-md p-2">
+                      {products.map((product) => {
+                        return <Link to={`/shopnow/productDetail/${product?.ProductID}`} key={product?.ProductID}>
+                          <div key={product?.ProductID} className="group relative border-solid border-2 min-h-[21.5rem] border-r-gray-200 rounded-md p-2">
                             {isAdminObj.access &&
 
                               <Menu as="div" className="absolute z-20 h-8 right-1">
@@ -332,7 +335,7 @@ export default function Product() {
                                   <div className="py-1">
                                     <MenuItem>
                                       <Link
-                                        to="sdhd"
+                                        to={`/edit-product/${product?.ProductID}`}
                                         className="block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
                                       >
                                         Edit
@@ -342,12 +345,12 @@ export default function Product() {
 
                                   <div className="py-1">
                                     <MenuItem>
-                                      <Link
-                                        to="sdhd"
+                                      <button
+                                        onClick={() => handleDeleteProduct(product?.ProductID)}
                                         className="block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
                                       >
-                                        Edit
-                                      </Link>
+                                        Delete
+                                      </button>
                                     </MenuItem>
                                   </div>
                                 </MenuItems>
@@ -357,38 +360,38 @@ export default function Product() {
 
                             <div className=" min-h-60 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-72">
                               <img
-                                alt={product.title}
-                                src={product.thumbnail}
+                                alt={product?.ProductName}
+                                src={product?.ThumbnailImage}
                                 className="h-full w-full object-cover object-center lg:h-full lg:w-full"
                               />
                             </div>
                             <div className="mt-4 flex justify-between">
                               <div>
                                 <h3 className="text-sm text-gray-700">
-                                  <a href={product.thumbnail}>
+                                  <a href={product?.ThumbnailImage}>
                                     <span
                                       aria-hidden="true"
                                       className="absolute inset-0 text-xs md:text-base"
                                     />
-                                    {product.title}
+                                    {product?.ProductName}
                                   </a>
                                 </h3>
                                 <p className="mt-1 text-sm text-gray-500 flex">
-                                  <StarIcon className="w-5 h-5 inline" /><span className="px-2 align-bottom">{product.rating}</span>
+                                  <StarIcon className="w-5 h-5 inline" /><span className="px-2 align-bottom">{product?.Rating}</span>
                                 </p>
                               </div>
                               <div>
                                 <p className="text-sm font-medium text-gray-900">
-                                  $ {Math.round(product.price * (1 - product.discountPercentage / 100))}
+                                  $ {Math.round(product?.Price * (1 - product?.Discount / 100))}
                                 </p>
                                 <p className="text-sm font-medium line-through text-gray-400">
-                                  $ {product.price}
+                                  $ {product?.Price}
                                 </p>
                               </div>
                             </div>
                           </div>
                         </Link>
-                      ))}
+                      })}
                     </div>
                   </div>
                 </div>

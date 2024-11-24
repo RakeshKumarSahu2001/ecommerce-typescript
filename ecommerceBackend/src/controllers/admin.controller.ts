@@ -137,7 +137,8 @@ export const addNewProduct = asyncHandler(async (req, res) => {
 
 //Delete product
 export const deleteProduct = asyncHandler(async (req, res) => {
-  const id = req.params;
+  const { id } = req.params;
+  console.log("id", id)
   if (!id) {
     throw new ApiErrorHandler({
       statusCode: 400,
@@ -155,10 +156,14 @@ export const deleteProduct = asyncHandler(async (req, res) => {
       message: "Database connection error."
     })
   }
+
   try {
-    const checkProductPresentInDBQuery = "SELECT * FROM products WHERE ProductID= ?;";
+    const checkProductPresentInDBQuery = "SELECT * FROM shopnow.products WHERE ProductID = ?;";
     const [checkProductPresentInDB] = await connection.execute<RowDataPacket[]>(checkProductPresentInDBQuery, [id]);
-    if (!checkProductPresentInDB || checkProductPresentInDB.length === 0) {
+    console.log("hello yopu want to delete product", checkProductPresentInDB)
+
+
+    if (!checkProductPresentInDB || checkProductPresentInDB?.length === 0) {
       throw new ApiErrorHandler({
         statusCode: 404,
         errors: ["Product not found."],
@@ -166,7 +171,8 @@ export const deleteProduct = asyncHandler(async (req, res) => {
       })
     }
 
-    const deleteProductQuery = "DELETE FROM products WHERE ProductID= ?;";
+
+    const deleteProductQuery = "DELETE FROM shopnow.products WHERE ProductID= ?;";
     const deleteProduct = await connection.execute<RowDataPacket[]>(deleteProductQuery, [id]);
     return res.status(200)
       .json({
@@ -182,7 +188,16 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 
 //Edit product
 export const editProduct = asyncHandler(async (req, res) => {
-  const id = req.params;
+  const { id } = req.params;
+  const { productName = null,
+    productDescription = null,
+    productRating = null,
+    productPrice = null,
+    discount = null,
+    stock = null,
+    brand = null,
+    productCategory = null } = req.body;
+
   if (!id) {
     throw new ApiErrorHandler({
       statusCode: 400,
@@ -212,8 +227,8 @@ export const editProduct = asyncHandler(async (req, res) => {
       })
     }
 
-    const updateProductInfoQuery = "UPDATE productS SET ProductName=?, Description=?, Rating=?, Price=?, Discount=?, StockQuantity=?, Brand=? WHERE ProductID= ?;";
-    const updateProductInfo = await connection.execute<RowDataPacket[]>(updateProductInfoQuery, []);
+    const updateProductInfoQuery = "UPDATE productS SET ProductName=?, Description=?, Rating=?, Price=?, Discount=?, StockQuantity=?, Brand=?, Category=? WHERE ProductID= ?;";
+    const [updateProductInfo] = await connection.execute<RowDataPacket[]>(updateProductInfoQuery, [productName,productDescription,productRating,productPrice,discount,stock,brand,productCategory,id]);
 
     return res.status(200)
       .json({

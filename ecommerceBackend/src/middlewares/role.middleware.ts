@@ -17,10 +17,14 @@ export const isAuthenicateToAccessTheRoute = asyncHandler(async (req, res, next)
     const sql = 'SELECT Role FROM `authtable` WHERE `ID` = ? ';
 
     const [rows] = await connection.execute<RowDataPacket[]>(sql, [user?.id]);
-    // console.log("is admin", rows);
+    console.log("is admin", rows);
 
     if (rows[0].Role !== "admin") {
-      throw new ApiErrorHandler({ statusCode: 400, errors: ["Not Autherized to access this route."], message: "Access Denied." })
+      throw new ApiErrorHandler({
+        statusCode: 400,
+        errors: ["Not Autherized to access this route."],
+        message: "Access Denied."
+      })
     }
     next()
 

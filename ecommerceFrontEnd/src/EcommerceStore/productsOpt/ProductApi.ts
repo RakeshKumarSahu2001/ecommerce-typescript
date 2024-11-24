@@ -1,12 +1,11 @@
 import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { product } from "../utils/types";
+import { product } from "../../utils/types";
 
-//action
 export const ProductApi = createAsyncThunk("products/fetchAllProducts", async () => {
     try {
-        const response = await axios.get(`http://localhost:3000/products`);
-        return response.data;
+        const response = await axios.get(`/api/v1/users/fetch-all-products`);
+        return response.data.data.products;
     } catch (err) {
         console.log(err)
         throw err;
@@ -29,12 +28,7 @@ export const ProductSlice = createSlice(
     {
         name: "allStoreProducts",
         initialState,
-        reducers: {
-            // addProduct: (state, action) => {
-
-            //     //need to write the code if want to add n
-            // }
-        },
+        reducers: {},
         extraReducers: (builder) => {
             builder.addCase(ProductApi.pending, (state) => {
                 state.loadingStatus = true
@@ -43,6 +37,7 @@ export const ProductSlice = createSlice(
                 // console.log("payload", action.payload)
                 state.loadingStatus = false;
                 state.allProducts = action.payload
+                // console.log("allproduct",state.allProducts)
             })
             builder.addCase(ProductApi.rejected, (state) => {
                 state.loadingError = true

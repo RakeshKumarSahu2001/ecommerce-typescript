@@ -1,6 +1,5 @@
 import mysql from "mysql2/promise";
-import { authTableCreationQuery, cartTableCreationQuery, dbCreationQuery,productTableCreationQuery } from "../models/user.model";
-
+import { authTableCreationQuery, cartTableCreationQuery, dbCreationQuery, productTableCreationQuery } from "../models/user.model";
 
 
 const dbConnection = async () => {
@@ -11,25 +10,29 @@ const dbConnection = async () => {
             user: process.env.DB_USER,
             database: process.env.DB_NAME,
             port: Number(process.env.DB_PORT),
-            password: process.env.DB_PASSWORD
+            password: process.env.DB_PASSWORD,
+            // waitForConnections: true,
+
         })
+
         const connection = await pool.getConnection();
         console.log("database connected successfully");
 
-        // Create schema if it doesn't exist
-        await connection.query(dbCreationQuery);
+        // try {
+            // Create schema if it doesn't exist
+            await connection.query(dbCreationQuery);
+            
+            // Create table if it doesn't exist
+            await connection.query(authTableCreationQuery);
 
-        // Create table if it doesn't exist
-        await connection.query(authTableCreationQuery);
+            // Create table if it doesn't exist
+            await connection.query(productTableCreationQuery)
 
-        // Create table if it doesn't exist
-        await connection.query(productTableCreationQuery)
-
-        //create Cart table
-        await connection.query(cartTableCreationQuery);
-        
-        // relese the connection
-        connection.release()
+            //create Cart table
+            await connection.query(cartTableCreationQuery);
+        // } finally {
+        //     connection.release()
+        // }
         return pool;
     } catch (err) {
         console.log("SQL connection Failed", err);

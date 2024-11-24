@@ -6,18 +6,19 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import { UserCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../Hooks/ecommerceStoreHooks";
-import { authSlice, logoutApi } from "../EcommerceStore/LoginApi"
+import { authSlice, logoutApi } from "../EcommerceStore/authOpt/LoginApi"
 
 function Navbar() {
   const [toggle, setToggle] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
+  const navigate=useNavigate()
 
   const cartProducts = useECommerceStoreSelector((state) => state.userCartProducts.userSelectedProduct[0])
-  const userinfo = useECommerceStoreSelector(state => state.authSlice.loggedInUser);
+  const id = localStorage.getItem("Id");
   const dispatch = useECommerceStoreDispatch()
   const [products, setProducts] = useState(cartProducts)
 
@@ -29,6 +30,7 @@ function Navbar() {
   const handleLogout = async () => {
     dispatch(logoutApi())
     dispatch(authSlice.actions.clearLoginUserInfoFromLocalStorage())
+    navigate("/shopnow/login")
   }
 
   return (
@@ -52,11 +54,6 @@ function Navbar() {
                 {" "}
                 Resources{" "}
               </Link>
-
-              <a href="#" title="" className="text-base font-medium text-black">
-                {" "}
-                Pricing{" "}
-              </a>
             </div>
 
             <div className="lg:absolute lg:-translate-x-1/2 lg:inset-y-5 lg:left-1/2">
@@ -119,7 +116,7 @@ function Navbar() {
             {/* dorp down */}
 
 
-            <div className="hidden lg:flex lg:items-center lg:space-x-10">
+            {id && <div className="hidden lg:flex lg:items-center lg:space-x-10">
               <Menu as="div" className="relative inline-block text-left">
                 <div>
                   <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
@@ -134,7 +131,7 @@ function Navbar() {
                   <div className="py-1">
                     <MenuItem>
                       <Link
-                        to={`/shopnow/user-info/${userinfo?.id}`}
+                        to={`/shopnow/user-info/${id}`}
                         className="block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
                       >
                         Profile
@@ -154,15 +151,11 @@ function Navbar() {
                   </div>
                 </MenuItems>
               </Menu>
-              <Link to="/shopnow/signup" title="" className="text-base font-medium text-black">
+              {!id && <Link to="/shopnow/signup" title="" className="text-base font-medium text-black">
                 {" "}
                 Sign up{" "}
-              </Link>
+              </Link>}
 
-              <Link to="/shopnow/login" title="" className="text-base font-medium text-black">
-                {" "}
-                Sign in{" "}
-              </Link>
 
               {/* cart toggle button for desktop screen */}
               <a
@@ -323,7 +316,7 @@ function Navbar() {
                   </div>
                 </div>
               </Dialog>
-            </div>
+            </div>}
           </nav>
         </div>
       </div>
@@ -386,36 +379,19 @@ function Navbar() {
                 Resources{" "}
               </Link>
 
-              <a
-                href="#"
-                title=""
-                className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
-              >
-                {" "}
-                Pricing{" "}
-              </a>
             </div>
 
             <hr className="my-4 border-gray-200" />
 
             <div className="flex flex-col space-y-2">
-              <a
+              {!id && <a
                 href="#"
                 title=""
                 className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
               >
                 {" "}
                 Sign up{" "}
-              </a>
-
-              <a
-                href="#"
-                title=""
-                className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
-              >
-                {" "}
-                Sign in{" "}
-              </a>
+              </a>}
             </div>
           </div>
         </div>

@@ -1,11 +1,11 @@
 import "./App.css";
 import HomePage from "./Pages/HomePage.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import LoginPage from "./Pages/LoginPage.tsx";
-import SignUpPage from "./Pages/SignUpPage.tsx";
+import LoginPage from "./Pages/AuthPages/LoginPage.tsx";
+import SignUpPage from "./Pages/AuthPages/SignUpPage.tsx";
 import CartPage from "./Pages/CartPage.tsx";
-import Product from "./Components/ProductList.tsx";
-import ProductDetail from "./Components/ProductDetail.tsx";
+import Product from "./Components/Products/ProductList.tsx";
+import ProductDetail from "./Components/Products/ProductDetail.tsx";
 import Protected from "./Hooks/Protected.tsx";
 import { useEffect } from "react";
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from "./Hooks/ecommerceStoreHooks.ts";
@@ -13,6 +13,9 @@ import { fetchCartProductByUserId } from "./EcommerceStore/FetchUserCartProducts
 import AddNewProduct from "./Components/AddNewProduct.tsx";
 import UserInfoPage from "./Pages/UserInfoPage.tsx";
 import AdminOnly from "./Hooks/AdminOnly.tsx";
+import EditProduct from "./Pages/EditProduct.tsx";
+import HomeCarousel from "./Components/Home/HomeCarousel.tsx";
+import UserProfEdit from "./Pages/User/UserProfEdit.tsx";
 
 
 
@@ -34,6 +37,14 @@ function App() {
           element: <Protected><ProductDetail /></Protected>
           // element:<ProductDetail />
         },
+        {
+          path: "/shopnow/user-info/:id",
+          element: <Protected><UserInfoPage /></Protected>
+        },
+        {
+          path: "/shopnow/edit-user-profile/:id",
+          element: <Protected><UserProfEdit /></Protected>
+        }
         // {
         //   path: "/shopnow/cart",
         //   element: <CartPage />,
@@ -53,10 +64,15 @@ function App() {
       element: <Protected><CartPage /></Protected>,
       // element:<CartPage />
     },
-    {
-      path: "/shopnow/user-info/:id",
-      element: <Protected><UserInfoPage /></Protected>
-    },
+    // {
+    //   path: "/shopnow/user-info/:id",
+    //   element: <Protected><UserInfoPage /></Protected>
+    // },
+    // {
+    //   path:"/shopnow/edit-user-profile/:id",
+    //   element:<Protected><UserProfEdit /></Protected>
+    // },
+    
     {
       path: "/add-product",
       element: (
@@ -66,6 +82,20 @@ function App() {
           </AdminOnly>
         </Protected>
       ),
+    },
+    {
+      path: "/edit-product/:id",
+      element: (
+        <Protected>
+          <AdminOnly>
+            <EditProduct />
+          </AdminOnly>
+        </Protected>
+      ),
+    },
+    {
+      path:"/caro",
+      element:<HomeCarousel />
     }
 
   ]);

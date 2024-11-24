@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 import { StarIcon } from '@heroicons/react/20/solid'
-// import { Radio, RadioGroup } from '@headlessui/react'
-import { useECommerceStoreDispatch, useECommerceStoreSelector } from '../Hooks/ecommerceStoreHooks'
-import { FetchProductDetailsApi } from '../EcommerceStore/productsOpt/FetchProductDetailsApi'
+import { useECommerceStoreDispatch, useECommerceStoreSelector } from '../../Hooks/ecommerceStoreHooks'
+import { FetchProductDetailsApi } from '../../EcommerceStore/productsOpt/FetchProductDetailsApi'
 import { useParams } from 'react-router-dom'
-import { CartApi } from '../EcommerceStore/CartApi'
-import { product } from '../utils/types'
+import { CartApi } from '../../EcommerceStore/cartOpt/CartApi'
+import { product } from '../../utils/types'
 
 const reviews = { href: '#', average: 4, totalCount: 117 }
 
@@ -20,25 +19,31 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (id) {
-      dispatch(FetchProductDetailsApi(Number(id)))
+      dispatch(FetchProductDetailsApi(id))
     }
   }, [dispatch, id])
+
   let product = useECommerceStoreSelector((state) => state.productDetails.productInfo)
-  const [selectedImg, setSelectedImg] = useState(product?.images?.[0])
-  const user=useECommerceStoreSelector((state)=>state.authSlice.loggedInUser)
+  // console.log("product info", product)
+  const images = product ? [product.ThumbnailImage ?? "", ...(product.Images ?? [])] : [];
+
+  // console.log("images", images);
+  const [selectedImg, setSelectedImg] = useState(images[0])
+  const user = useECommerceStoreSelector((state) => state.authSlice.loggedInUser)
   // const [selectedSize, setSelectedSize] = useState(sizes[2])
-  
+
+
   useEffect(() => {
-    if (product?.images?.length) {
-      setSelectedImg(product.images[0])
+    if (product?.Images?.length) {
+      setSelectedImg(product.Images[0])
     }
   }, [product])
 
 
   // add to cart start
-  const handleAddToCart=(e:React.MouseEvent<HTMLButtonElement>,product:product)=>{
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>, product: product) => {
     e.preventDefault()
-    dispatch(CartApi({...product,quantity:1,userId:user?.id}))
+    dispatch(CartApi({ ...product, quantity: 1, userId: user?.id }))
   }
 
 
@@ -47,7 +52,7 @@ export default function ProductDetail() {
       <div className="pt-20">
         <nav aria-label="Breadcrumb" className='py-[10px]'>
           <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 lg:max-w-7xl">
-            {product.tags.map((tag, i) => (
+            {/* {product.tags.map((tag, i) => (
               <li key={i}>
                 <div className="flex items-center">
                   <p className="mr-2 text-sm font-medium text-gray-900">
@@ -65,10 +70,10 @@ export default function ProductDetail() {
                   </svg>
                 </div>
               </li>
-            ))}
+            ))} */}
             <li className="text-sm font-medium text-gray-500 hover:text-gray-600">
               {
-                product.title
+                product?.ProductName
               }
             </li>
           </ol>
@@ -81,14 +86,14 @@ export default function ProductDetail() {
             <div className="sticky rounded-lg flex flex-row justify-center gap-2">
               <div className='flex flex-col lg:w-[15em]'>
                 {
-                  product.images.map((image, i) => <div className="max-w-28 h-20" key={i} onClick={() => {
+                  images?.map((image, i) => <div className="max-w-28 h-20" key={i} onClick={() => {
                     setSelectedImg(image)
-                  }}><img src={image} alt={product.title} className='aspect-square w-auto' /></div>)
+                  }}><img src={image} alt={product.ProductName} className='aspect-square w-auto' /></div>)
                 }
               </div>
               <div>
                 <img
-                  alt={product.title}
+                  alt={product.ProductName}
                   src={selectedImg}
                   className="object-center aspect-square" />
               </div>
@@ -123,46 +128,27 @@ export default function ProductDetail() {
 
           <div className="px-4 pt-10 lg:pt-0 ">
             <div className=" lg:border-r lg:border-gray-200">
-              <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{product.title}</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{product.ProductName}</h1>
             </div>
 
             <div className="py-10 lg:col-start-1 lg:pt-6">
               {/* Description and details */}
               <div>
-                <h3 className="sr-only">Description</h3>
-
-                <div className="space-y-6">
-                  <p className="text-base text-justify text-gray-900">{product.description}</p>
-                </div>
-              </div>
-
-              <div className="mt-10">
-                <h3 className="text-sm font-medium text-gray-900">Highlights</h3>
-
-                {/* <div className="mt-4">
-                  <ul role="list" className="list-disc space-y-2 pl-4 text-sm">
-                    {product.highlights.map((highlight) => (
-                      <li key={highlight} className="text-gray-400">
-                        <span className="text-gray-600">{highlight}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div> */}
-              </div>
-
-              <div className="mt-10">
                 <h2 className="text-sm font-medium text-gray-900">Details</h2>
-                {/* 
-                <div className="mt-4 space-y-6">
-                  <p className="text-sm text-justify text-gray-600">{product.details}</p>
-                </div> */}
+
+                <div className="">
+                  {
+                    product?.Description?.split(".").map(data=><p className="text-base text-justify text-gray-900">{data+"."}</p>)
+                  }
+                  {/* <p className="text-base text-justify text-gray-900">{product.Description}</p> */}
+                </div>
               </div>
             </div>
 
             {/* Options */}
             <div className="mt-4 lg:row-span-3 lg:mt-0">
               <h2 className="sr-only">Product information</h2>
-              <p className="text-3xl tracking-tight text-gray-900">{product.price}</p>
+              <p className="text-3xl tracking-tight text-gray-900">{product.Price}</p>
 
               {/* Reviews */}
               <div className="mt-6">
@@ -174,13 +160,13 @@ export default function ProductDetail() {
                         key={rating}
                         aria-hidden="true"
                         className={classNames(
-                          reviews.average > rating ? 'text-gray-900' : 'text-gray-200',
+                          parseInt(product?.Rating) > rating ? 'text-gray-900' : 'text-gray-200',
                           'h-5 fl20x-shrink-0',
                         )}
                       />
                     ))}
                   </div>
-                  <p className="sr-only">{reviews.average} out of 5 stars</p>
+                  <p className="sr-only">{product?.Rating} out of 5 stars</p>
                   <a href={reviews.href} className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500">
                     {reviews.totalCount} reviews
                   </a>

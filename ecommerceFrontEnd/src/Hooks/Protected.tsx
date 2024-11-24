@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from './ecommerceStoreHooks';
 import { Navigate } from 'react-router-dom';
-import { authSlice } from '../EcommerceStore/LoginApi';
+import { authSlice } from '../EcommerceStore/authOpt/LoginApi';
 
 type childrenType={
     children:React.ReactNode
