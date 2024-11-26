@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { userProfileInfoType } from "../../utils/types";
 
-// Define the type for formData
 interface FormDataType {
     id: string;
     data: {
@@ -22,7 +21,6 @@ interface FormDataType {
 export const AddUserProfInfoById = createAsyncThunk(
     "user/addUserProfileInfo",
     async (formData: FormDataType) => {
-        console.log("user profile data", formData);
 
         try {
             const response = await axios.post(
@@ -31,7 +29,6 @@ export const AddUserProfInfoById = createAsyncThunk(
             );
             return response.data;
         } catch (error) {
-            console.log("error on line no 10 of add profile info", error);
             throw error;
         }
     }
@@ -41,7 +38,6 @@ export const AddUserProfInfoById = createAsyncThunk(
 export const EditUserProfInfoById = createAsyncThunk(
     "user/editUserProfileInfo",
     async (formData: FormDataType) => {
-        console.log("user profile data to edit", formData);
 
         try {
             const response = await axios.put(
@@ -50,7 +46,6 @@ export const EditUserProfInfoById = createAsyncThunk(
             );
             return response.data;
         } catch (error) {
-            console.log("error on line no 21 of edit profile info", error);
             throw error;
         }
     }
@@ -69,7 +64,7 @@ const initialState: initialStateType = {
     profileDataError: false,
 };
 
-export const AddUserProfInfoSlice = createSlice({
+export const manageUserProfInfoSlice = createSlice({
     name: "userInfoAddEditSlice",
     initialState,
     reducers: {},

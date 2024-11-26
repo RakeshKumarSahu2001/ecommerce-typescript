@@ -3,7 +3,6 @@ import axios from "axios";
 
 
 export const DeleteSpecificProductApi = createAsyncThunk("products/deleteSpecificProduct", async (id: string) => {
-    // console.log("id",id);
     try {
         const response = await axios.delete("/api/v1/admin/delete-product/"+ id);
         return response.data

@@ -2,22 +2,39 @@ import { configureStore } from "@reduxjs/toolkit";
 import { ProductSlice } from "./productsOpt/ProductApi";
 import { ProductDetailsSlice } from "./productsOpt/FetchProductDetailsApi";
 import { createNewUserSlice } from "./authOpt/SignUpApi";
-import { authSlice } from "./authOpt/LoginApi";
-import { cartSlice } from "./cartOpt/CartApi";
-import { userCartSlice } from "./FetchUserCartProducts";
+import { loginSlice } from "./authOpt/LoginApi";
+import { useraddToCartSlice } from "./cartOpt/FetchUserCartProducts";
 import { createNewAddProductSlice } from "./productsOpt/AddNewProductApi";
-import { AddUserProfInfoSlice } from "./FetchUserProfInfoApi";
+import { FetchUserProfInfoSlice } from "./userProf/FetchUserProfInfoApi";
+import { addToCartSlice } from "./cartOpt/AddToCartApi";
+import { manageUserProfInfoSlice } from "./userProf/AddEditUserProfInfoApi";
+import { deleteProductSlice } from "./productsOpt/DeleteSpecificProductById";
+import { EditSpecificProductSlice } from "./productsOpt/EditSpecificProduct";
+import { deleteCartProductSlice } from "./cartOpt/DeleteCartProduct";
 
 const ecommerceStore = configureStore({
     reducer: {
+        //product
         products: ProductSlice.reducer,
         productDetails: ProductDetailsSlice.reducer,
+
+        //login & signup
         createNewUser: createNewUserSlice.reducer,
-        authSlice: authSlice.reducer,
-        addProductsToCart: cartSlice.reducer,
-        userCartProducts: userCartSlice.reducer,
+        loginSlice: loginSlice.reducer,
+
+        //cart
+        addProductsToCart: addToCartSlice.reducer,
+        userCartProducts: useraddToCartSlice.reducer,
+        deleteCartProductSlice:deleteCartProductSlice.reducer,
+
+        //admin
         addNewProductsInTheWeb: createNewAddProductSlice.reducer,
-        AddUserProfInfoSlice:AddUserProfInfoSlice.reducer
+        deleteProductSlice:deleteProductSlice.reducer,
+        EditSpecificProductSlice:EditSpecificProductSlice.reducer,
+
+        //user
+        FetchUserProfInfoSlice:FetchUserProfInfoSlice.reducer,
+        manageUserProfInfoSlice:manageUserProfInfoSlice.reducer
     }
 });
 

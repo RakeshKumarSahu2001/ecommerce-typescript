@@ -1,4 +1,4 @@
-import UserInfo from '../Components/UserProfInfo'
+import UserInfo from '../../Components/User/UserProfInfo'
 
 function UserInfoPage() {
   return (

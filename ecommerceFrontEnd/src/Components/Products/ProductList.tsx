@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogBackdrop, DialogPanel, Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems, } from "@headlessui/react";
-import { EllipsisVerticalIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon, StarIcon } from "@heroicons/react/20/solid";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon} from "@heroicons/react/20/solid";
 import { ProductApi } from "../../EcommerceStore/productsOpt/ProductApi";
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../../Hooks/ecommerceStoreHooks";
 import { Link } from "react-router-dom";
-import isAdmin from "../../Hooks/isAdmin";
+// import isAdmin from "../../Hooks/isAdmin";
 import { DeleteSpecificProductApi } from "../../EcommerceStore/productsOpt/DeleteSpecificProductById";
+import ProductCard from "./ProductCard";
 // import { ProductSlice } from "../EcommerceStore/ProductApi";
 
 const sortOptions = [
@@ -68,10 +69,9 @@ function classNames(...classes: (string | boolean | undefined | null)[]): string
 
 export default function Product() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const isAdminObj = new isAdmin();
+  // const isAdminObj = new isAdmin();
   const dispatch = useECommerceStoreDispatch();
   const handleDeleteProduct = (id: string) => {
-    console.log("id value", id)
     dispatch(DeleteSpecificProductApi(id))
   }
   useEffect(() => {
@@ -318,78 +318,15 @@ export default function Product() {
                       {/* product mapped here */}
                       {products.map((product) => {
                         return <Link to={`/shopnow/productDetail/${product?.ProductID}`} key={product?.ProductID}>
-                          <div key={product?.ProductID} className="group relative border-solid border-2 min-h-[21.5rem] border-r-gray-200 rounded-md p-2">
-                            {isAdminObj.access &&
-
-                              <Menu as="div" className="absolute z-20 h-8 right-1">
-                                <div>
-                                  <MenuButton className="relative w-[100%] h-8 gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm">
-                                    <EllipsisVerticalIcon aria-hidden="true" className="absolute z-20 h-8 top-0 right-0" />
-                                  </MenuButton>
-                                </div>
-
-                                <MenuItems
-                                  transition
-                                  className="absolute -right-12 z-10 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-                                >
-                                  <div className="py-1">
-                                    <MenuItem>
-                                      <Link
-                                        to={`/edit-product/${product?.ProductID}`}
-                                        className="block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-                                      >
-                                        Edit
-                                      </Link>
-                                    </MenuItem>
-                                  </div>
-
-                                  <div className="py-1">
-                                    <MenuItem>
-                                      <button
-                                        onClick={() => handleDeleteProduct(product?.ProductID)}
-                                        className="block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-                                      >
-                                        Delete
-                                      </button>
-                                    </MenuItem>
-                                  </div>
-                                </MenuItems>
-                              </Menu>
-                            }
-
-
-                            <div className=" min-h-60 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-72">
-                              <img
-                                alt={product?.ProductName}
-                                src={product?.ThumbnailImage}
-                                className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                              />
-                            </div>
-                            <div className="mt-4 flex justify-between">
-                              <div>
-                                <h3 className="text-sm text-gray-700">
-                                  <a href={product?.ThumbnailImage}>
-                                    <span
-                                      aria-hidden="true"
-                                      className="absolute inset-0 text-xs md:text-base"
-                                    />
-                                    {product?.ProductName}
-                                  </a>
-                                </h3>
-                                <p className="mt-1 text-sm text-gray-500 flex">
-                                  <StarIcon className="w-5 h-5 inline" /><span className="px-2 align-bottom">{product?.Rating}</span>
-                                </p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-900">
-                                  $ {Math.round(product?.Price * (1 - product?.Discount / 100))}
-                                </p>
-                                <p className="text-sm font-medium line-through text-gray-400">
-                                  $ {product?.Price}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
+                          <ProductCard
+                            ProductID={product?.ProductID}
+                            ProductName={product?.ProductName}
+                            ThumbnailImage={product?.ThumbnailImage}
+                            Rating={product?.Rating}
+                            Price={product?.Price}
+                            Discount={product?.Discount}
+                            handleDeleteProduct={handleDeleteProduct}
+                          />
                         </Link>
                       })}
                     </div>

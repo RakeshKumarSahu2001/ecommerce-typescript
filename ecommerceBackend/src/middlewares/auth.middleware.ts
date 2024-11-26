@@ -12,7 +12,6 @@ export const verifyJWT = asyncHandler(async (req: Request, res: Response, next: 
 
     try {
         const tokenInfo = jwt.verify(token, String(process.env.ACCESS_TOKEN_SECRETE)) as JwtPayload;
-        // console.log("user information", tokenInfo);
 
         if (!tokenInfo || !tokenInfo.id || !tokenInfo.email) {
             throw new ApiErrorHandler({
@@ -30,7 +29,6 @@ export const verifyJWT = asyncHandler(async (req: Request, res: Response, next: 
 
         next();
     } catch (err) {
-        // console.log(err);
         throw new ApiErrorHandler({
             statusCode: 401,
             errors: [],

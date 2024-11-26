@@ -15,7 +15,7 @@ function Login() {
   const { register, reset, handleSubmit, formState: { errors, isSubmitting } } = useForm<inputData>();
   const dispatch = useECommerceStoreDispatch()
 
-  const user = useECommerceStoreSelector((state) => state.authSlice.isUserExist)
+  const user = useECommerceStoreSelector((state) => state.loginSlice.isUserExist)
   const navigate = useNavigate()
 
   const onSubmit: SubmitHandler<inputData> = ({ email, password }) => {
@@ -26,7 +26,6 @@ function Login() {
   useEffect(() => {
     if (user) {
       navigate("/shopnow/allproduct");
-      // console.log("hello form this site",user)
     }
   }, [user, navigate]);
 

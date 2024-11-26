@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Dialog,
   DialogBackdrop,
@@ -10,28 +10,61 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../Hooks/ecommerceStoreHooks";
-import { authSlice, logoutApi } from "../EcommerceStore/authOpt/LoginApi"
+import { loginSlice, logoutApi } from "../EcommerceStore/authOpt/LoginApi"
+import isAdmin from "../Hooks/isAdmin";
+import { fetchCartProductByUserId } from "../EcommerceStore/cartOpt/FetchUserCartProducts";
+import { deleteCartProductApi } from "../EcommerceStore/cartOpt/DeleteCartProduct";
+import CartCard from "./Cart/CartCard";
 
 function Navbar() {
   const [toggle, setToggle] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
-  const navigate=useNavigate()
+  const navigate = useNavigate()
+  const isAdminObj = new isAdmin();
 
-  const cartProducts = useECommerceStoreSelector((state) => state.userCartProducts.userSelectedProduct[0])
   const id = localStorage.getItem("Id");
   const dispatch = useECommerceStoreDispatch()
-  const [products, setProducts] = useState(cartProducts)
 
+
+  const handleCartOpen = () => {
+    setOpen(true)
+  }
+  const cartProducts = useECommerceStoreSelector((state) => state.userCartProducts.cartProducts);
+  // const [products, setProducts] = useState(cartProducts)
+  // console.log("cart products",cartProducts);
 
   useEffect(() => {
-    setProducts(cartProducts)
-  }, [cartProducts])
+    if (id) {
+      dispatch(fetchCartProductByUserId(id))
+    }
+  }, [id, dispatch])
+
+  // useEffect(() => {
+  //   setProducts(cartProducts)
+  // }, [cartProducts])
 
   const handleLogout = async () => {
     dispatch(logoutApi())
-    dispatch(authSlice.actions.clearLoginUserInfoFromLocalStorage())
+    dispatch(loginSlice.actions.clearLoginUserInfoFromLocalStorage())
     navigate("/shopnow/login")
   }
+
+  const handleDeleteProductFromCart = (CartID: string) => {
+    console.log("cart id =", CartID);
+    dispatch(deleteCartProductApi(CartID))
+  }
+
+  const subTotal = useMemo(() => {
+    return cartProducts?.reduce((total, product) => {
+      return total + Math.round(parseInt(product.Price) * (1 - parseInt(product.Discount) / 100))
+    }, 0);
+  }, [cartProducts])
+
+  // const subtotal = useMemo(() => {
+  //   return cartProducts?.reduce((total, product) => {
+  //     return total + Math.round(parseInt(product.Price) * (1 - parseInt(product.Discount) / 100));
+  //   }, 0);
+  // }, [cartProducts]);
 
   return (
     <header className="z-20 fixed w-screen">
@@ -48,12 +81,13 @@ function Navbar() {
                 {" "}
                 Products{" "}
               </a>
-
-              <Link
-                to="/add-product" className="text-base font-medium text-black">
-                {" "}
-                Resources{" "}
-              </Link>
+              {
+                isAdminObj.access && <Link
+                  to="/shopnow/admin/add-product" className="text-base font-medium text-black">
+                  {" "}
+                  Resources{" "}
+                </Link>
+              }
             </div>
 
             <div className="lg:absolute lg:-translate-x-1/2 lg:inset-y-5 lg:left-1/2">
@@ -162,7 +196,7 @@ function Navbar() {
                 href="#"
                 title=""
                 className="flex items-center justify-center w-10 h-10 text-white bg-black rounded-full"
-                onClick={() => setOpen(true)}
+                onClick={() => handleCartOpen()}
               >
                 <svg
                   className="w-6 h-6"
@@ -221,58 +255,17 @@ function Navbar() {
                                   role="list"
                                   className="-my-6 divide-y divide-gray-200"
                                 >
-                                  {products && products.map((product) => (
-                                    <li key={product.id} className="flex py-6">
-                                      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                        <img
-                                          alt={product.title}
-                                          src={product.images[0]}
-                                          className="h-full w-full object-cover object-center"
-                                        />
-                                      </div>
-
-                                      <div className="ml-4 flex flex-1 flex-col">
-                                        <div>
-                                          <div className="flex justify-between text-base font-medium text-gray-900">
-                                            <h3>
-                                              <a href={product.thumbnail}>
-                                                {product.title}
-                                              </a>
-                                            </h3>
-                                            <p className="ml-4">
-                                              {product.price}
-                                            </p>
-                                          </div>
-                                          <p className="mt-1 text-sm text-gray-500">
-                                            {product.color}
-                                          </p>
-                                        </div>
-                                        <div className="flex flex-1 items-end justify-between text-sm">
-                                          <div className="text-gray-500">
-                                            <label
-                                              htmlFor="quantity"
-                                              className="inline text-sm font-medium leading-6 text-gray-500"
-                                            >
-                                              Qty
-                                            </label>{" "}
-                                            <select>
-                                              <option value="">1</option>
-                                              <option value="">2</option>
-                                              <option value="">3</option>
-                                              <option value="">4</option>
-                                            </select>
-                                          </div>
-
-                                          <div className="flex">
-                                            <button
-                                              type="button"
-                                              className="font-medium text-indigo-600 hover:text-indigo-500"
-                                            >
-                                              Remove
-                                            </button>
-                                          </div>
-                                        </div>
-                                      </div>
+                                  {cartProducts && cartProducts.map((product) => (
+                                    <li key={product.CartID}>
+                                      
+                                      <CartCard 
+                                      ProductName={product.ProductName}
+                                      ThumbnailImage={product.ThumbnailImage}
+                                      Price={product.Price}
+                                      CartID={product.CartID}
+                                      Discount={product.Discount}
+                                      handleDeleteProductFromCart={handleDeleteProductFromCart}
+                                      />
                                     </li>
                                   ))}
                                 </ul>
@@ -283,7 +276,9 @@ function Navbar() {
                           <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                             <div className="flex justify-between text-base font-medium text-gray-900">
                               <p>Subtotal</p>
-                              <p>$262.00</p>
+                              <p>
+                              ₹{subTotal}
+                              </p>
                             </div>
                             <p className="mt-0.5 text-sm text-gray-500">
                               Shipping and taxes calculated at checkout.
@@ -371,13 +366,13 @@ function Navbar() {
                 Solutions{" "}
               </a>
 
-              <Link
+              {isAdminObj.access && <Link
                 to="/add-product"
                 className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
               >
                 {" "}
                 Resources{" "}
-              </Link>
+              </Link>}
 
             </div>
 

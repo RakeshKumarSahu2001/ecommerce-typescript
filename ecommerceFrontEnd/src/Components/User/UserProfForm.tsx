@@ -1,5 +1,5 @@
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useECommerceStoreSelector } from "../Hooks/ecommerceStoreHooks";
+import { useECommerceStoreSelector } from "../../Hooks/ecommerceStoreHooks";
 
 // Define the type for form data
 interface inputDataType {
@@ -22,7 +22,7 @@ type UserProfFormProps = {
 function UserProfForm({ submit }: UserProfFormProps) {
     const { handleSubmit, register } = useForm<inputDataType>(); // Pass form data type to useForm
     const userInfo = useECommerceStoreSelector(
-        (state) => state.AddUserProfInfoSlice.userProfileInfo
+        (state) => state.FetchUserProfInfoSlice.userProfileInfo
     );
 
     return (

@@ -16,9 +16,6 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
 
-    // console.log("multer middleware req", req.body)
-    // console.log("multer middleware file", file)
-
     const uniqueSuffix = Date.now() + '-' + file.fieldname + '-' + file.originalname
     cb(null, uniqueSuffix)
   }

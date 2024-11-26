@@ -6,7 +6,6 @@ import { updatedProductInfoType } from "../../utils/types";
 export const EditSpecificProductApi = createAsyncThunk("products/EditSpecificProduct",
     async ({ id, updatedData }: { id: string; updatedData: updatedProductInfoType }) => {
 
-        console.log("updated data on line no 20", updatedData);
         try {
             const response = await axios.put(`/api/v1/admin/edit-product-by-id/${id}`, updatedData);
             return response.data;
@@ -51,7 +50,7 @@ export const EditSpecificProductSlice = createSlice({
             state.isupdated = false
             state.updatedProdcuctInfo = null
         })
-        builder.addCase(EditSpecificProductApi.pending, (state, action) => {
+        builder.addCase(EditSpecificProductApi.fulfilled, (state, action) => {
             state.isError = false
             state.isupdated = false
             state.updatedProdcuctInfo = action.payload

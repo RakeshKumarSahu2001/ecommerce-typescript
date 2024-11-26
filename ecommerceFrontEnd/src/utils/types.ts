@@ -40,7 +40,8 @@ enum Gender {
   Other = "other"
 }
 
-export interface userProfileInfoType{
+export interface userProfileInfoType {
+  UserID: string,
   FullName: string,
   Phone: number,
   Street: string,

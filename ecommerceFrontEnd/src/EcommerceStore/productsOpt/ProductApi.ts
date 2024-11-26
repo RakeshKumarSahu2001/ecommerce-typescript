@@ -7,7 +7,6 @@ export const ProductApi = createAsyncThunk("products/fetchAllProducts", async ()
         const response = await axios.get(`/api/v1/users/fetch-all-products`);
         return response.data.data.products;
     } catch (err) {
-        console.log(err)
         throw err;
     }
 })
@@ -34,10 +33,8 @@ export const ProductSlice = createSlice(
                 state.loadingStatus = true
             })
             builder.addCase(ProductApi.fulfilled, (state, action) => {
-                // console.log("payload", action.payload)
                 state.loadingStatus = false;
                 state.allProducts = action.payload
-                // console.log("allproduct",state.allProducts)
             })
             builder.addCase(ProductApi.rejected, (state) => {
                 state.loadingError = true

@@ -1,10 +1,10 @@
 import { SubmitHandler} from "react-hook-form"
-import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../Hooks/ecommerceStoreHooks"
-import { fetchUserProfInfoById } from "../EcommerceStore/FetchUserProfInfoApi";
+import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../../Hooks/ecommerceStoreHooks"
+import { fetchUserProfInfoById } from "../../EcommerceStore/userProf/FetchUserProfInfoApi";
 import { useEffect } from "react";
 import {  useNavigate, useParams } from "react-router-dom";
+import { AddUserProfInfoById } from "../../EcommerceStore/userProf/AddEditUserProfInfoApi";
 import UserProfForm from "./UserProfForm";
-import { AddUserProfInfoById } from "../EcommerceStore/userProf/AddEditUserProfInfoApi";
 
 enum Gender {
     Male = "male",
@@ -27,7 +27,7 @@ interface inputDataType {
 function UserInfo() {
     const id = useParams<{ id: string }>().id || '';
     console.log("user info on line 28", id);
-    const userInfo = useECommerceStoreSelector(state => state.AddUserProfInfoSlice.userProfileInfo);
+    const userInfo = useECommerceStoreSelector(state => state.FetchUserProfInfoSlice.userProfileInfo);
     console.log("userinfo", userInfo);
     const dispatch = useECommerceStoreDispatch();
     const navigate=useNavigate();

@@ -1,9 +1,9 @@
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../Hooks/ecommerceStoreHooks";
+import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../../Hooks/ecommerceStoreHooks";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FetchProductDetailsApi } from "../EcommerceStore/productsOpt/FetchProductDetailsApi";
-import { EditSpecificProductApi } from "../EcommerceStore/productsOpt/EditSpecificProduct";
+import { FetchProductDetailsApi } from "../../EcommerceStore/productsOpt/FetchProductDetailsApi";
+import { EditSpecificProductApi } from "../../EcommerceStore/productsOpt/EditSpecificProduct";
 
 function EditSpecificProduct() {
     const { register, handleSubmit } = useForm();
@@ -29,7 +29,6 @@ function EditSpecificProduct() {
         productCategory: string
     }
     const onSubmit: SubmitHandler<productUpdatedData> = (data: productUpdatedData) => {
-        console.log("data on line no 33", id, data);
         dispatch(EditSpecificProductApi({ id, updatedData: data }))
         navigate(`/shopnow/productDetail/${id}`)
     }
@@ -64,7 +63,7 @@ function EditSpecificProduct() {
 
                     <div className="px-4 pt-10 lg:pt-0 ">
                         <form
-                            className="grid grid-cols-2 grid-rows-6 gap-2"
+                            className="grid grid-cols-2 grid-rows-7 gap-2"
                             onSubmit={handleSubmit(onSubmit)}>
                             <div className="col-span-2">
                                 <label htmlFor="productName">Product Name</label><br></br>
@@ -195,7 +194,7 @@ function EditSpecificProduct() {
 
                             </div>
 
-                            <div className="col-span-2">
+                            <div className="col-span-2 row-span-2">
                                 <label htmlFor="productDescription">Product Description</label><br></br>
                                 <textarea
                                     defaultValue={product?.Description}
@@ -207,13 +206,16 @@ function EditSpecificProduct() {
                                         }
                                     })
                                     }
+                                    rows={4}
                                     placeholder="Enter the product description"
                                     className="w-[100%] rounded-md"
                                 ></textarea>
 
                             </div>
 
-                            <button type="submit">
+                            <button 
+                            type="submit"
+                            className="col-span-2 px-5 py-2 font-semibold text-white transition-all duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:bg-blue-700">
                                 Submit
                             </button>
                         </form>

@@ -1,6 +1,7 @@
 import { SubmitHandler, useForm } from "react-hook-form"
-import { AddNewProductApi } from "../EcommerceStore/productsOpt/AddNewProductApi"
-import { useECommerceStoreDispatch } from "../Hooks/ecommerceStoreHooks"
+import { useECommerceStoreDispatch } from "../../Hooks/ecommerceStoreHooks"
+import { AddNewProductApi } from "../../EcommerceStore/productsOpt/AddNewProductApi"
+
 
 type inputDataType = {
   productName: string,
@@ -22,16 +23,15 @@ function AddNewProduct() {
 
 
   const onSubmit: SubmitHandler<inputDataType> = (data: inputDataType) => {
-    // console.log("inputDatatypes",data)
     dispatch(AddNewProductApi(data))
   }
 
 
 
   return (
-    <div className="w-100 grid place-content-center">
+    <div className="w-100 grid place-content-center pt-24 pb-7">
       <h3 className="text-center">Add New Product</h3>
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 grid-rows-6 gap-2">
+      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 grid-rows-7 gap-2">
         <div className="col-span-2">
           <label htmlFor="productName">Product Name</label><br></br>
           <input
@@ -184,7 +184,7 @@ function AddNewProduct() {
           />
         </div>
 
-        <div className="col-span-2">
+        <div className="col-span-2 row-span-2">
           <label htmlFor="productDescription">Product Description</label><br></br>
           <textarea
             {
@@ -195,13 +195,16 @@ function AddNewProduct() {
               }
             })
             }
+            rows={4}
             placeholder="Enter the product description"
             className="w-[100%] rounded-md"
           ></textarea>
           {errors.productDescription && <p className="text-red-600">{errors.productDescription.message}</p>}
         </div>
 
-        <button type="submit">
+        <button 
+        type="submit"
+        className="inline-flex items-center justify-center px-6 py-4 font-semibold text-white transition-all duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:bg-blue-700">
           Submit
         </button>
       </form>

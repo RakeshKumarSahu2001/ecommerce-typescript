@@ -1,10 +1,9 @@
 import { SubmitHandler } from "react-hook-form";
-import UserProfForm from "../../Components/UserProfForm";
 import { EditUserProfInfoById } from "../../EcommerceStore/userProf/AddEditUserProfInfoApi";
 import { useECommerceStoreDispatch } from "../../Hooks/ecommerceStoreHooks";
 import { useParams } from "react-router-dom";
+import UserProfForm from "../../Components/User/UserProfForm";
 
-// Define the type for form data
 interface inputDataType {
     FullName: string;
     Phone: number;
@@ -27,8 +26,7 @@ function UserProfEdit() {
     }
 
     const onSubmit: SubmitHandler<inputDataType> = (formData) => {
-        console.log("formdata", formData, id);
-        dispatch(EditUserProfInfoById({ data: formData, id })); // 'id' is now guaranteed to be a string
+        dispatch(EditUserProfInfoById({ data: formData, id }));
     };
 
     return (

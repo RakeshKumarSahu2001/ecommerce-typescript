@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { userProfileInfoType } from "../utils/types";
+import { userProfileInfoType } from "../../utils/types";
 
 
 export const fetchUserProfInfoById = createAsyncThunk("user/fetchUserProfileInfo", async (id:string) => {
@@ -28,7 +28,7 @@ const initialState: initialStateType = {
     profileDataInsertionError: false
 }
 
-export const AddUserProfInfoSlice = createSlice({
+export const FetchUserProfInfoSlice = createSlice({
     name: "userInfoSlice",
     initialState,
     reducers: {},
@@ -44,6 +44,7 @@ export const AddUserProfInfoSlice = createSlice({
             state.profileDataInsertionError=false
         })
         builder.addCase(fetchUserProfInfoById.fulfilled,(state,action)=>{
+            console.log("payload",action.payload)
             state.isProfileDataInserted=false,
             state.userProfileInfo=action.payload,
             state.profileDataInsertionError=false 

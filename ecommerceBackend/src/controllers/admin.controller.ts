@@ -40,17 +40,14 @@ export const fetchAllProducts = asyncHandler(async (req, res) => {
 
 //Add product
 export const addNewProduct = asyncHandler(async (req, res) => {
-  // console.log("hello",req.files)
   const { productName, productDescription, brand, productRating, productPrice, productCategory, discount, stock } = req.body
   const requiredFields = [productName, productDescription, brand, productRating, productPrice, productCategory, discount, stock];
   const fieldNames = ['Product Name', 'Product Description', 'Product Rating', 'Product Price', 'Product Category', 'Discount', 'Stock'];
-  // console.log("fields are ", requiredFields)
 
   const missingFields = requiredFields
     .map((value, index) => (value?.trim() === "" ? fieldNames[index] : null))
     .filter(field => field !== null);
 
-  // console.log("fields",missingFields)
   if ([productName, productDescription, brand, productRating, productPrice, productCategory, discount, stock].some((value) => value?.trim() === "")) {
     throw new ApiErrorHandler({
       statusCode: 400,
@@ -70,9 +67,7 @@ export const addNewProduct = asyncHandler(async (req, res) => {
   const thumbNailImage = req.files?.thumbNailImage?.[0]?.path;
   const images = req.files?.images?.map((file) => file.path);
 
-  // console.log("files", images?.[0])
 
-  // console.log("mainimage", req)
 
   if (!thumbNailImage) {
     throw new ApiErrorHandler({
@@ -121,7 +116,6 @@ export const addNewProduct = asyncHandler(async (req, res) => {
       JSON.stringify(productImages.map(img => img?.secure_url))
     ];
 
-    // console.log("values are", values)
 
     //insert product information in the database
     const productInsertQuery = "INSERT INTO products (ProductName, Description, Rating, Price,Category, Discount, StockQuantity, Brand, ThumbnailImage, Images) VALUES (?,?,?,?,?,?,?,?,?,?)";
@@ -138,7 +132,6 @@ export const addNewProduct = asyncHandler(async (req, res) => {
 //Delete product
 export const deleteProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  console.log("id", id)
   if (!id) {
     throw new ApiErrorHandler({
       statusCode: 400,

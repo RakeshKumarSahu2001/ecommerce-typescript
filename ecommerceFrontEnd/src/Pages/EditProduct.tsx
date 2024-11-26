@@ -1,4 +1,4 @@
-import EditSpecificProduct from "../Components/EditSpecificProduct"
+import EditSpecificProduct from "../Components/Admin/EditSpecificProduct"
 
 function EditProduct() {
   return (

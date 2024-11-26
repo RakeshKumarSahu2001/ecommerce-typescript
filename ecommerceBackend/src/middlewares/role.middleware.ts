@@ -7,17 +7,19 @@ import asyncHandler from "../utils/asyncHandler";
 
 export const isAuthenicateToAccessTheRoute = asyncHandler(async (req, res, next) => {
   const user = req.user
-  // console.log("user info",user)
   const pool = await dbConnection();
   const connection = await pool.getConnection()
   if (!connection) {
-    throw new ApiErrorHandler({ statusCode: 500, errors: ["Database connection failed during role validation."], message: "Database connnection error" })
+    throw new ApiErrorHandler({
+      statusCode: 500,
+      errors: ["Database connection failed during role validation."],
+      message: "Database connnection error"
+    })
   }
   try {
     const sql = 'SELECT Role FROM `authtable` WHERE `ID` = ? ';
 
     const [rows] = await connection.execute<RowDataPacket[]>(sql, [user?.id]);
-    console.log("is admin", rows);
 
     if (rows[0].Role !== "admin") {
       throw new ApiErrorHandler({

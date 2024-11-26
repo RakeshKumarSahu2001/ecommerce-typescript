@@ -3,7 +3,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { product } from "../../utils/types";
 
 export const FetchProductDetailsApi = createAsyncThunk("products/fetchProductById", async (id:string) => {
-    // console.log("id",typeof(id))
     try {
         const productDetails = await axios.get(`/api/v1/users/fetch-product-by-id/${id}`)
         return productDetails.data.data.product;
@@ -81,7 +80,6 @@ export const ProductDetailsSlice = createSlice({
         }),
         builder.addCase(FetchProductDetailsApi.fulfilled,(state,action)=>{
             state.loadingStatus=false,
-            // console.log("payload",action.payload)
             state.productInfo=action.payload[0]
         }),
         builder.addCase(FetchProductDetailsApi.rejected,(state)=>{
