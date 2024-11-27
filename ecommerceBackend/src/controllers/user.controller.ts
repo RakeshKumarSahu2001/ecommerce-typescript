@@ -462,7 +462,6 @@ export const editUserInfoById = asyncHandler(async (req, res) => {
 //add product to cart
 export const addProductToCart = asyncHandler(async (req, res) => {
     const { productID, quantity, AuthID } = req.body;
-    console.log("body", productID, quantity, AuthID)
 
     if (!productID || !quantity || !AuthID) {
         throw new ApiErrorHandler({
@@ -486,12 +485,10 @@ export const addProductToCart = asyncHandler(async (req, res) => {
         const theProductExistInUserCartQuery = "SELECT * FROM cart WHERE ProductID=? AND AuthID=?;";
         const [theProductExistInUserCart] = await connection.execute<RowDataPacket[]>(theProductExistInUserCartQuery, [productID, AuthID]);
 
-        console.log("cart product info", theProductExistInUserCart[0]?.Quantity);
         if (theProductExistInUserCart.length > 0) {
             //change quantity or throw error
             const updateCartProductQuantityQuery = "UPDATE cart SET Quantity=? WHERE ProductID=? AND AuthID=?;";
-            const [updateCartProductQuantity] = await connection.execute<RowDataPacket[]>(updateCartProductQuantityQuery, [theProductExistInUserCart[0]?.Quantity + 1, productID, AuthID]);
-            console.log("updated value", updateCartProductQuantity);
+            await connection.execute<RowDataPacket[]>(updateCartProductQuantityQuery, [theProductExistInUserCart[0]?.Quantity + 1, productID, AuthID]);
 
             return res.status(200).json({
                 success: true,
@@ -501,9 +498,8 @@ export const addProductToCart = asyncHandler(async (req, res) => {
         }
 
         const addProductToCartQuery = "INSERT INTO cart (Quantity,ProductID,AuthID) VALUES (?,?,?);";
-        const [addProductToCart] = await connection.execute<RowDataPacket[]>(addProductToCartQuery, [quantity, productID, AuthID]);
+        await connection.execute<RowDataPacket[]>(addProductToCartQuery, [quantity, productID, AuthID]);
 
-        console.log("cart items ", addProductToCart);
 
         res.status(200)
             .json({
@@ -564,7 +560,6 @@ export const fetchProductsInCart = asyncHandler(async (req, res) => {
 //delete product from cart
 export const deleteProductFromCart = asyncHandler(async (req, res) => {
     const {id} = req.params;
-    console.log("req.body=",id)
     if (!id) {
         throw new ApiErrorHandler({
             statusCode: 400,
@@ -606,4 +601,6 @@ export const deleteProductFromCart = asyncHandler(async (req, res) => {
         connection.release();
     }
 })
+
+
 

@@ -3,19 +3,16 @@ import HomePage from "./Pages/HomePage.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LoginPage from "./Pages/AuthPages/LoginPage.tsx";
 import SignUpPage from "./Pages/AuthPages/SignUpPage.tsx";
-import CartPage from "./Pages/CartPage.tsx";
-import Product from "./Components/Products/ProductList.tsx";
-import ProductDetail from "./Components/Products/ProductDetail.tsx";
+import CartPage from "./Pages/Cart/CartPage.tsx";
 import Protected from "./Hooks/Protected.tsx";
-import { useEffect } from "react";
-import { useECommerceStoreDispatch, useECommerceStoreSelector } from "./Hooks/ecommerceStoreHooks.ts";
-import { fetchCartProductByUserId } from "./EcommerceStore/cartOpt/FetchUserCartProducts.ts";
 import AdminOnly from "./Hooks/AdminOnly.tsx";
-import EditProduct from "./Pages/EditProduct.tsx";
 import HomeCarousel from "./Components/Home/HomeCarousel.tsx";
 import UserProfEdit from "./Pages/User/UserProfEdit.tsx";
 import UserInfoPage from "./Pages/User/UserInfoPage.tsx";
-import AddNewProduct from "./Components/Admin/AddNewProduct.tsx";
+import ProductsPage from "./Pages/Products/ProductsPage.tsx";
+import ProductDetailsPage from "./Pages/Products/ProductDetailsPage.tsx";
+import EditProductPage from "./Pages/Admin/EditProductPage.tsx";
+import AddNewProductPage from "./Pages/Admin/AddNewProductPage.tsx";
 
 
 
@@ -29,11 +26,11 @@ function App() {
       children: [
         {
           path: "/shopnow/allproduct",
-          element: <Protected><Product /></Protected>
+          element: <Protected><ProductsPage /></Protected>
         },
         {
           path: "/shopnow/productDetail/:id",
-          element: <Protected><ProductDetail /></Protected>
+          element: <Protected><ProductDetailsPage /></Protected>
         },
         {
           path: "/shopnow/user-info/:id",
@@ -44,7 +41,7 @@ function App() {
           element: <Protected><UserProfEdit /></Protected>
         },
         {
-          path: "/shopnow/cart",
+          path: "/shopnow/cart/:id",
           element: <Protected><CartPage /></Protected>,
         },
         {
@@ -52,7 +49,7 @@ function App() {
           element: (
             <Protected>
               <AdminOnly>
-                <AddNewProduct />
+                <AddNewProductPage />
               </AdminOnly>
             </Protected>
           ),
@@ -62,15 +59,11 @@ function App() {
           element: (
             <Protected>
               <AdminOnly>
-                <EditProduct />
+                <EditProductPage />
               </AdminOnly>
             </Protected>
           ),
         },
-        // {
-        //   path: "/shopnow/cart",
-        //   element: <CartPage />,
-        // },
       ]
     },
     {
@@ -81,12 +74,9 @@ function App() {
       path: "/shopnow/signup",
       element: <SignUpPage />,
     },
-
-
-
     {
-      path:"/caro",
-      element:<HomeCarousel />
+      path: "/caro",
+      element: <HomeCarousel />
     }
 
   ]);

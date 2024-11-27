@@ -26,19 +26,18 @@ interface inputDataType {
 
 function UserInfo() {
     const id = useParams<{ id: string }>().id || '';
-    console.log("user info on line 28", id);
     const userInfo = useECommerceStoreSelector(state => state.FetchUserProfInfoSlice.userProfileInfo);
-    console.log("userinfo", userInfo);
     const dispatch = useECommerceStoreDispatch();
     const navigate=useNavigate();
 
-    const onSubmit: SubmitHandler<inputDataType> = (formData) => {
-        console.log(formData)
+    const submit: SubmitHandler<inputDataType> = (formData) => {
         dispatch(AddUserProfInfoById({ data: formData, id: id }));
     }
 
     useEffect(() => {
+        if(id){
         dispatch(fetchUserProfInfoById(id))
+        }
     }, [id])
 
     const handleRouteToNextPage=()=>{
@@ -90,7 +89,7 @@ function UserInfo() {
                     <button onClick={handleRouteToNextPage}>Edit</button>
                 </div>
             </div> :
-            <UserProfForm submit={onSubmit} />
+            <UserProfForm submit={submit} />
     )
 }
 

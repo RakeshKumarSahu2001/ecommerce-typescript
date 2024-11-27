@@ -17,7 +17,7 @@ type inputDataType = {
 }
 
 function AddNewProduct() {
-  const { reset, register, control, handleSubmit, formState: { errors, isSubmitted } } = useForm<inputDataType>()
+  const { register,handleSubmit, formState: { errors} } = useForm<inputDataType>()
 
   const dispatch = useECommerceStoreDispatch()
 

@@ -119,9 +119,8 @@ export const addNewProduct = asyncHandler(async (req, res) => {
 
     //insert product information in the database
     const productInsertQuery = "INSERT INTO products (ProductName, Description, Rating, Price,Category, Discount, StockQuantity, Brand, ThumbnailImage, Images) VALUES (?,?,?,?,?,?,?,?,?,?)";
-    const [result] = await connection.execute<RowDataPacket[]>(productInsertQuery, values);
+    await connection.execute<RowDataPacket[]>(productInsertQuery, values);
 
-    console.log("results", result);
     return res.status(200)
       .json({ message: "successfull" })
   } finally {
@@ -153,7 +152,6 @@ export const deleteProduct = asyncHandler(async (req, res) => {
   try {
     const checkProductPresentInDBQuery = "SELECT * FROM shopnow.products WHERE ProductID = ?;";
     const [checkProductPresentInDB] = await connection.execute<RowDataPacket[]>(checkProductPresentInDBQuery, [id]);
-    console.log("hello yopu want to delete product", checkProductPresentInDB)
 
 
     if (!checkProductPresentInDB || checkProductPresentInDB?.length === 0) {

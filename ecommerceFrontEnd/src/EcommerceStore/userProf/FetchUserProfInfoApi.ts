@@ -4,13 +4,10 @@ import { userProfileInfoType } from "../../utils/types";
 
 
 export const fetchUserProfInfoById = createAsyncThunk("user/fetchUserProfileInfo", async (id:string) => {
-    console.log("id",id)
     try {
         const response = await axios.get(`/api/v1/users/fetch-user-profile-info/${id}`);
-        console.log("response =",response)
         return response.data.data;
     } catch (error) {
-        console.log("error on line no 21 of manage user profile info", error);
         throw error;
     }
 })
@@ -44,7 +41,6 @@ export const FetchUserProfInfoSlice = createSlice({
             state.profileDataInsertionError=false
         })
         builder.addCase(fetchUserProfInfoById.fulfilled,(state,action)=>{
-            console.log("payload",action.payload)
             state.isProfileDataInserted=false,
             state.userProfileInfo=action.payload,
             state.profileDataInsertionError=false 

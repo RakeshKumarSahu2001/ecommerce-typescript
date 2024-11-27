@@ -15,6 +15,7 @@ import isAdmin from "../Hooks/isAdmin";
 import { fetchCartProductByUserId } from "../EcommerceStore/cartOpt/FetchUserCartProducts";
 import { deleteCartProductApi } from "../EcommerceStore/cartOpt/DeleteCartProduct";
 import CartCard from "./Cart/CartCard";
+import Cart from "./Cart";
 
 function Navbar() {
   const [toggle, setToggle] = useState<boolean>(false);
@@ -31,7 +32,6 @@ function Navbar() {
   }
   const cartProducts = useECommerceStoreSelector((state) => state.userCartProducts.cartProducts);
   // const [products, setProducts] = useState(cartProducts)
-  // console.log("cart products",cartProducts);
 
   useEffect(() => {
     if (id) {
@@ -49,22 +49,21 @@ function Navbar() {
     navigate("/shopnow/login")
   }
 
-  const handleDeleteProductFromCart = (CartID: string) => {
-    console.log("cart id =", CartID);
-    dispatch(deleteCartProductApi(CartID))
+  const handleMoveToProducts=()=>{
+    navigate("/shopnow/allproduct")
+    setOpen(false)
   }
 
-  const subTotal = useMemo(() => {
-    return cartProducts?.reduce((total, product) => {
-      return total + Math.round(parseInt(product.Price) * (1 - parseInt(product.Discount) / 100))
-    }, 0);
-  }, [cartProducts])
+  // const handleDeleteProductFromCart = (CartID: string) => {
+  //   dispatch(deleteCartProductApi(CartID))
+  // }
 
-  // const subtotal = useMemo(() => {
+  // const subTotal = useMemo(() => {
   //   return cartProducts?.reduce((total, product) => {
-  //     return total + Math.round(parseInt(product.Price) * (1 - parseInt(product.Discount) / 100));
+  //     return total + Math.round(parseInt(product.Price) * (1 - parseInt(product.Discount) / 100))
   //   }, 0);
-  // }, [cartProducts]);
+  // }, [cartProducts])
+
 
   return (
     <header className="z-20 fixed w-screen">
@@ -249,7 +248,7 @@ function Navbar() {
                               </div>
                             </div>
 
-                            <div className="mt-8">
+                            {/* <div className="mt-8">
                               <div className="flow-root">
                                 <ul
                                   role="list"
@@ -270,10 +269,12 @@ function Navbar() {
                                   ))}
                                 </ul>
                               </div>
-                            </div>
+                            </div> */}
+                            <Cart
+                            handleMoveToProducts={handleMoveToProducts} />
                           </div>
 
-                          <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+                          {/* <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                             <div className="flex justify-between text-base font-medium text-gray-900">
                               <p>Subtotal</p>
                               <p>
@@ -285,7 +286,7 @@ function Navbar() {
                             </p>
                             <div className="mt-6">
                               <Link
-                                to="/shopnow/cart"
+                                to={`/shopnow/cart/${id}`}
                                 className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                               >
                                 Checkout
@@ -304,7 +305,7 @@ function Navbar() {
                                 </button>
                               </p>
                             </div>
-                          </div>
+                          </div> */}
                         </div>
                       </DialogPanel>
                     </div>

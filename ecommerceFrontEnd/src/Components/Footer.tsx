@@ -3,7 +3,7 @@ import shopnow from "../assets/images/ShopNow.png"
 function Footer() {
 
     return (
-        <section className="py-10 bg-gray-50 sm:pt-16 lg:pt-24">
+        <section className="py-10 bg-gray-50 sm:pt-16">
             <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
                 <div className="grid grid-cols-2 md:col-span-3 lg:grid-cols-6 gap-y-16 gap-x-12">
                     <div className="col-span-2 md:col-span-3 lg:col-span-2 lg:pr-8">
@@ -61,44 +61,16 @@ function Footer() {
 
                         <ul className="mt-6 space-y-4">
                             <li>
-                                <a href="#" title="" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600"> About </a>
+                                <a href="#" title="" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600"> Home</a>
                             </li>
 
                             <li>
-                                <a href="#" title="" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600"> Features </a>
-                            </li>
-
-                            <li>
-                                <a href="#" title="" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600"> Works </a>
-                            </li>
-
-                            <li>
-                                <a href="#" title="" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600"> Career </a>
+                                <a href="#" title="" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600"> Products</a>
                             </li>
                         </ul>
                     </div>
 
-                    <div>
-                        <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase">Help</p>
 
-                        <ul className="mt-6 space-y-4">
-                            <li>
-                                <a href="#" title="" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600"> Customer Support </a>
-                            </li>
-
-                            <li>
-                                <a href="#" title="" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600"> Delivery Details </a>
-                            </li>
-
-                            <li>
-                                <a href="#" title="" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600"> Terms & Conditions </a>
-                            </li>
-
-                            <li>
-                                <a href="#" title="" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600"> Privacy Policy </a>
-                            </li>
-                        </ul>
-                    </div>
 
                     <div className="col-span-2 md:col-span-1 lg:col-span-2 lg:pl-8">
                         <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase">Subscribe to newsletter</p>
@@ -114,9 +86,9 @@ function Footer() {
                     </div>
                 </div>
 
-                <hr className="mt-16 mb-10 border-gray-200" />
+                <hr className="my-5 border-gray-200" />
 
-                <p className="text-sm text-center text-gray-600">© Copyright 2021, All Rights Reserved by Postcraft</p>
+                <p className="text-sm text-center text-gray-600">© Copyright 2024, Desinged by Rakesh Kumar Sahu</p>
             </div>
         </section>
 

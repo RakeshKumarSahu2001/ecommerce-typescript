@@ -3,7 +3,17 @@ import { EllipsisVerticalIcon, StarIcon } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
 import isAdmin from '../../Hooks/isAdmin';
 
-function ProductCard({ProductID,ProductName,ThumbnailImage,Rating,Price,Discount,handleDeleteProduct}) {
+type propsType={
+  ProductID:string,
+  ProductName:string,
+  ThumbnailImage:string,
+  Rating:string,
+  Price:number,
+  Discount:number,
+  handleDeleteProduct:(productID:string)=>void
+}
+
+function ProductCard({ProductID,ProductName,ThumbnailImage,Rating,Price,Discount,handleDeleteProduct}:propsType) {
     const isAdminObj = new isAdmin();
   return (
     <div key={ProductID} className="group relative border-solid border-2 min-h-[21.5rem] border-r-gray-200 rounded-md p-2">

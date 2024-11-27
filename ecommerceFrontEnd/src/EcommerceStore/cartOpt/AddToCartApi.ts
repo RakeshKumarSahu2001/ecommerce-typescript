@@ -2,9 +2,13 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import axios from "axios";
 import { product } from "../../utils/types";
 
+type catInfoType={
+    productID:string,
+    quantity:number,
+    AuthID:string
+  }
 
-export const addToCartApi=createAsyncThunk("cart/addToCart",async(cartInfo)=>{
-    console.log("cart item",cartInfo);
+export const addToCartApi=createAsyncThunk("cart/addToCart",async(cartInfo:catInfoType)=>{
     try{
         const response=await axios.post(`/api/v1/users/add-product-to-cart`,cartInfo);
         return response.data;
@@ -33,10 +37,8 @@ export const addToCartSlice=createSlice({
         builder.addCase(addToCartApi.pending,(state)=>{
             state.isAdded=false;
         })
-        builder.addCase(addToCartApi.fulfilled,(state,action)=>{
-            console.log("on line no 38",action.payload)
+        builder.addCase(addToCartApi.fulfilled,(state)=>{
             state.isAdded=true;
-            // state.userSelectedProduct.push()
         })
         builder.addCase(addToCartApi.rejected,(state)=>{
             state.isAdded=false;

@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react'
 import { StarIcon } from '@heroicons/react/20/solid'
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from '../../Hooks/ecommerceStoreHooks'
 import { FetchProductDetailsApi } from '../../EcommerceStore/productsOpt/FetchProductDetailsApi'
-import { useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { BoltIcon, ShoppingCartIcon } from '@heroicons/react/24/outline'
 import { addToCartApi } from '../../EcommerceStore/cartOpt/AddToCartApi'
 
-const reviews = { href: '#', average: 4, totalCount: 117 }
 
 function classNames(...classes: (string | boolean | undefined | null)[]): string {
   return classes.filter(Boolean).join(' ')
@@ -16,6 +15,7 @@ export default function ProductDetail() {
   // fetching product details
   const  productID  = useParams()?.id
   const dispatch = useECommerceStoreDispatch()
+  const navigate=useNavigate();
 
   useEffect(() => {
     if (productID) {
@@ -29,7 +29,6 @@ export default function ProductDetail() {
   const [selectedImg, setSelectedImg] = useState(images[0])
   const AuthID = localStorage.getItem("Id")
 
-  console.log("user id",AuthID)
 
   useEffect(() => {
     if (product?.Images?.length) {
@@ -45,7 +44,6 @@ export default function ProductDetail() {
 
   // add to cart start
   const handleAddToCart = () => {
-   console.log("hello from cart",productID)
    const cartInfo:catInfoType={
     productID:productID || "",
     quantity:1,
@@ -54,37 +52,29 @@ export default function ProductDetail() {
     dispatch(addToCartApi(cartInfo))
   }
 
+  const handleBuyNow=()=>{
+    const cartInfo:catInfoType={
+      productID:productID || "",
+      quantity:1,
+      AuthID:AuthID || ""
+     }
+      dispatch(addToCartApi(cartInfo))
+    navigate(`/shopnow/cart/${AuthID}`)
+  }
+
+
 
   return (
     product && <div className="bg-white pb-8">
       <div className="pt-20">
         <nav aria-label="Breadcrumb" className='py-[10px]'>
-          <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 lg:max-w-7xl">
-            {/* {product.tags.map((tag, i) => (
-              <li key={i}>
-                <div className="flex items-center">
-                  <p className="mr-2 text-sm font-medium text-gray-900">
-                    {tag}
-                  </p>
-                  <svg
-                    fill="currentColor"
-                    width={16}
-                    height={20}
-                    viewBox="0 0 16 20"
-                    aria-hidden="true"
-                    className="h-5 w-4 text-gray-300"
-                  >
-                    <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
-                  </svg>
-                </div>
-              </li>
-            ))} */}
-            <li className="text-sm font-medium text-gray-500 hover:text-gray-600">
+          {/* <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 lg:max-w-7xl"> */}
+            <p className="text-sm font-medium text-gray-500 hover:text-gray-600">
               {
                 product?.ProductName
               }
-            </li>
-          </ol>
+            </p>
+          {/* </ol> */}
         </nav>
 
         {/* Image gallery */}
@@ -114,10 +104,12 @@ export default function ProductDetail() {
                   <ShoppingCartIcon className="size-6" />
               </button>
 
-              <button className="flex items-center text-white bg-[#fb641b] border border-[#fb641b] py-2 px-6 gap-2 rounded ">
-                  <span>
+              <button
+              onClick={()=>handleBuyNow()}
+              className="flex items-center text-white bg-[#fb641b] border border-[#fb641b] py-2 px-6 gap-2 rounded ">
+                  <Link to={`/shopnow/cart/${AuthID}`}>
                     Buy Now
-                  </span>
+                  </Link>
                   <BoltIcon className="size-6" />
               </button>
             </div>
@@ -128,7 +120,7 @@ export default function ProductDetail() {
               <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{product.ProductName}</h1>
             </div>
 
-            <div className="py-10 lg:col-start-1 lg:pt-6">
+            <div className="lg:col-start-1 lg:pt-6">
               {/* Description and details */}
               <div>
                 <h2 className="text-sm font-medium text-gray-900">Details</h2>
@@ -145,8 +137,6 @@ export default function ProductDetail() {
             {/* Options */}
             <div className="mt-4 lg:row-span-3 lg:mt-0">
               <h2 className="sr-only">Product information</h2>
-              <p className="text-3xl tracking-tight text-gray-900">{product.Price}</p>
-
               {/* Reviews */}
               <div className="mt-6">
                 <h3 className="sr-only">Reviews</h3>
@@ -164,14 +154,15 @@ export default function ProductDetail() {
                     ))}
                   </div>
                   <p className="sr-only">{product?.Rating} out of 5 stars</p>
-                  <a href={reviews.href} className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                    {reviews.totalCount} reviews
+                  <a href="#" className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                    {product?.Rating}
                   </a>
                 </div>
               </div>
+              <p className="text-3xl tracking-tight text-gray-900">
+              ₹ {Math.round(product.Price * (1 - product.Discount / 100))}
+              </p>
             </div>
-
-
           </div>
         </div>
 

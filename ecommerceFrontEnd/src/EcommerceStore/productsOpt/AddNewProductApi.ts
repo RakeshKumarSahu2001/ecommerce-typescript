@@ -14,7 +14,6 @@ export const AddNewProductApi = createAsyncThunk("products/addNewProduct",
         thumbNailImage: FileList,
         images: FileList[]
     }) => {
-        console.log(data)
 
         try {
             const formData = new FormData();
@@ -39,7 +38,6 @@ export const AddNewProductApi = createAsyncThunk("products/addNewProduct",
 
             return response.data
         } catch (err) {
-            console.log("error in the addproduct section :", err)
             throw err;
         }
     })

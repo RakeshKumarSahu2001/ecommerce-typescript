@@ -7,7 +7,7 @@ import { EditSpecificProductApi } from "../../EcommerceStore/productsOpt/EditSpe
 
 function EditSpecificProduct() {
     const { register, handleSubmit } = useForm();
-    const { id } = useParams()
+    const { id } = useParams<{ id: string }>()
     const dispatch = useECommerceStoreDispatch();
     const navigate=useNavigate()
 

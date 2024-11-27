@@ -2,13 +2,10 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 export const deleteCartProductApi = createAsyncThunk("cart/deleteCartProduct", async (id: string) => {
-    console.log("cartid to be deleted is", id);
     try {
         const response = await axios.delete(`/api/v1/users/delete-cart-product/${id}`);
-        console.log("response", response.data);
         return response.data.data;
     } catch (error) {
-        console.log("delete cart error", error)
         throw error;
     }
 })
