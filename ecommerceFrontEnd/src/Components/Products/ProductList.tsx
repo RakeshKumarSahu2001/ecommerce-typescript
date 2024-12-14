@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { Dialog, DialogBackdrop, DialogPanel, Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems, } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon} from "@heroicons/react/20/solid";
+import { useEffect } from "react";
+// import { Dialog, DialogBackdrop, DialogPanel, Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems, } from "@headlessui/react";
+// import { XMarkIcon } from "@heroicons/react/24/outline";
+// import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon} from "@heroicons/react/20/solid";
 import { ProductApi } from "../../EcommerceStore/productsOpt/ProductApi";
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../../Hooks/ecommerceStoreHooks";
 import { Link } from "react-router-dom";
@@ -10,65 +10,65 @@ import { DeleteSpecificProductApi } from "../../EcommerceStore/productsOpt/Delet
 import ProductCard from "./ProductCard";
 // import { ProductSlice } from "../EcommerceStore/ProductApi";
 
-const sortOptions = [
-  { name: "Most Popular", href: "#", current: true },
-  { name: "Best Rating", href: "#", current: false },
-  { name: "Newest", href: "#", current: false },
-  { name: "Price: Low to High", href: "#", current: false },
-  { name: "Price: High to Low", href: "#", current: false },
-];
-const subCategories = [
-  { name: "Totes", href: "#" },
-  { name: "Backpacks", href: "#" },
-  { name: "Travel Bags", href: "#" },
-  { name: "Hip Bags", href: "#" },
-  { name: "Laptop Sleeves", href: "#" },
-];
-const filters = [
-  {
-    id: "color",
-    name: "Color",
-    options: [
-      { value: "white", label: "White", checked: false },
-      { value: "beige", label: "Beige", checked: false },
-      { value: "blue", label: "Blue", checked: true },
-      { value: "brown", label: "Brown", checked: false },
-      { value: "green", label: "Green", checked: false },
-      { value: "purple", label: "Purple", checked: false },
-    ],
-  },
-  {
-    id: "category",
-    name: "Category",
-    options: [
-      { value: "new-arrivals", label: "New Arrivals", checked: false },
-      { value: "sale", label: "Sale", checked: false },
-      { value: "travel", label: "Travel", checked: true },
-      { value: "organization", label: "Organization", checked: false },
-      { value: "accessories", label: "Accessories", checked: false },
-    ],
-  },
-  {
-    id: "size",
-    name: "Size",
-    options: [
-      { value: "2l", label: "2L", checked: false },
-      { value: "6l", label: "6L", checked: false },
-      { value: "12l", label: "12L", checked: false },
-      { value: "18l", label: "18L", checked: false },
-      { value: "20l", label: "20L", checked: false },
-      { value: "40l", label: "40L", checked: true },
-    ],
-  },
-];
+// const sortOptions = [
+//   { name: "Most Popular", href: "#", current: true },
+//   { name: "Best Rating", href: "#", current: false },
+//   { name: "Newest", href: "#", current: false },
+//   { name: "Price: Low to High", href: "#", current: false },
+//   { name: "Price: High to Low", href: "#", current: false },
+// ];
+// const subCategories = [
+//   { name: "Totes", href: "#" },
+//   { name: "Backpacks", href: "#" },
+//   { name: "Travel Bags", href: "#" },
+//   { name: "Hip Bags", href: "#" },
+//   { name: "Laptop Sleeves", href: "#" },
+// ];
+// const filters = [
+//   {
+//     id: "color",
+//     name: "Color",
+//     options: [
+//       { value: "white", label: "White", checked: false },
+//       { value: "beige", label: "Beige", checked: false },
+//       { value: "blue", label: "Blue", checked: true },
+//       { value: "brown", label: "Brown", checked: false },
+//       { value: "green", label: "Green", checked: false },
+//       { value: "purple", label: "Purple", checked: false },
+//     ],
+//   },
+//   {
+//     id: "category",
+//     name: "Category",
+//     options: [
+//       { value: "new-arrivals", label: "New Arrivals", checked: false },
+//       { value: "sale", label: "Sale", checked: false },
+//       { value: "travel", label: "Travel", checked: true },
+//       { value: "organization", label: "Organization", checked: false },
+//       { value: "accessories", label: "Accessories", checked: false },
+//     ],
+//   },
+//   {
+//     id: "size",
+//     name: "Size",
+//     options: [
+//       { value: "2l", label: "2L", checked: false },
+//       { value: "6l", label: "6L", checked: false },
+//       { value: "12l", label: "12L", checked: false },
+//       { value: "18l", label: "18L", checked: false },
+//       { value: "20l", label: "20L", checked: false },
+//       { value: "40l", label: "40L", checked: true },
+//     ],
+//   },
+// ];
 
-function classNames(...classes: (string | boolean | undefined | null)[]): string {
-  return classes.filter(Boolean).join(" ");
-}
+// function classNames(...classes: (string | boolean | undefined | null)[]): string {
+//   return classes.filter(Boolean).join(" ");
+// }
 
 
 export default function Product() {
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  // const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   // const isAdminObj = new isAdmin();
   const dispatch = useECommerceStoreDispatch();
   const handleDeleteProduct = (id: string) => {
@@ -85,7 +85,7 @@ export default function Product() {
     <div className="bg-white">
       <div>
         {/* Mobile filter dialog */}
-        <Dialog
+        {/* <Dialog
           open={mobileFiltersOpen}
           onClose={setMobileFiltersOpen}
           className="relative z-40 lg:hidden"
@@ -112,7 +112,6 @@ export default function Product() {
                 </button>
               </div>
 
-              {/* Filters */}
               <form className="mt-4 border-t border-gray-200">
                 <h3 className="sr-only">Categories</h3>
                 <ul role="list" className="px-2 py-3 font-medium text-gray-900">
@@ -175,10 +174,10 @@ export default function Product() {
               </form>
             </DialogPanel>
           </div>
-        </Dialog>
+        </Dialog> */}
 
-        <main className="mx-auto max-w-[160rem] sm:px-6 lg:px-8">
-          <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-4">
+        <main className="mx-auto max-w-[160rem] sm:px-6 lg:px-8 lg:py-20">
+          {/* <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-4">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900">
               New Arrivals
             </h1>
@@ -235,7 +234,7 @@ export default function Product() {
                 <FunnelIcon aria-hidden="true" className="h-5 w-5" />
               </button>
             </div>
-          </div>
+          </div> */}
 
           <section aria-labelledby="products-heading" className="pb-24 pt-6">
             <h2 id="products-heading" className="sr-only">
@@ -244,7 +243,7 @@ export default function Product() {
 
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-7">
               {/* Filters */}
-              <form className="hidden lg:block">
+              {/* <form className="hidden lg:block">
                 <h3 className="sr-only">Categories</h3>
                 <ul
                   role="list"
@@ -304,7 +303,7 @@ export default function Product() {
                     </DisclosurePanel>
                   </Disclosure>
                 ))}
-              </form>
+              </form> */}
 
               {/* Product grid */}
               <div className="lg:col-span-6">

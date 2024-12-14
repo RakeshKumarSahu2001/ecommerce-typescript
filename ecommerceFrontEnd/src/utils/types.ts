@@ -1,6 +1,6 @@
 export type userAuthData = {
-  email: string,
-  password: string,
+  id:string,
+  email: string
 }
 
 // product details

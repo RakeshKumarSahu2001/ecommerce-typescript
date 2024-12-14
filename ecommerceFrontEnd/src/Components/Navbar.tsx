@@ -13,8 +13,6 @@ import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../Hooks/e
 import { loginSlice, logoutApi } from "../EcommerceStore/authOpt/LoginApi"
 import isAdmin from "../Hooks/isAdmin";
 import { fetchCartProductByUserId } from "../EcommerceStore/cartOpt/FetchUserCartProducts";
-import { deleteCartProductApi } from "../EcommerceStore/cartOpt/DeleteCartProduct";
-import CartCard from "./Cart/CartCard";
 import Cart from "./Cart";
 
 function Navbar() {
@@ -30,8 +28,6 @@ function Navbar() {
   const handleCartOpen = () => {
     setOpen(true)
   }
-  const cartProducts = useECommerceStoreSelector((state) => state.userCartProducts.cartProducts);
-  // const [products, setProducts] = useState(cartProducts)
 
   useEffect(() => {
     if (id) {
@@ -39,9 +35,6 @@ function Navbar() {
     }
   }, [id, dispatch])
 
-  // useEffect(() => {
-  //   setProducts(cartProducts)
-  // }, [cartProducts])
 
   const handleLogout = async () => {
     dispatch(logoutApi())
@@ -49,43 +42,44 @@ function Navbar() {
     navigate("/shopnow/login")
   }
 
-  const handleMoveToProducts=()=>{
+  const handleMoveToProducts = () => {
     navigate("/shopnow/allproduct")
     setOpen(false)
   }
 
-  // const handleDeleteProductFromCart = (CartID: string) => {
-  //   dispatch(deleteCartProductApi(CartID))
-  // }
-
-  // const subTotal = useMemo(() => {
-  //   return cartProducts?.reduce((total, product) => {
-  //     return total + Math.round(parseInt(product.Price) * (1 - parseInt(product.Discount) / 100))
-  //   }, 0);
-  // }, [cartProducts])
-
 
   return (
-    <header className="z-20 fixed w-screen">
+    <header className="z-40 fixed w-screen">
       <div className="bg-gray-100 border-b border-gray-200">
         <div className="px-4 mx-auto sm:px-6 lg:px-8">
           <nav className="relative flex items-center justify-between h-16 lg:h-20">
             <div className="hidden lg:flex lg:items-center lg:space-x-10">
-              <Link to="/shopnow/allproduct" title="" className="text-base font-medium text-black">
+              <Link to="/" title="" className="text-base font-medium text-black">
                 {" "}
                 Home{" "}
               </Link>
 
-              <a href="#" title="" className="text-base font-medium text-black">
+              {id && <Link to="/shopnow/allproduct" title="" className="text-base font-medium text-black">
                 {" "}
                 Products{" "}
-              </a>
+              </Link>}
               {
                 isAdminObj.access && <Link
                   to="/shopnow/admin/add-product" className="text-base font-medium text-black">
                   {" "}
-                  Resources{" "}
+                  Add New Product{" "}
                 </Link>
+              }
+              {
+                !id && <Link to="/shopnow/login" title="" className="text-base font-medium text-black">
+                  {" "}
+                  Login{" "}
+                </Link>
+              }
+              {!id && <Link to="/shopnow/signup" title="" className="text-base font-medium text-black">
+                {" "}
+                Sign up{" "}
+              </Link>
               }
             </div>
 
@@ -102,7 +96,7 @@ function Navbar() {
             </div>
 
             {/* cart toggle button for Mobile screen */}
-            <button
+           {id && <button
               type="button"
               className="flex items-center justify-center ml-auto text-white bg-black rounded-full w-9 h-9 lg:hidden"
               onClick={() => setOpen(true)}
@@ -121,7 +115,7 @@ function Navbar() {
                   d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                 />
               </svg>
-            </button>
+            </button>}
 
             {/* menu toggle button */}
             <button
@@ -247,65 +241,9 @@ function Navbar() {
                                 </button>
                               </div>
                             </div>
-
-                            {/* <div className="mt-8">
-                              <div className="flow-root">
-                                <ul
-                                  role="list"
-                                  className="-my-6 divide-y divide-gray-200"
-                                >
-                                  {cartProducts && cartProducts.map((product) => (
-                                    <li key={product.CartID}>
-                                      
-                                      <CartCard 
-                                      ProductName={product.ProductName}
-                                      ThumbnailImage={product.ThumbnailImage}
-                                      Price={product.Price}
-                                      CartID={product.CartID}
-                                      Discount={product.Discount}
-                                      handleDeleteProductFromCart={handleDeleteProductFromCart}
-                                      />
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            </div> */}
                             <Cart
-                            handleMoveToProducts={handleMoveToProducts} />
+                              handleMoveToProducts={handleMoveToProducts} />
                           </div>
-
-                          {/* <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
-                            <div className="flex justify-between text-base font-medium text-gray-900">
-                              <p>Subtotal</p>
-                              <p>
-                              ₹{subTotal}
-                              </p>
-                            </div>
-                            <p className="mt-0.5 text-sm text-gray-500">
-                              Shipping and taxes calculated at checkout.
-                            </p>
-                            <div className="mt-6">
-                              <Link
-                                to={`/shopnow/cart/${id}`}
-                                className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-                              >
-                                Checkout
-                              </Link>
-                            </div>
-                            <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
-                              <p>
-                                or{" "}
-                                <button
-                                  type="button"
-                                  onClick={() => setOpen(false)}
-                                  className="font-medium text-indigo-600 hover:text-indigo-500"
-                                >
-                                  Continue Shopping
-                                  <span aria-hidden="true"> &rarr;</span>
-                                </button>
-                              </p>
-                            </div>
-                          </div> */}
                         </div>
                       </DialogPanel>
                     </div>
@@ -349,45 +287,32 @@ function Navbar() {
 
           <div className="mt-6">
             <div className="flex flex-col space-y-2">
-              <a
-                href="#"
-                title=""
-                className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
-              >
-                {" "}
-                Features{" "}
-              </a>
-
-              <a
-                href="#"
-                title=""
-                className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
-              >
-                {" "}
-                Solutions{" "}
-              </a>
-
               {isAdminObj.access && <Link
                 to="/add-product"
                 className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
               >
                 {" "}
-                Resources{" "}
+                Add New Product{" "}
               </Link>}
 
             </div>
 
-            <hr className="my-4 border-gray-200" />
-
+            {id && <hr className="my-4 border-gray-200" />
+            }
             <div className="flex flex-col space-y-2">
-              {!id && <a
-                href="#"
-                title=""
+              {!id && <Link
+                to="/shopnow/signup"
                 className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
               >
                 {" "}
                 Sign up{" "}
-              </a>}
+              </Link>}
+              {
+                !id && <Link to="/shopnow/login" title="" className="text-base font-medium text-black">
+                  {" "}
+                  Login{" "}
+                </Link>
+              }
             </div>
           </div>
         </div>

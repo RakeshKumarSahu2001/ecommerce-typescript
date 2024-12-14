@@ -4,6 +4,7 @@ import ApiErrorHandler from "../utils/ApiErrorHandler";
 import dbConnection from "../db/dbConnection";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import jwt, { Algorithm, JwtPayload } from "jsonwebtoken";
+import { transporter } from "../services/NodeMailer";
 
 
 const secureCookieOption = { secure: true, httpOnly: true, }
@@ -11,14 +12,14 @@ const secureCookieOption = { secure: true, httpOnly: true, }
 // User Signup
 export const SignUp = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-    if ([email, password].some((value) => value?.trim() === "")) {
-        throw new ApiErrorHandler({ statusCode: 400, errors: ["All field are nessary for signup"], message: "For Signup You Have To Add Your Email and Password In The Input Field" })
-    }
-
     const pool = await dbConnection()
     const connection = await pool.getConnection()
     if (!connection) {
-        throw new ApiErrorHandler({ statusCode: 500, errors: ["Database connection not found while signup"], message: "Database connnection error" })
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while signup"],
+            message: "Database connnection error"
+        })
     }
 
     try {
@@ -36,19 +37,100 @@ export const SignUp = asyncHandler(async (req, res) => {
 
         // hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
+        const randomNo = Math.floor(Math.random() * 10000);
+        const verifyOTPExpiryAt = Date.now() + 24 * 60 * 60 * 1000
+
         //insert into database
-        const insertQuery = 'INSERT INTO `authtable`(`Email`, `Password`) VALUES (?, ?)';
-        const [result] = await connection.execute<ResultSetHeader>(insertQuery, [email, hashedPassword]);
+        const insertQuery = 'INSERT INTO `authtable`(`Email`, `Password`, `VerifyOTP`,`VerifyOTPExpiryAt`) VALUES (?, ?,?,?)';
+        await connection.execute<ResultSetHeader>(insertQuery, [email, hashedPassword, randomNo, verifyOTPExpiryAt]);
+
+        await transporter.sendMail({
+            from: process.env.SENDER_EMAIL,
+            to: email,
+            subject: "Hello ✔",
+            text: "Hello world?",
+            html: `<b>${randomNo}</b>`,
+        });
+
+        const fetchReGIDQuery="SELECT ID FROM authtable WHERE email=?";
+        const [row]=await connection.execute<RowDataPacket[]>(fetchReGIDQuery,[email]);
 
         return res.status(200).json({
             message: "User registered successfully",
             success: true,
-            data: { id: result.insertId, email: email }
+            data: { id: row[0].ID, email: email }
         })
-
     } finally {
         connection.release()
     }
+})
+
+//Verify email
+export const validatOTP = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { otp } = req.body;
+    if (!id || !otp) {
+        throw new ApiErrorHandler({
+            statusCode: 400,
+            errors: ["Missing details"],
+            message: "Missing details"
+        })
+    }
+
+
+    const pool = await dbConnection();
+    const connection = await pool.getConnection();
+    if (!connection) {
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while signup"],
+            message: "Database connnection error"
+        })
+    }
+    
+    try {
+        const fetchAuthRecordQuery = "SELECT * FROM authtable WHERE ID=?"
+        const [result] = await connection.execute<RowDataPacket[]>(fetchAuthRecordQuery, [id]);
+        
+        if (!result) {
+            throw new ApiErrorHandler({
+                statusCode: 400,
+                message: "User record not found.",
+                errors: ["User Record not found."]
+            })
+        }
+
+        if (!result?.length || result[0]?.VerifyOTP !== otp) {
+            throw new ApiErrorHandler({
+                statusCode: 400,
+                message: "Invalid OTP.",
+                errors: ["OTP does not match."]
+            });
+        }
+
+        if(result[0]?.VerifyOTPExpiryAt<Date.now()){
+            throw new ApiErrorHandler({
+                statusCode:300,
+                errors:["Otp expired."],
+                message:"Otp expired."
+            })
+        }
+
+        const updateAuthTableQuery = "UPDATE authtable SET IsAccountVerified=?,VerifyOTP=?,VerifyOTPExpiryAt=? WHERE ID=?";
+        const updatedInfo = await connection.execute<RowDataPacket[]>(updateAuthTableQuery, [true,null,0, id]);
+
+        console.log("updated table info", updatedInfo);
+
+        return res.status(200).json({
+            success: true,
+            message: "Verified successfully.",
+            data: []
+        })
+
+    } finally {
+        connection.release();
+    }
+
 })
 
 //generate cookie
@@ -70,14 +152,6 @@ async function ServerCookieGenerator(id: string, email: string, role: string) {
 export const Login = asyncHandler(async (req, res) => {
     const body = req.body;
 
-    //check email and password is present or not
-    if (body.email?.trim() === "" || body.password.trim() === "") {
-        throw new ApiErrorHandler({
-            statusCode: 400,
-            errors: ["all fields are required for login"],
-            message: "For Login You Have To Add Your Email and Password In The Input Field"
-        })
-    }
     const pool = await dbConnection();
     const connection = await pool.getConnection();
     if (!connection) {
@@ -101,12 +175,13 @@ export const Login = asyncHandler(async (req, res) => {
             })
         }
 
+        
         //fetch the records if user exist
         const userInfoQuery = "SELECT * FROM `authtable` WHERE `Email` = ?";
         const [rows] = await connection.query<RowDataPacket[]>(userInfoQuery, [body.email]);
-
+        
         // Check if user exists
-        if (rows.length === 0) {
+        if (!rows || rows.length === 0) {
             throw new ApiErrorHandler({
                 statusCode: 404,
                 errors: ["User not found"],
@@ -114,7 +189,13 @@ export const Login = asyncHandler(async (req, res) => {
             });
         }
 
-
+        if(!rows[0].IsAccountVerified){
+            throw new ApiErrorHandler({
+                statusCode:400,
+                errors:["Unverified email."],
+                message:"Verify your email."
+            })
+        }
 
         //Check the user validation
         const isValid = await bcrypt.compare(body.password, String(rows[0].Password))
@@ -515,7 +596,7 @@ export const addProductToCart = asyncHandler(async (req, res) => {
 
 //fetch all cart product
 export const fetchProductsInCart = asyncHandler(async (req, res) => {
-    const AuthID  = req.params.id;
+    const AuthID = req.params.id;
 
     if (!AuthID) {
         throw new ApiErrorHandler({
@@ -537,12 +618,12 @@ export const fetchProductsInCart = asyncHandler(async (req, res) => {
     try {
         const fetchAllCartProductQuery = "SELECT CartID,Quantity,ProductName,Rating,Price,Category,Discount,Brand,ThumbnailImage FROM shopnow.cart INNER JOIN shopnow.authtable ON authtable.ID=cart.AuthID INNER JOIN shopnow.products ON cart.ProductID=products.ProductID WHERE cart.AuthID=?;"
         const [fetchAllCartProduct] = await connection.execute<RowDataPacket[]>(fetchAllCartProductQuery, [AuthID]);
-        
-        if(!fetchAllCartProduct || fetchAllCartProduct.length===0){
+
+        if (!fetchAllCartProduct || fetchAllCartProduct.length === 0) {
             throw new ApiErrorHandler({
-                statusCode:404,
-                message:"No record is present in the cart.",
-                errors:["No record is present in the cart."]
+                statusCode: 404,
+                message: "No record is present in the cart.",
+                errors: ["No record is present in the cart."]
             })
         }
 
@@ -559,7 +640,7 @@ export const fetchProductsInCart = asyncHandler(async (req, res) => {
 
 //delete product from cart
 export const deleteProductFromCart = asyncHandler(async (req, res) => {
-    const {id} = req.params;
+    const { id } = req.params;
     if (!id) {
         throw new ApiErrorHandler({
             statusCode: 400,

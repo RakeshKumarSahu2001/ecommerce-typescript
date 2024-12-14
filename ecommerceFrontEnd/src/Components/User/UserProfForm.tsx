@@ -141,7 +141,10 @@ function UserProfForm({ submit }: UserProfFormProps) {
                     </select>
                 </div>
                 <br />
-                <button type="submit">Submit</button>
+                <button 
+                type="submit"
+                className="inline-flex items-center justify-center px-6 py-4 mt-3 font-semibold text-white transition-all duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:bg-blue-700"
+                >Submit</button>
             </form>
         </div>
     );

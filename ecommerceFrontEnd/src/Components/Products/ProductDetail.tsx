@@ -68,13 +68,11 @@ export default function ProductDetail() {
     product && <div className="bg-white pb-8">
       <div className="pt-20">
         <nav aria-label="Breadcrumb" className='py-[10px]'>
-          {/* <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 lg:max-w-7xl"> */}
             <p className="text-sm font-medium text-gray-500 hover:text-gray-600">
               {
                 product?.ProductName
               }
             </p>
-          {/* </ol> */}
         </nav>
 
         {/* Image gallery */}

@@ -50,43 +50,46 @@ function UserInfo() {
                 <div className="user-info-card grid grid-cols-2 grid-rows-5 gap-4">
                     <div>
                         <label htmlFor="FullName">Full name</label><br />
-                        <p>{userInfo?.FullName}</p>
+                        <p className="pr-5 pt-2 border-solid border-b-4 border-gray-700">{userInfo?.FullName}</p>
                     </div>
                     <div>
                         <label htmlFor="Phone">Phone</label><br />
-                        <p>{userInfo?.Phone}</p>
+                        <p className="pr-5 pt-2 border-solid border-b-4 border-gray-700">{userInfo?.Phone}</p>
                     </div>
                     <div>
                         <label htmlFor="Street">Street</label><br />
-                        <p>{userInfo?.Street}</p>
+                        <p className="pr-5 pt-2 border-solid border-b-4 border-gray-700">{userInfo?.Street}</p>
                     </div>
                     <div>
                         <label htmlFor="PostalCode">Pincode</label><br />
-                        <p>{userInfo?.PostalCode}</p>
+                        <p className="pr-5 pt-2 border-solid border-b-4 border-gray-700">{userInfo?.PostalCode}</p>
                     </div>
                     <div>
                         <label htmlFor="City">City</label><br />
-                        <p>{userInfo?.City}</p>
+                        <p className="pr-5 pt-2 border-solid border-b-4 border-gray-700">{userInfo?.City}</p>
                     </div>
                     <div>
                         <label htmlFor="State">State</label><br />
-                        <p>{userInfo?.State}</p>
+                        <p className="pr-5 pt-2 border-solid border-b-4 border-gray-700">{userInfo?.State}</p>
                     </div>
                     <div>
                         <label htmlFor="Country">Country</label><br />
-                        <p>{userInfo?.Country}</p>
+                        <p className="pr-5 pt-2 border-solid border-b-4 border-gray-700">{userInfo?.Country}</p>
                     </div>
                     <div>
                         <label htmlFor="DateOfBirth">DOB</label><br />
-                        <p>{userInfo?.DateOfBirth ? new Date(userInfo.DateOfBirth).toLocaleDateString() : ''}</p>
+                        <p className="pr-5 pt-2 border-solid border-b-4 border-gray-700">{userInfo?.DateOfBirth ? new Date(userInfo.DateOfBirth).toLocaleDateString() : ''}</p>
 
                     </div>
                     <div>
                         <label htmlFor="Gender">Gender</label><br />
-                        <p>{userInfo?.Gender}</p>
+                        <p className="pr-5 pt-2 border-solid border-b-4 border-gray-700">{userInfo?.Gender}</p>
                     </div>
                     <br />
-                    <button onClick={handleRouteToNextPage}>Edit</button>
+                    <button 
+                    onClick={handleRouteToNextPage}
+                    className="inline-flex items-center justify-center px-6 py-4 mt-3 font-semibold text-white transition-all duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:bg-blue-700">
+                        Edit</button>
                 </div>
             </div> :
             <UserProfForm submit={submit} />

@@ -1,6 +1,7 @@
 import { SubmitHandler, useForm } from "react-hook-form"
 import { useECommerceStoreDispatch } from "../../Hooks/ecommerceStoreHooks"
 import { AddNewProductApi } from "../../EcommerceStore/productsOpt/AddNewProductApi"
+import { useNavigate } from "react-router-dom"
 
 
 type inputDataType = {
@@ -20,10 +21,12 @@ function AddNewProduct() {
   const { register,handleSubmit, formState: { errors} } = useForm<inputDataType>()
 
   const dispatch = useECommerceStoreDispatch()
+  const navigate=useNavigate()
 
 
   const onSubmit: SubmitHandler<inputDataType> = (data: inputDataType) => {
     dispatch(AddNewProductApi(data))
+    navigate("/shopnow/allproduct")
   }
 
 

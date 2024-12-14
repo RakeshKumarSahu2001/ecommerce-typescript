@@ -1,7 +1,7 @@
 import { SubmitHandler } from "react-hook-form";
 import { EditUserProfInfoById } from "../../EcommerceStore/userProf/AddEditUserProfInfoApi";
 import { useECommerceStoreDispatch } from "../../Hooks/ecommerceStoreHooks";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import UserProfForm from "../../Components/User/UserProfForm";
 
 interface inputDataType {
@@ -19,6 +19,7 @@ interface inputDataType {
 function UserProfEdit() {
     const dispatch = useECommerceStoreDispatch();
     const { id } = useParams();
+    const navigate=useNavigate()
 
     if (!id) {
         console.error("User ID is missing from the route parameters.");
@@ -27,6 +28,7 @@ function UserProfEdit() {
 
     const onSubmit: SubmitHandler<inputDataType> = (formData) => {
         dispatch(EditUserProfInfoById({ data: formData, id }));
+        navigate(`/shopnow/user-info/${id}`)
     };
 
     return (

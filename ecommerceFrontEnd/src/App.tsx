@@ -13,6 +13,7 @@ import ProductsPage from "./Pages/Products/ProductsPage.tsx";
 import ProductDetailsPage from "./Pages/Products/ProductDetailsPage.tsx";
 import EditProductPage from "./Pages/Admin/EditProductPage.tsx";
 import AddNewProductPage from "./Pages/Admin/AddNewProductPage.tsx";
+import EmailValidationPage from "./Pages/AuthPages/EmailValidationPage.tsx";
 
 
 
@@ -24,6 +25,10 @@ function App() {
       // for now render home page
       element: <HomePage />,
       children: [
+        {
+          path: "/",
+          element: <HomeCarousel />
+        },
         {
           path: "/shopnow/allproduct",
           element: <Protected><ProductsPage /></Protected>
@@ -77,18 +82,13 @@ function App() {
     {
       path: "/caro",
       element: <HomeCarousel />
+    },
+    {
+      path: "/shopnow/validate-email",
+      element: <EmailValidationPage />
     }
-
   ]);
 
-  // const user = useECommerceStoreSelector((state) => state.loginSlice)
-  // const dispatch = useECommerceStoreDispatch()
-
-  // useEffect(() => {
-  //   if (user && user.loggedInUser?.id) {
-  //     dispatch(fetchCartProductByUserId(user.loggedInUser.id))
-  //   }
-  // }, [user, dispatch])
 
   return (
     <>

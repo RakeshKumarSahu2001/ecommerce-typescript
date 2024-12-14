@@ -34,7 +34,7 @@ function ProductCard({ProductID,ProductName,ThumbnailImage,Rating,Price,Discount
             <MenuItem>
               <Link
                 to={`/shopnow/admin/edit-product/${ProductID}`}
-                className="block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                className="block px-4 py-2 text-sm text-start font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
               >
                 Edit
               </Link>
@@ -45,7 +45,7 @@ function ProductCard({ProductID,ProductName,ThumbnailImage,Rating,Price,Discount
             <MenuItem>
               <button
                 onClick={() => handleDeleteProduct(ProductID)}
-                className="block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                className="block px-4 w-32 text-start py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
               >
                 Delete
               </button>

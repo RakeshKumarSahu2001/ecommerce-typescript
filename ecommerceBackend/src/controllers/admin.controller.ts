@@ -44,6 +44,7 @@ export const addNewProduct = asyncHandler(async (req, res) => {
   const requiredFields = [productName, productDescription, brand, productRating, productPrice, productCategory, discount, stock];
   const fieldNames = ['Product Name', 'Product Description', 'Product Rating', 'Product Price', 'Product Category', 'Discount', 'Stock'];
 
+
   const missingFields = requiredFields
     .map((value, index) => (value?.trim() === "" ? fieldNames[index] : null))
     .filter(field => field !== null);
@@ -219,7 +220,7 @@ export const editProduct = asyncHandler(async (req, res) => {
     }
 
     const updateProductInfoQuery = "UPDATE productS SET ProductName=?, Description=?, Rating=?, Price=?, Discount=?, StockQuantity=?, Brand=?, Category=? WHERE ProductID= ?;";
-    const [updateProductInfo] = await connection.execute<RowDataPacket[]>(updateProductInfoQuery, [productName,productDescription,productRating,productPrice,discount,stock,brand,productCategory,id]);
+    const [updateProductInfo] = await connection.execute<RowDataPacket[]>(updateProductInfoQuery, [productName, productDescription, productRating, productPrice, discount, stock, brand, productCategory, id]);
 
     return res.status(200)
       .json({

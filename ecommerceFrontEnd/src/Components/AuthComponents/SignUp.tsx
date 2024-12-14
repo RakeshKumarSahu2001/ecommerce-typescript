@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form"
-import { useECommerceStoreDispatch } from "../../Hooks/ecommerceStoreHooks";
-import { signUpApi } from "../../EcommerceStore/authOpt/SignUpApi";
+import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../../Hooks/ecommerceStoreHooks";
+import { createNewUserSlice, signUpApi } from "../../EcommerceStore/authOpt/SignUpApi";
 import logo from "../../assets/images/logo.png"
-
+import { useEffect } from "react";
 
 type inputData = {
   email: string,
@@ -15,14 +15,20 @@ type inputData = {
 function SignUp() {
   const { register, handleSubmit, watch, formState: { errors, isSubmitting }, reset } = useForm<inputData>();
   const dispatch = useECommerceStoreDispatch()
+  const isUserCreated = useECommerceStoreSelector((state) => state.createNewUser.isUserCreated);
   const navigate = useNavigate();
+
   const onSubmit: SubmitHandler<inputData> = ({ email, password }) => {
     dispatch(signUpApi({ email: email, password: password }))
-
     reset()
-    navigate("/shopnow/login")
   };
 
+  useEffect(() => {
+    if (isUserCreated) {
+      navigate("/shopnow/validate-email")
+      dispatch(createNewUserSlice.actions.resetUserCreationState())
+    }
+  }, [isUserCreated, navigate, dispatch])
 
 
   return (
@@ -40,15 +46,13 @@ function SignUp() {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form action="#" method="POST" className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div>
+        <form action="#" method="POST" className="space-y-6 w-96" onSubmit={handleSubmit(onSubmit)}>
+          <div className="w-100">
             <label
               htmlFor="email"
-              className="block text-sm font-medium leading-6 text-gray-900"
+              className="input input-bordered flex items-center gap-2 w-100"
             >
-              Email address
-            </label>
-            <div className="mt-2">
+              Email
               <input
                 type="email"
                 {...register("email", {
@@ -58,25 +62,20 @@ function SignUp() {
                     message: "Please enter a valid email"
                   }
                 })}
-                placeholder="Email address"
                 autoComplete="off"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="grow !focus:outline-none !focus:border-none !border-none !outline-none !border-transparent !ring-0" placeholder="daisy@site.com"
               />
-            </div>
+            </label>
+
             {errors.email && <p className="text-red-500">{`${errors.email.message}`}</p>}
           </div>
 
-          <div>
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Password
-              </label>
-
-            </div>
-            <div className="mt-2">
+          <div className="w-100">
+            <label
+              htmlFor="password"
+              className="input input-bordered flex items-center gap-2 w-100"
+            >
+              Password
               <input
                 type="text"
                 {...register("password", {
@@ -92,24 +91,21 @@ function SignUp() {
                 })}
                 placeholder="Enter Password"
                 autoComplete="off"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="grow !focus:outline-none !focus:border-none !border-none !outline-none !border-transparent !ring-0"
               />
-            </div>
+            </label>
+
             {errors.password && <p className="text-red-500">{`${errors.password.message}`}</p>}
 
           </div>
 
           {/* confirm password */}
-          <div>
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Confirm Password
-              </label>
-            </div>
-            <div className="mt-2">
+          <div className="w-100">
+            <label
+              htmlFor="password"
+              className="input input-bordered flex items-center gap-2 w-100"
+            >
+              Confirm Password
               <input
                 type="text"
                 {...register("confirmPassword", {
@@ -121,10 +117,11 @@ function SignUp() {
                   validate: (value) => value === watch("password") || "Confirm password must be same as password"
                 })}
                 placeholder="Confirm Your Password"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 autoComplete="off"
+                className="grow !focus:outline-none !focus:border-none !border-none !outline-none !border-transparent !ring-0"
               />
-            </div>
+            </label>
+
             {errors.confirmPassword && <p className="text-red-500">{`${errors.confirmPassword.message}`}</p>}
 
           </div>

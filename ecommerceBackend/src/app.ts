@@ -34,7 +34,6 @@ app.use("/api/v1/admin", adminRouter);
 
 
 
-
 //Handle API error
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof ApiErrorHandler) {
@@ -47,7 +46,7 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
     return res.status(500).json({
         success: false,
         message: "something went wrong on the server page",
-        err: err
+        errors: err
     })
 })
 

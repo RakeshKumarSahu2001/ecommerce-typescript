@@ -11,6 +11,7 @@ import { manageUserProfInfoSlice } from "./userProf/AddEditUserProfInfoApi";
 import { deleteProductSlice } from "./productsOpt/DeleteSpecificProductById";
 import { EditSpecificProductSlice } from "./productsOpt/EditSpecificProduct";
 import { deleteCartProductSlice } from "./cartOpt/DeleteCartProduct";
+import { EmailValidationSlice } from "./authOpt/EmailValidationApi";
 
 const ecommerceStore = configureStore({
     reducer: {
@@ -21,7 +22,7 @@ const ecommerceStore = configureStore({
         //login & signup
         createNewUser: createNewUserSlice.reducer,
         loginSlice: loginSlice.reducer,
-
+        EmailValidationSlice:EmailValidationSlice.reducer,
         //cart
         addProductsToCart: addToCartSlice.reducer,
         userCartProducts: useraddToCartSlice.reducer,
