@@ -32,7 +32,12 @@ const initialState:initialStateType={
 export const addToCartSlice=createSlice({
     name:"addToCart",
     initialState,
-    reducers:{},
+    reducers:{
+        changeToInitState:(state)=>{
+            state.isAdded=false
+            state.isError=false
+        }
+    },
     extraReducers:(builder)=>{
         builder.addCase(addToCartApi.pending,(state)=>{
             state.isAdded=false;

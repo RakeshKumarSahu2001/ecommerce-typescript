@@ -41,34 +41,9 @@ export const fetchAllProducts = asyncHandler(async (req, res) => {
 //Add product
 export const addNewProduct = asyncHandler(async (req, res) => {
   const { productName, productDescription, brand, productRating, productPrice, productCategory, discount, stock } = req.body
-  const requiredFields = [productName, productDescription, brand, productRating, productPrice, productCategory, discount, stock];
-  const fieldNames = ['Product Name', 'Product Description', 'Product Rating', 'Product Price', 'Product Category', 'Discount', 'Stock'];
-
-
-  const missingFields = requiredFields
-    .map((value, index) => (value?.trim() === "" ? fieldNames[index] : null))
-    .filter(field => field !== null);
-
-  if ([productName, productDescription, brand, productRating, productPrice, productCategory, discount, stock].some((value) => value?.trim() === "")) {
-    throw new ApiErrorHandler({
-      statusCode: 400,
-      errors: [`${missingFields.join(", ")} are nessary`],
-      message: "All product information fields are required"
-    })
-  }
-
-  if (productRating > 5 || productRating < 1) {
-    throw new ApiErrorHandler({
-      statusCode: 400,
-      errors: ["rating can't excid 5"],
-      message: "rating must be in the range of 1-5"
-    })
-  }
 
   const thumbNailImage = req.files?.thumbNailImage?.[0]?.path;
   const images = req.files?.images?.map((file) => file.path);
-
-
 
   if (!thumbNailImage) {
     throw new ApiErrorHandler({
@@ -84,6 +59,7 @@ export const addNewProduct = asyncHandler(async (req, res) => {
       message: "Can send only 3 images"
     })
   }
+
 
   // after getting the cloudnairy image links store it in the database
   const pool = await dbConnection();
@@ -181,14 +157,14 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 //Edit product
 export const editProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { productName = null,
-    productDescription = null,
-    productRating = null,
-    productPrice = null,
-    discount = null,
-    stock = null,
-    brand = null,
-    productCategory = null } = req.body;
+  const { ProductName = null,
+    Description = null,
+    Rating = null,
+    Price = null,
+    Discount = null,
+    StockQuantity = null,
+    Brand = null,
+    Category = null } = req.body;
 
   if (!id) {
     throw new ApiErrorHandler({
@@ -220,13 +196,14 @@ export const editProduct = asyncHandler(async (req, res) => {
     }
 
     const updateProductInfoQuery = "UPDATE productS SET ProductName=?, Description=?, Rating=?, Price=?, Discount=?, StockQuantity=?, Brand=?, Category=? WHERE ProductID= ?;";
-    const [updateProductInfo] = await connection.execute<RowDataPacket[]>(updateProductInfoQuery, [productName, productDescription, productRating, productPrice, discount, stock, brand, productCategory, id]);
+    await connection.execute<RowDataPacket[]>(updateProductInfoQuery, [ProductName, Description, Rating, Price, Discount, StockQuantity, Brand, Category, id]);
+
 
     return res.status(200)
       .json({
         success: true,
         message: "Product information Updated successfully.",
-        data: updateProductInfo
+        data: []
       })
   } finally {
     connection.release();

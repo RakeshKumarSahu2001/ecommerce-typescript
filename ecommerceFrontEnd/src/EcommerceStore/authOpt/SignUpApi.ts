@@ -5,8 +5,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export const signUpApi = createAsyncThunk("users/createNewUser", async (data: userAuthData,{rejectWithValue}) => {
     try {
-        const response = await axios.post("/api/v1/users/register", data)
-        console.log("reg response", response.data)
+        const response = await axios.post("/api/v1/users/register", data);
         return response.data.data;
     } catch (err) {
         console.error(err)
@@ -40,7 +39,6 @@ export const createNewUserSlice = createSlice({
             state.userCreationError = false
         })
         builder.addCase(signUpApi.fulfilled, (state, action) => {
-            console.log(action.payload)
             state.isUserCreated = true
             state.addUserInfo = action.payload
         })

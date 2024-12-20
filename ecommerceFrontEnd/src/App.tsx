@@ -14,6 +14,7 @@ import ProductDetailsPage from "./Pages/Products/ProductDetailsPage.tsx";
 import EditProductPage from "./Pages/Admin/EditProductPage.tsx";
 import AddNewProductPage from "./Pages/Admin/AddNewProductPage.tsx";
 import EmailValidationPage from "./Pages/AuthPages/EmailValidationPage.tsx";
+import AuthPage from "./Pages/AuthPage.tsx";
 
 
 
@@ -26,7 +27,7 @@ function App() {
       element: <HomePage />,
       children: [
         {
-          path: "/",
+          index:true,
           element: <HomeCarousel />
         },
         {
@@ -71,22 +72,26 @@ function App() {
         },
       ]
     },
+
     {
-      path: "/shopnow/login",
-      element: <LoginPage />,
-    },
-    {
-      path: "/shopnow/signup",
-      element: <SignUpPage />,
-    },
-    {
-      path: "/caro",
-      element: <HomeCarousel />
-    },
-    {
-      path: "/shopnow/validate-email",
-      element: <EmailValidationPage />
+      path:"/auth",
+      element:<AuthPage />,
+      children:[
+        {
+          path: "login",
+          element: <LoginPage />,
+        },
+        {
+          path: "signup",
+          element: <SignUpPage />,
+        },
+        {
+          path: "validate-email",
+          element: <EmailValidationPage />
+        }
+      ]
     }
+
   ]);
 
 

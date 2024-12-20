@@ -2,59 +2,17 @@ import axios from "axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { product } from "../../utils/types";
 
-export const FetchProductDetailsApi = createAsyncThunk("products/fetchProductById", async (id:string) => {
+export const FetchProductDetailsApi = createAsyncThunk("products/fetchProductById", async (id:string,{rejectWithValue}) => {
     try {
-        const productDetails = await axios.get(`/api/v1/users/fetch-product-by-id/${id}`)
-        return productDetails.data.data.product;
+        const response = await axios.get(`/api/v1/users/fetch-product-by-id/${id}`)
+        console.log(response)
+        return response.data.data.product;
     } catch (err) {
-        throw err;
+        console.error(err);
+        rejectWithValue(err)
     }
 })
 
-// designing interface for ptoduct details 
-// type dimension = {
-//     width: number,
-//     height: number,
-//     depth: number,
-// }
-// type review = {
-//     rating: number,
-//     comment: string,
-//     date: string,
-//     reviewerName: string,
-//     reviewerEmail: string
-// }
-// type meta = {
-//     createdAt: string,
-//     updatedAt: string,
-//     barcode: string,
-//     qrCode: string
-// }
-
-// interface productInfo {
-//     id: string,
-//     title: string,
-//     description: string,
-//     category: string,
-//     price: number,
-//     discountPercentage: number,
-//     rating: number,
-//     stock: number,
-//     tags: string[],
-//     brand: string,
-//     sku: string,
-//     weight: number,
-//     dimensions: dimension,
-//     warrantyInformation: string,
-//     shippingInformation: string,
-//     availabilityStatus: string,
-//     reviews: review[],
-//     returnPolicy: string,
-//     minimumOrderQuantity: number,
-//     meta: meta,
-//     images: string[],
-//     thumbnail: string
-// }
 
 type initialStateType = {
     loadingStatus: boolean,

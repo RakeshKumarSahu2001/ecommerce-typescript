@@ -1,7 +1,4 @@
 import { useEffect } from "react";
-// import { Dialog, DialogBackdrop, DialogPanel, Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems, } from "@headlessui/react";
-// import { XMarkIcon } from "@heroicons/react/24/outline";
-// import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon} from "@heroicons/react/20/solid";
 import { ProductApi } from "../../EcommerceStore/productsOpt/ProductApi";
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../../Hooks/ecommerceStoreHooks";
 import { Link } from "react-router-dom";
@@ -69,16 +66,18 @@ import ProductCard from "./ProductCard";
 
 export default function Product() {
   // const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  // const isAdminObj = new isAdmin();
+
   const dispatch = useECommerceStoreDispatch();
-  const handleDeleteProduct = (id: string) => {
-    dispatch(DeleteSpecificProductApi(id))
+  const isLoading = useECommerceStoreSelector((state) => state.products.loadingStatus)
+  const handleDeleteProduct = async (id: string) => {
+    await dispatch(DeleteSpecificProductApi(id))
   }
   useEffect(() => {
     dispatch(ProductApi())
   }, [dispatch])
   const products = useECommerceStoreSelector((state) => state.products.allProducts)
 
+  console.log("products",products)
 
 
   return (
@@ -315,19 +314,27 @@ export default function Product() {
 
                     <div className="mt-6 grid grid-cols-2 md:gap-x-6 md:gap-y-8 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
                       {/* product mapped here */}
-                      {products.map((product) => {
-                        return <Link to={`/shopnow/productDetail/${product?.ProductID}`} key={product?.ProductID}>
-                          <ProductCard
-                            ProductID={product?.ProductID}
-                            ProductName={product?.ProductName}
-                            ThumbnailImage={product?.ThumbnailImage}
-                            Rating={product?.Rating}
-                            Price={product?.Price}
-                            Discount={product?.Discount}
-                            handleDeleteProduct={handleDeleteProduct}
-                          />
-                        </Link>
-                      })}
+
+                      {isLoading ? (
+                        <div className="!w-[100vw] flex justify-center items-center">
+                          <span className="loading loading-dots loading-lg"></span>
+                        </div>
+                      ) : (
+                        products?.map((product) => (
+                          <Link to={`/shopnow/productDetail/${product?.ProductID}`} key={product?.ProductID}>
+                            <ProductCard
+                              ProductID={product?.ProductID}
+                              ProductName={String(product?.ProductName)}
+                              ThumbnailImage={product?.ThumbnailImage}
+                              Rating={Number(product?.Rating)}
+                              Price={Number(product?.Price)}
+                              Discount={Number(product?.Discount)}
+                              handleDeleteProduct={handleDeleteProduct}
+                            />
+                          </Link>
+                        ))
+                      )}
+
                     </div>
                   </div>
                 </div>

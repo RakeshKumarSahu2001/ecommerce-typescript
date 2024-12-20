@@ -18,28 +18,29 @@ import Cart from "./Cart";
 function Navbar() {
   const [toggle, setToggle] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const isDeleted=useECommerceStoreSelector((state)=>state.deleteCartProductSlice.isDeleted)
   const isAdminObj = new isAdmin();
 
-  const id = localStorage.getItem("Id");
+  const id = sessionStorage.getItem("Id");
   const dispatch = useECommerceStoreDispatch()
 
 
-  const handleCartOpen = () => {
+  const handleCartOpen = async() => {
     setOpen(true)
   }
 
   useEffect(() => {
-    if (id) {
+    if (open && id) {
       dispatch(fetchCartProductByUserId(id))
     }
-  }, [id, dispatch])
+  }, [id,open,isDeleted, dispatch])
 
 
   const handleLogout = async () => {
     dispatch(logoutApi())
     dispatch(loginSlice.actions.clearLoginUserInfoFromLocalStorage())
-    navigate("/shopnow/login")
+    navigate("/auth/login")
   }
 
   const handleMoveToProducts = () => {
@@ -71,12 +72,12 @@ function Navbar() {
                 </Link>
               }
               {
-                !id && <Link to="/shopnow/login" title="" className="text-base font-medium text-black">
+                !id && <Link to="/auth/login" title="" className="text-base font-medium text-black">
                   {" "}
                   Login{" "}
                 </Link>
               }
-              {!id && <Link to="/shopnow/signup" title="" className="text-base font-medium text-black">
+              {!id && <Link to="/auth/signup" title="" className="text-base font-medium text-black">
                 {" "}
                 Sign up{" "}
               </Link>
@@ -139,9 +140,7 @@ function Navbar() {
               </svg>
             </button>
 
-
             {/* dorp down */}
-
 
             {id && <div className="hidden lg:flex lg:items-center lg:space-x-10">
               <Menu as="div" className="relative inline-block text-left">
@@ -178,7 +177,7 @@ function Navbar() {
                   </div>
                 </MenuItems>
               </Menu>
-              {!id && <Link to="/shopnow/signup" title="" className="text-base font-medium text-black">
+              {!id && <Link to="/auth/signup" title="" className="text-base font-medium text-black">
                 {" "}
                 Sign up{" "}
               </Link>}
@@ -301,14 +300,14 @@ function Navbar() {
             }
             <div className="flex flex-col space-y-2">
               {!id && <Link
-                to="/shopnow/signup"
+                to="/auth/signup"
                 className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
               >
                 {" "}
                 Sign up{" "}
               </Link>}
               {
-                !id && <Link to="/shopnow/login" title="" className="text-base font-medium text-black">
+                !id && <Link to="/auth/login" title="" className="text-base font-medium text-black">
                   {" "}
                   Login{" "}
                 </Link>

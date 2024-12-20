@@ -5,9 +5,9 @@ type childrenType={
 }
 
 function Protected({ children }:childrenType) {
-    const user=localStorage.getItem("Id");
+    const user=sessionStorage.getItem("Id");
 
-    return user ? <>{children}</> : <Navigate to="/shopnow/login" replace={true} />;
+    return user ? <>{children}</> : <Navigate to="/auth/login" replace={true} />;
 }
 
 export default Protected;

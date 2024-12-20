@@ -7,6 +7,8 @@ import { useEffect } from "react";
 type children = {
   otp: string
 }
+
+
 function Emailvalidation() {
   const dispatch = useECommerceStoreDispatch()
   const user = useECommerceStoreSelector((state) => state.createNewUser.addUserInfo)
@@ -14,31 +16,41 @@ function Emailvalidation() {
   const navigate = useNavigate();
   const isEmailVerified = useECommerceStoreSelector((state) => state.EmailValidationSlice.isEmailVerified)
 
-  const submit: SubmitHandler<children> = ({ otp }) => {
-    dispatch(EmailValidation({ otp: otp, id: user?.id }))
+  const submit: SubmitHandler<children> = async ({ otp }) => {
+    await dispatch(EmailValidation({ otp: otp, id: user?.id }))
   }
 
   useEffect(() => {
     if (isEmailVerified) {
-      navigate("/shopnow/login")
+      navigate("/auth/login")
     }
   }, [navigate, dispatch, isEmailVerified])
 
   return (
-    <div className="w-100" >
-      <form action="post" onSubmit={handleSubmit(submit)}>
-        <input
-          type="text"
-          {...register("otp", {
-            required: {
-              value: true,
-              message: "otp field is required"
-            }
-          })}
-        />
+
+    <div className="flex !w-[100%] !h-[100%] justify-center items-center">
+      <form action="post" className="space-y-6 w-96" onSubmit={handleSubmit(submit)}>
+        <label
+          htmlFor="email"
+          className="input input-bordered flex items-center gap-2 w-100"
+        >
+          OTP
+          <input
+            type="text"
+            className="grow !focus:outline-none !focus:border-none !border-none !outline-none !border-transparent !ring-0"
+            {...register("otp", {
+              required: {
+                value: true,
+                message: "otp field is required"
+              }
+            })}
+          />
+        </label>
         {errors.otp && <p className="text-red-500">{`${errors.otp.message}`}</p>}
         <button
-          type="button">
+          type="button"
+          className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
           Submit
         </button>
       </form>

@@ -8,7 +8,7 @@ export const authTableCreationQuery = `CREATE TABLE IF NOT EXISTS shopnow.authta
     Password VARCHAR(512) NOT NULL,
     RefreshToken VARCHAR(512) NULL,
     VerifyOTP varchar(10) NULL,
-    VerifyOTPExpiryAt int NULL,
+    VerifyOTPExpiryAt bigint NULL,
     IsAccountVerified boolean DEFAULT false, 
     Role ENUM("admin", "manager", "user") NOT NULL DEFAULT 'user',
     CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

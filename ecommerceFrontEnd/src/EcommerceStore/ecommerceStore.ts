@@ -23,6 +23,7 @@ const ecommerceStore = configureStore({
         createNewUser: createNewUserSlice.reducer,
         loginSlice: loginSlice.reducer,
         EmailValidationSlice:EmailValidationSlice.reducer,
+        
         //cart
         addProductsToCart: addToCartSlice.reducer,
         userCartProducts: useraddToCartSlice.reducer,

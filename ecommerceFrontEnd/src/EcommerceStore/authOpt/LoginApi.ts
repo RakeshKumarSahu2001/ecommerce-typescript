@@ -57,16 +57,16 @@ export const loginSlice = createSlice({
     initialState,
     reducers: {
         clearLoginUserInfoFromLocalStorage:()=>{
-             localStorage.clear()
+             sessionStorage.clear()
         }
     },
     extraReducers: (builder) => {
         builder.addCase(loginApi.fulfilled, (state, action) => {
             state.isUserExist = true;
             state.loggedInUser = action.payload;
-            localStorage.setItem("Id", action.payload.id);
-            localStorage.setItem("Email", action.payload.email);
-            localStorage.setItem("Role", action.payload.Role);
+            sessionStorage.setItem("Id", action.payload.id);
+            sessionStorage.setItem("Email", action.payload.email);
+            sessionStorage.setItem("Role", action.payload.Role);
         })
         builder.addCase(loginApi.rejected, (state) => {
             state.isUserExist = false
@@ -74,7 +74,7 @@ export const loginSlice = createSlice({
         builder.addCase(logoutApi.fulfilled, (state) => {
             state.isUserExist = false
             state.loggedInUser = null
-            localStorage.removeItem("loginUserInfo")
+            sessionStorage.removeItem("loginUserInfo")
         })
         builder.addCase(logoutApi.rejected, () => {
             console.log("Logout failed");

@@ -9,7 +9,7 @@ import { useraddToCartSlice } from "../EcommerceStore/cartOpt/FetchUserCartProdu
 function Cart({ handleMoveToProducts }: { handleMoveToProducts: () => void }) {
     const cartProducts = useECommerceStoreSelector((state) => state.userCartProducts.cartProducts);
     const dispatch = useECommerceStoreDispatch()
-    const id = localStorage.getItem("Id");
+    const id = sessionStorage.getItem("Id");
 
     const subTotal = useMemo(() => {
         return cartProducts?.reduce((total, product) => {
@@ -39,7 +39,7 @@ function Cart({ handleMoveToProducts }: { handleMoveToProducts: () => void }) {
                                     <CartCard
                                         ProductName={product.ProductName}
                                         ThumbnailImage={product.ThumbnailImage}
-                                        Price={product.Price}
+                                        Price={Number(product.Price)}
                                         CartID={product.CartID}
                                         Discount={product.Discount}
                                         Quantity={product.Quantity}

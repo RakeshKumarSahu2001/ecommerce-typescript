@@ -33,7 +33,6 @@ import adminRouter from "./routes/admin.routes";
 app.use("/api/v1/admin", adminRouter);
 
 
-
 //Handle API error
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof ApiErrorHandler) {

@@ -23,7 +23,11 @@ const initialState: initialStateType = {
 export const deleteCartProductSlice=createSlice({
     name:"DeleteCartProducts",
     initialState,
-    reducers:{},
+    reducers:{
+        setToInitval:(state)=>{
+            state.isDeleted=false
+        }
+    },
     extraReducers:(builder)=>{
         builder.addCase(deleteCartProductApi.fulfilled,(state)=>{
             state.isDeleted=true

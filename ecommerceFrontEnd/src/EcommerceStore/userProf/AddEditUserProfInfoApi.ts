@@ -17,7 +17,6 @@ interface FormDataType {
     };
 }
 
-// AddUserProfInfoById with explicit type
 export const AddUserProfInfoById = createAsyncThunk(
     "user/addUserProfileInfo",
     async (formData: FormDataType) => {
@@ -34,7 +33,6 @@ export const AddUserProfInfoById = createAsyncThunk(
     }
 );
 
-// EditUserProfInfoById with explicit type
 export const EditUserProfInfoById = createAsyncThunk(
     "user/editUserProfileInfo",
     async (formData: FormDataType) => {
@@ -51,7 +49,6 @@ export const EditUserProfInfoById = createAsyncThunk(
     }
 );
 
-// Initial state type
 interface initialStateType {
     isProfData: boolean;
     userInfo: userProfileInfoType | null;

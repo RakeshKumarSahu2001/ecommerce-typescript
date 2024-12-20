@@ -4,7 +4,7 @@ import { useECommerceStoreDispatch, useECommerceStoreSelector } from '../../Hook
 import { FetchProductDetailsApi } from '../../EcommerceStore/productsOpt/FetchProductDetailsApi'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { BoltIcon, ShoppingCartIcon } from '@heroicons/react/24/outline'
-import { addToCartApi } from '../../EcommerceStore/cartOpt/AddToCartApi'
+import { addToCartApi, addToCartSlice } from '../../EcommerceStore/cartOpt/AddToCartApi'
 
 
 function classNames(...classes: (string | boolean | undefined | null)[]): string {
@@ -13,9 +13,10 @@ function classNames(...classes: (string | boolean | undefined | null)[]): string
 
 export default function ProductDetail() {
   // fetching product details
-  const  productID  = useParams()?.id
+  const productID = useParams()?.id
   const dispatch = useECommerceStoreDispatch()
-  const navigate=useNavigate();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (productID) {
@@ -27,7 +28,7 @@ export default function ProductDetail() {
   const images = product ? [product.ThumbnailImage ?? "", ...(product.Images ?? [])] : [];
 
   const [selectedImg, setSelectedImg] = useState(images[0])
-  const AuthID = localStorage.getItem("Id")
+  const AuthID = sessionStorage.getItem("Id")
 
 
   useEffect(() => {
@@ -36,29 +37,32 @@ export default function ProductDetail() {
     }
   }, [product])
 
-  type catInfoType={
-    productID:string,
-    quantity:number,
-    AuthID:string
+  type catInfoType = {
+    productID: string,
+    quantity: number,
+    AuthID: string
   }
 
   // add to cart start
-  const handleAddToCart = () => {
-   const cartInfo:catInfoType={
-    productID:productID || "",
-    quantity:1,
-    AuthID:AuthID || ""
-   }
-    dispatch(addToCartApi(cartInfo))
+  const handleAddToCart = async () => {
+    const cartInfo: catInfoType = {
+      productID: productID || "",
+      quantity: 1,
+      AuthID: AuthID || ""
+    }
+    setIsLoading(true)
+    await dispatch(addToCartApi(cartInfo))
+    setIsLoading(false)
+    dispatch(addToCartSlice.actions.changeToInitState())
   }
 
-  const handleBuyNow=()=>{
-    const cartInfo:catInfoType={
-      productID:productID || "",
-      quantity:1,
-      AuthID:AuthID || ""
-     }
-      dispatch(addToCartApi(cartInfo))
+  const handleBuyNow = () => {
+    const cartInfo: catInfoType = {
+      productID: productID || "",
+      quantity: 1,
+      AuthID: AuthID || ""
+    }
+    dispatch(addToCartApi(cartInfo))
     navigate(`/shopnow/cart/${AuthID}`)
   }
 
@@ -68,15 +72,16 @@ export default function ProductDetail() {
     product && <div className="bg-white pb-8">
       <div className="pt-20">
         <nav aria-label="Breadcrumb" className='py-[10px]'>
-            <p className="text-sm font-medium text-gray-500 hover:text-gray-600">
-              {
-                product?.ProductName
-              }
-            </p>
+          <p className="text-sm font-medium text-gray-500 hover:text-gray-600">
+            {
+              product?.ProductName
+            }
+          </p>
         </nav>
 
         {/* Image gallery */}
-        <div className="mx-auto lg:grid lg:max-w-7xl grid-cols-[400px_minmax(850px,_1fr)] lg:gap-x-6">
+        <div className="mx-auto relative lg:grid lg:max-w-7xl grid-cols-[400px_minmax(850px,_1fr)] lg:gap-x-6">
+          {isLoading && <span className="loading loading-spinner loading-lg absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30"></span>}
           <div className='flex flex-col gap-3'>
 
             <div className="sticky rounded-lg flex flex-row justify-center gap-2">
@@ -96,19 +101,19 @@ export default function ProductDetail() {
             </div>
             <div className='flex flex-row gap-4 justify-center'>
               <button onClick={() => handleAddToCart()} className='flex items-center text-white bg-[#ff9f00] border border-[#ff9f00] py-2 px-6 gap-2 rounded'>
-                  <span>
-                    Add To Cart
-                  </span>
-                  <ShoppingCartIcon className="size-6" />
+                <span>
+                  Add To Cart
+                </span>
+                <ShoppingCartIcon className="size-6" />
               </button>
 
               <button
-              onClick={()=>handleBuyNow()}
-              className="flex items-center text-white bg-[#fb641b] border border-[#fb641b] py-2 px-6 gap-2 rounded ">
-                  <Link to={`/shopnow/cart/${AuthID}`}>
-                    Buy Now
-                  </Link>
-                  <BoltIcon className="size-6" />
+                onClick={() => handleBuyNow()}
+                className="flex items-center text-white bg-[#fb641b] border border-[#fb641b] py-2 px-6 gap-2 rounded ">
+                <Link to={`/shopnow/cart/${AuthID}`}>
+                  Buy Now
+                </Link>
+                <BoltIcon className="size-6" />
               </button>
             </div>
           </div>
@@ -125,9 +130,8 @@ export default function ProductDetail() {
 
                 <div className="">
                   {
-                    product?.Description?.split(".").map(data=><p className="text-base text-justify text-gray-900">{data+"."}</p>)
+                    product?.Description?.split(".").map(data => <p className="text-base text-justify text-gray-900">{data + "."}</p>)
                   }
-                  {/* <p className="text-base text-justify text-gray-900">{product.Description}</p> */}
                 </div>
               </div>
             </div>
@@ -145,7 +149,7 @@ export default function ProductDetail() {
                         key={rating}
                         aria-hidden="true"
                         className={classNames(
-                          parseInt(product?.Rating) > rating ? 'text-gray-900' : 'text-gray-200',
+                          Number(product?.Rating) > rating ? 'text-gray-900' : 'text-gray-200',
                           'h-5 fl20x-shrink-0',
                         )}
                       />
@@ -158,12 +162,11 @@ export default function ProductDetail() {
                 </div>
               </div>
               <p className="text-3xl tracking-tight text-gray-900">
-              ₹ {Math.round(product.Price * (1 - product.Discount / 100))}
+                ₹ {Math.round(Number(product?.Price) * (1 - Number(product?.Discount) / 100))}
               </p>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   )

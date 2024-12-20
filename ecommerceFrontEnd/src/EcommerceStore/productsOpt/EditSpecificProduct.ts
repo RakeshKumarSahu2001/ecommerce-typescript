@@ -4,35 +4,25 @@ import { updatedProductInfoType } from "../../utils/types";
 
 
 export const EditSpecificProductApi = createAsyncThunk("products/EditSpecificProduct",
-    async ({ id, updatedData }: { id: string; updatedData: updatedProductInfoType }) => {
-
+    async ({ id, updatedData }: { id: string; updatedData: updatedProductInfoType }, { rejectWithValue }) => {
         try {
             const response = await axios.put(`/api/v1/admin/edit-product-by-id/${id}`, updatedData);
             return response.data;
         } catch (error) {
-            throw error;
+            console.error(error);
+            return rejectWithValue(error)
         }
     })
+
 
 type initialStateType = {
     isError: boolean,
     isupdated: boolean,
-    updatedProdcuctInfo: {
-        productName: string,
-        productDescription: string,
-        productRating: string,
-        productPrice: string,
-        discount: string,
-        stock: string,
-        brand: string,
-        productCategory: string
-    } | null
 }
 
 const initialState: initialStateType = {
     isError: false,
     isupdated: false,
-    updatedProdcuctInfo: null
 }
 
 export const EditSpecificProductSlice = createSlice({
@@ -43,17 +33,14 @@ export const EditSpecificProductSlice = createSlice({
         builder.addCase(EditSpecificProductApi.pending, (state) => {
             state.isError = false
             state.isupdated = false
-            state.updatedProdcuctInfo = null
         })
         builder.addCase(EditSpecificProductApi.rejected, (state) => {
             state.isError = true
             state.isupdated = false
-            state.updatedProdcuctInfo = null
         })
-        builder.addCase(EditSpecificProductApi.fulfilled, (state, action) => {
+        builder.addCase(EditSpecificProductApi.fulfilled, (state) => {
             state.isError = false
             state.isupdated = false
-            state.updatedProdcuctInfo = action.payload
         })
     }
 })

@@ -5,15 +5,15 @@ export const AddNewProductApi = createAsyncThunk("products/addNewProduct",
     async (data: {
         productName: string,
         productDescription: string,
-        productRating: string,
-        productPrice: string,
-        discount: string,
-        stock: string,
+        productRating: number,
+        productPrice: number,
+        discount: number,
+        stock: number,
         brand: string,
         productCategory: string,
         thumbNailImage: FileList,
-        images: FileList[]
-    }) => {
+        images: FileList
+    }, { rejectWithValue }) => {
 
         try {
             const formData = new FormData();
@@ -25,10 +25,11 @@ export const AddNewProductApi = createAsyncThunk("products/addNewProduct",
                 } else if (value instanceof FileList) {
                     formData.append(key, value[0]);
                 } else {
-                    formData.append(key, value);
+                    formData.append(key, value.toString());
                 }
             });
 
+            console.log("product data", data);
 
             const response = await axios.post(`/api/v1/admin/add-new-product`, formData, {
                 headers: {
@@ -38,7 +39,8 @@ export const AddNewProductApi = createAsyncThunk("products/addNewProduct",
 
             return response.data
         } catch (err) {
-            throw err;
+            console.error(err);
+            return rejectWithValue(err);
         }
     })
 
@@ -69,7 +71,10 @@ export const createNewAddProductSlice = createSlice({
     name: "AddNewProductIntoTheSlice",
     initialState,
     reducers: {
-
+        setProductParameterToInitialState: (state) => {
+            state.isProductAdded = false
+            state.errorInAddProduct = false
+        }
     },
     extraReducers: (builder) => {
         builder.addCase(AddNewProductApi.pending, (state) => {

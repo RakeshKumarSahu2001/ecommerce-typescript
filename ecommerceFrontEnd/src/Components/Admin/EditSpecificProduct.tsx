@@ -4,12 +4,13 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FetchProductDetailsApi } from "../../EcommerceStore/productsOpt/FetchProductDetailsApi";
 import { EditSpecificProductApi } from "../../EcommerceStore/productsOpt/EditSpecificProduct";
+import { updatedProductInfoType } from "../../utils/types";
 
 function EditSpecificProduct() {
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm();
     const { id } = useParams<{ id: string }>()
     const dispatch = useECommerceStoreDispatch();
-    const navigate=useNavigate()
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (id) {
@@ -18,18 +19,9 @@ function EditSpecificProduct() {
     }, [dispatch, id])
     const product = useECommerceStoreSelector((state) => state.productDetails.productInfo);
 
-    type productUpdatedData = {
-        productName: string,
-        productDescription: string,
-        productRating: string,
-        productPrice: string,
-        discount: string,
-        stock: string,
-        brand: string,
-        productCategory: string
-    }
-    const onSubmit: SubmitHandler<productUpdatedData> = (data: productUpdatedData) => {
-        dispatch(EditSpecificProductApi({ id, updatedData: data }))
+    const onSubmit: SubmitHandler<updatedProductInfoType> = async (data: updatedProductInfoType) => {
+        console.log("data", data)
+        await dispatch(EditSpecificProductApi({ id, updatedData: data }))
         navigate(`/shopnow/productDetail/${id}`)
     }
 
@@ -66,11 +58,11 @@ function EditSpecificProduct() {
                             className="grid grid-cols-2 grid-rows-7 gap-2"
                             onSubmit={handleSubmit(onSubmit)}>
                             <div className="col-span-2">
-                                <label htmlFor="productName">Product Name</label><br></br>
+                                <label htmlFor="ProductName">Product Name</label><br></br>
                                 <input
                                     defaultValue={product?.ProductName}
                                     {
-                                    ...register("productName",
+                                    ...register("ProductName",
                                         {
                                             required: {
                                                 value: true,
@@ -80,44 +72,47 @@ function EditSpecificProduct() {
                                     }
                                     type="text"
                                     placeholder="Enter the product name"
-                                    className="w-[100%] rounded-md"
+                                    className="w-[100%] file-input file-input-bordered file-input-primary"
                                 />
-
+                                {errors?.ProductName && <p>{String(errors?.ProductName.message)}</p>}
                             </div>
                             <div className="">
-                                <label htmlFor="productRating">Product Rating</label><br></br>
+                                <label htmlFor="Rating">Product Rating</label><br></br>
                                 <input
                                     defaultValue={product?.Rating}
                                     {
-                                    ...register("productRating", {
+                                    ...register("Rating", {
                                         required: {
                                             value: true,
                                             message: "Product Rating is requierd"
                                         }
                                     })
                                     }
-                                    type="text"
+                                    step="any"
+                                    type="number"
                                     placeholder="Enter the rating"
-                                    className="w-[100%] rounded-md"
+                                    className="w-[100%] file-input file-input-bordered file-input-primary"
                                 />
-
+                                {errors?.Rating && <p>{String(errors?.Rating.message)}</p>}
                             </div>
                             <div className="">
-                                <label htmlFor="productPrice">Product Price</label><br></br>
+                                <label htmlFor="Price">Product Price</label><br></br>
                                 <input
                                     defaultValue={product?.Price}
                                     {
-                                    ...register("productPrice", {
+                                    ...register("Price", {
                                         required: {
                                             value: true,
                                             message: "Product Price is requierd"
                                         }
                                     })
                                     }
-                                    type="text"
+                                    step="any"
+                                    type="number"
                                     placeholder="Enter the price"
-                                    className="w-[100%] rounded-md"
+                                    className="w-[100%] file-input file-input-bordered file-input-primary"
                                 />
+                                {errors?.Price && <p>{String(errors?.Price.message)}</p>}
 
                             </div>
                             <div className="">
@@ -125,44 +120,45 @@ function EditSpecificProduct() {
                                 <input
                                     defaultValue={product?.Discount}
                                     {
-                                    ...register("discount", {
+                                    ...register("Discount", {
                                         required: {
                                             value: true,
                                             message: "Product Discount is requierd"
                                         }
                                     })
-
                                     }
-                                    type="text"
+                                    step="any"
+                                    type="number"
                                     placeholder="Enter the discount"
-                                    className="w-[100%] rounded-md"
+                                    className="w-[100%] file-input file-input-bordered file-input-primary"
                                 />
-
+                                {errors?.Discount && <p>{String(errors?.Discount.message)}</p>}
                             </div>
                             <div className="">
-                                <label htmlFor="stock">Product Stock Quantity</label><br></br>
+                                <label htmlFor="StockQuantity">Product Stock Quantity</label><br></br>
                                 <input
                                     defaultValue={product?.StockQuantity}
                                     {
-                                    ...register("stock", {
+                                    ...register("StockQuantity", {
                                         required: {
                                             value: true,
                                             message: "Stock Quantity is requierd"
                                         }
                                     })
                                     }
-                                    type="text"
+                                    step="any"
+                                    type="number"
                                     placeholder="Enter the stockquantity"
-                                    className="w-[100%] rounded-md"
+                                    className="w-[100%] file-input file-input-bordered file-input-primary"
                                 />
-
+                                {errors?.StockQuantity && <p>{String(errors?.StockQuantity.message)}</p>}
                             </div>
                             <div className="">
-                                <label htmlFor="brand">Product Brand</label><br></br>
+                                <label htmlFor="Brand">Product Brand</label><br></br>
                                 <input
                                     defaultValue={product?.Brand}
                                     {
-                                    ...register("brand", {
+                                    ...register("Brand", {
                                         required: {
                                             value: true,
                                             message: "Brand is requierd"
@@ -170,17 +166,17 @@ function EditSpecificProduct() {
                                     })
                                     }
                                     type="text"
-                                    placeholder="Enter the product brand"
-                                    className="w-[100%] rounded-md"
+                                    placeholder="Enter the product Brand"
+                                    className="w-[100%] file-input file-input-bordered file-input-primary"
                                 />
-
+                                {errors?.Brand && <p>{String(errors?.Brand.message)}</p>}
                             </div>
                             <div className="">
-                                <label htmlFor="productCategory">Product Category</label><br></br>
+                                <label htmlFor="Category">Product Category</label><br></br>
                                 <input
                                     defaultValue={product?.Category}
                                     {
-                                    ...register("productCategory", {
+                                    ...register("Category", {
                                         required: {
                                             value: true,
                                             message: "Category is requierd"
@@ -189,17 +185,18 @@ function EditSpecificProduct() {
                                     }
                                     type="text"
                                     placeholder="Enter the product category"
-                                    className="w-[100%] rounded-md"
+                                    className="w-[100%] file-input file-input-bordered file-input-primary"
                                 />
+                                {errors?.Category && <p>{String(errors?.Category.message)}</p>}
 
                             </div>
 
                             <div className="col-span-2 row-span-2">
-                                <label htmlFor="productDescription">Product Description</label><br></br>
+                                <label htmlFor="Description">Product Description</label><br></br>
                                 <textarea
                                     defaultValue={product?.Description}
                                     {
-                                    ...register("productDescription", {
+                                    ...register("Description", {
                                         required: {
                                             value: true,
                                             message: "Product Description is required"
@@ -208,14 +205,15 @@ function EditSpecificProduct() {
                                     }
                                     rows={4}
                                     placeholder="Enter the product description"
-                                    className="w-[100%] rounded-md"
+                                    className="w-[100%] textarea textarea-primary"
                                 ></textarea>
+                                {errors?.Description && <p>{String(errors?.Description.message)}</p>}
 
                             </div>
 
-                            <button 
-                            type="submit"
-                            className="col-span-2 px-5 py-2 font-semibold text-white transition-all duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:bg-blue-700">
+                            <button
+                                type="submit"
+                                className="col-span-2 px-5 py-2 font-semibold text-white transition-all duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:bg-blue-700">
                                 Submit
                             </button>
                         </form>

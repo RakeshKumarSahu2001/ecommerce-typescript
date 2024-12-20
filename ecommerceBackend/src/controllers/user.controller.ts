@@ -235,8 +235,6 @@ export const Login = asyncHandler(async (req, res) => {
 // User Logout
 export const Logout = asyncHandler(async (req, res) => {
     const user = req.user
-    //update the refreshtoken field
-    //delete the cookies
     const pool = await dbConnection();
     const connection = await pool.getConnection();
 
@@ -426,13 +424,13 @@ export const insertUserInfoById = asyncHandler(async (req, res) => {
         }
 
         const updateUserInfo = "INSERT INTO `user` (`FullName`,`Phone`,`Street`,`City`,`State`,`Country`,`PostalCode`,`DateOfBirth`,`Gender`,`AuthID`) VALUES (?,?,?,?,?,?,?,?,?,?);";
-        await connection.execute<RowDataPacket[]>(updateUserInfo, [FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender, id]);
+        await connection.execute<RowDataPacket[]>(updateUserInfo, [FullName, Number(Phone), Street, City, State, Country, Number(PostalCode), DateOfBirth, Gender, id]);
 
         return res.status(200)
             .json({
                 message: "Data inserted successfully",
                 success: true,
-                data: { FullName, Phone, Street, City, State, Country, PostalCode, DateOfBirth, Gender }
+                data: []
             })
     } finally {
         connection.release()
@@ -586,7 +584,7 @@ export const addProductToCart = asyncHandler(async (req, res) => {
             .json({
                 success: true,
                 message: "Data fetched successfullt.",
-                data: {}
+                data: []
             })
     } finally {
         connection.release();
@@ -620,10 +618,10 @@ export const fetchProductsInCart = asyncHandler(async (req, res) => {
         const [fetchAllCartProduct] = await connection.execute<RowDataPacket[]>(fetchAllCartProductQuery, [AuthID]);
 
         if (!fetchAllCartProduct || fetchAllCartProduct.length === 0) {
-            throw new ApiErrorHandler({
-                statusCode: 404,
-                message: "No record is present in the cart.",
-                errors: ["No record is present in the cart."]
+            return res.status(200).json({
+                message: "Cart data fetched successfully.",
+                success: true,
+                data:[]
             })
         }
 

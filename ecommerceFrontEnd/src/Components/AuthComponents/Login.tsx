@@ -13,13 +13,13 @@ type inputData = {
 
 function Login() {
   const { register, reset, handleSubmit, formState: { errors, isSubmitting } } = useForm<inputData>();
-  const dispatch = useECommerceStoreDispatch()
+  const dispatch = useECommerceStoreDispatch();
 
   const user = useECommerceStoreSelector((state) => state.loginSlice.isUserExist)
   const navigate = useNavigate()
 
-  const onSubmit: SubmitHandler<inputData> = ({ email, password }) => {
-    dispatch(loginApi({ email: email, password: password }))
+  const onSubmit: SubmitHandler<inputData> = async({ email, password }) => {
+    await dispatch(loginApi({ email: email, password: password }));
     reset();
   }
 
@@ -30,7 +30,7 @@ function Login() {
   }, [user, navigate]);
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div className="flex !w-[50%] !h-[100%] flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
           alt="Your Company"
@@ -43,12 +43,23 @@ function Login() {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-              Email address
-            </label>
-            <div className="mt-2">
+            <label
+              htmlFor="email"
+              className="input input-bordered flex items-center gap-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="h-4 w-4 opacity-70">
+                <path
+                  d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
+                <path
+                  d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
+              </svg>
+
               <input
                 {...register("email", {
                   required: "Email is required",
@@ -60,24 +71,32 @@ function Login() {
                 placeholder='Email address'
                 type="email"
                 autoComplete="off"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="grow !focus:outline-none !focus:border-none !border-none !outline-none !border-transparent !ring-0"
               />
-              {errors.email && <p className="text-red-600">{errors.email.message}</p>}
-            </div>
+            </label>
+            {errors.email && <p className="text-red-600">{errors.email.message}</p>}
           </div>
 
-          <div>
-            <div className="flex items-center justify-between">
-              <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                Password
-              </label>
-              <div className="text-sm">
-                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                  Forgot password?
-                </a>
-              </div>
-            </div>
-            <div className="mt-2">
+          <div className="text-sm flex items-center justify-end">
+            <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+              Forgot password?
+            </a>
+          </div>
+          <div className="mt-2">
+            <label
+              htmlFor="password"
+              className="input input-bordered flex items-center gap-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="h-4 w-4 opacity-70">
+                <path
+                  fillRule="evenodd"
+                  d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
+                  clipRule="evenodd" />
+              </svg>
               <input
                 {...register("password", {
                   required: "Password is required",
@@ -89,10 +108,10 @@ function Login() {
                 placeholder='Enter Password'
                 type="text"
                 autoComplete="off"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="grow !focus:outline-none !focus:border-none !border-none !outline-none !border-transparent !ring-0"
               />
-              {errors.password && <p className="text-red-600">{errors.password.message}</p>}
-            </div>
+            </label>
+            {errors.password && <p className="text-red-600">{errors.password.message}</p>}
           </div>
 
           <div>
@@ -101,7 +120,7 @@ function Login() {
               type="submit"
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              {isSubmitting ? "Logging in..." : "Login"}
+              {isSubmitting ? <span className="loading loading-infinity loading-lg"></span> : "Login"}
             </button>
           </div>
         </form>
