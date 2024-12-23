@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { ProductApi } from "../../EcommerceStore/productsOpt/ProductApi";
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../../Hooks/ecommerceStoreHooks";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // import isAdmin from "../../Hooks/isAdmin";
 import { DeleteSpecificProductApi } from "../../EcommerceStore/productsOpt/DeleteSpecificProductById";
 import ProductCard from "./ProductCard";
@@ -68,17 +68,25 @@ export default function Product() {
   // const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const dispatch = useECommerceStoreDispatch();
-  const isLoading = useECommerceStoreSelector((state) => state.products.loadingStatus)
+  const isLoading = useECommerceStoreSelector((state) => state.products.loadingStatus);
+  const loadingError = useECommerceStoreSelector(state => state.products.loadingError);
+  const navigate=useNavigate();
+
+
   const handleDeleteProduct = async (id: string) => {
     await dispatch(DeleteSpecificProductApi(id))
   }
+
   useEffect(() => {
     dispatch(ProductApi())
   }, [dispatch])
   const products = useECommerceStoreSelector((state) => state.products.allProducts)
 
-  console.log("products",products)
-
+  useEffect(() => {
+    if (loadingError) {
+      navigate("/shopnow/error")
+    }
+  }, [loadingError, navigate])
 
   return (
     <div className="bg-white">

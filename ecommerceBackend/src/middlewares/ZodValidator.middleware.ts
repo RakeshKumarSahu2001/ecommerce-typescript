@@ -5,7 +5,7 @@ import { Response, Request, NextFunction } from "express";
 function ZodValidator(schema: ZodSchema) {
 
     return async (req: Request, res: Response, next: NextFunction) => {
-
+        console.log("req body",req.body)
         try {
             const body = req.body;
             const parsedReq = await schema.parseAsync(body);

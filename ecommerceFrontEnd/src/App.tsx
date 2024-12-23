@@ -15,6 +15,9 @@ import EditProductPage from "./Pages/Admin/EditProductPage.tsx";
 import AddNewProductPage from "./Pages/Admin/AddNewProductPage.tsx";
 import EmailValidationPage from "./Pages/AuthPages/EmailValidationPage.tsx";
 import AuthPage from "./Pages/AuthPage.tsx";
+import ErrorPage from "./Pages/ErrorPage.tsx";
+import EmailPage from "./Pages/AuthPages/EmailPage.tsx";
+import ResetPasswordPage from "./Pages/AuthPages/ResetPasswordPage.tsx";
 
 
 
@@ -33,6 +36,10 @@ function App() {
         {
           path: "/shopnow/allproduct",
           element: <Protected><ProductsPage /></Protected>
+        },    {
+          path:"/shopnow/error",
+          element:<Protected><ErrorPage /></Protected>
+    
         },
         {
           path: "/shopnow/productDetail/:id",
@@ -73,6 +80,7 @@ function App() {
       ]
     },
 
+
     {
       path:"/auth",
       element:<AuthPage />,
@@ -88,9 +96,17 @@ function App() {
         {
           path: "validate-email",
           element: <EmailValidationPage />
+        },
+        {
+          path:"check-email-valid",
+          element:<EmailPage />
+        },
+        {
+          path:"reset-password/:email",
+          element:<ResetPasswordPage />
         }
       ]
-    }
+    },
 
   ]);
 

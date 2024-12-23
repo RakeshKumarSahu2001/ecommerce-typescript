@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogBackdrop,
@@ -53,40 +53,40 @@ function Navbar() {
     <header className="z-40 fixed w-screen">
       <div className="bg-gray-100 border-b border-gray-200">
         <div className="px-4 mx-auto sm:px-6 lg:px-8">
-          <nav className="relative flex items-center justify-between h-16 lg:h-20">
+          <nav className="relative flex items-center justify-between h-16 lg:h-16">
             <div className="hidden lg:flex lg:items-center lg:space-x-10">
-              <Link to="/" title="" className="text-base font-medium text-black">
+              <Link to="/" title="" className="text-base font-medium text-black !outline-none focus:outline-none active:outline-none active:border-none">
                 {" "}
                 Home{" "}
               </Link>
 
-              {id && <Link to="/shopnow/allproduct" title="" className="text-base font-medium text-black">
+              {id && <Link to="/shopnow/allproduct" title="" className="text-base font-medium text-black !outline-none focus:outline-none active:outline-none active:border-none">
                 {" "}
                 Products{" "}
               </Link>}
               {
                 isAdminObj.access && <Link
-                  to="/shopnow/admin/add-product" className="text-base font-medium text-black">
+                  to="/shopnow/admin/add-product" className="text-base font-medium text-black !outline-none focus:outline-none active:outline-none active:border-none">
                   {" "}
                   Add New Product{" "}
                 </Link>
               }
               {
-                !id && <Link to="/auth/login" title="" className="text-base font-medium text-black">
+                !id && <Link to="/auth/login" title="" className="text-base font-medium text-black !outline-none focus:outline-none active:outline-none active:border-none">
                   {" "}
                   Login{" "}
                 </Link>
               }
-              {!id && <Link to="/auth/signup" title="" className="text-base font-medium text-black">
+              {!id && <Link to="/auth/signup" title="" className="text-base font-medium text-black !outline-none focus:outline-none active:outline-none active:border-none">
                 {" "}
                 Sign up{" "}
               </Link>
               }
             </div>
 
-            <div className="lg:absolute lg:-translate-x-1/2 lg:inset-y-5 lg:left-1/2">
+            <div className="lg:absolute lg:-translate-x-1/2 lg:inset-y-5 lg:left-1/2 !top-0">
               <div className="flex-shrink-0">
-                <a href="#" title="" className="flex">
+                <a href="#" title="" className="flex !outline-none focus:outline-none active:outline-none active:border-none">
                   <img
                     className="w-auto h-8 lg:h-16"
                     src={logo}
@@ -145,7 +145,7 @@ function Navbar() {
             {id && <div className="hidden lg:flex lg:items-center lg:space-x-10">
               <Menu as="div" className="relative inline-block text-left">
                 <div>
-                  <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                  <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 !outline-none focus:outline-none active:outline-none active:border-none active:bg-blue-500">
                     <UserCircleIcon aria-hidden="true" className="-mr-1 h-5 w-5 text-gray-400" />
                   </MenuButton>
                 </div>
@@ -169,7 +169,7 @@ function Navbar() {
                     <MenuItem>
                       <button
                         onClick={handleLogout}
-                        className="block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900">
+                        className="!w-[100%] text-start block px-4 py-2 text-sm font-semibold text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900">
                         {" "}
                         Sign out{" "}
                       </button>

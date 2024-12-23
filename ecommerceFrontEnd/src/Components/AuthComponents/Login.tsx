@@ -18,7 +18,7 @@ function Login() {
   const user = useECommerceStoreSelector((state) => state.loginSlice.isUserExist)
   const navigate = useNavigate()
 
-  const onSubmit: SubmitHandler<inputData> = async({ email, password }) => {
+  const onSubmit: SubmitHandler<inputData> = async ({ email, password }) => {
     await dispatch(loginApi({ email: email, password: password }));
     reset();
   }
@@ -78,9 +78,9 @@ function Login() {
           </div>
 
           <div className="text-sm flex items-center justify-end">
-            <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+            <Link to="/auth/check-email-valid" className="font-semibold text-indigo-600 hover:text-indigo-500">
               Forgot password?
-            </a>
+            </Link>
           </div>
           <div className="mt-2">
             <label

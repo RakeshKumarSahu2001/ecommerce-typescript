@@ -11,12 +11,14 @@ import {
     Login,
     Logout,
     refreshAccessToken,
+    SendResetPasswordOtp,
     SignUp,
-    validatOTP
+    validatOTP,
+    verifyResetOtp
 } from "../controllers/user.controller";
 import { verifyJWT } from "../middlewares/auth.middleware";
 import ZodValidator from "../middlewares/ZodValidator.middleware"
-import { ZodEmailValidation, ZodLoginValidator, ZodSignupValidator } from "../ZodValidatorSchemas/ZodAuthValidator";
+import { ZodEmailCheckValidator, ZodEmailValidation, ZodLoginValidator, ZodResetPasswordValidator, ZodSignupValidator } from "../ZodValidatorSchemas/ZodAuthValidator";
 
 
 const router = Router();
@@ -25,6 +27,8 @@ router.route("/register").post(ZodValidator(ZodSignupValidator), SignUp)
 router.route("/verify-otp/:id").post(ZodValidator(ZodEmailValidation), validatOTP)
 router.route("/login").post(ZodValidator(ZodLoginValidator), Login)
 router.route("/logout").post(verifyJWT, Logout)
+router.route("/send-reset-password-otp").post(ZodValidator(ZodEmailCheckValidator),SendResetPasswordOtp)
+router.route("/reset-password").post(ZodValidator(ZodResetPasswordValidator),verifyResetOtp)
 
 router.route("/refresh-token").post(refreshAccessToken)
 

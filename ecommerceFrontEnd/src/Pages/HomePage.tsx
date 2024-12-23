@@ -4,7 +4,7 @@ import Navbar from "../Components/Navbar"
 
 function HomePage() {
   return (
-    <div>
+    <div className="!w-[100%] flex flex-col">
         <Navbar />
         <Outlet />
         <Footer />

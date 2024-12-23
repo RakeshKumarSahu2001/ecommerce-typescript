@@ -4,6 +4,8 @@ import { EmailValidation } from "../../EcommerceStore/authOpt/EmailValidationApi
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
+import logo from "../../assets/images/logo.png"
+
 type children = {
   otp: string
 }
@@ -17,6 +19,7 @@ function Emailvalidation() {
   const isEmailVerified = useECommerceStoreSelector((state) => state.EmailValidationSlice.isEmailVerified)
 
   const submit: SubmitHandler<children> = async ({ otp }) => {
+    console.log("otp",otp,user)
     await dispatch(EmailValidation({ otp: otp, id: user?.id }))
   }
 
@@ -28,10 +31,18 @@ function Emailvalidation() {
 
   return (
 
-    <div className="flex !w-[100%] !h-[100%] justify-center items-center">
-      <form action="post" className="space-y-6 w-96" onSubmit={handleSubmit(submit)}>
+    <div className="flex flex-col !w-[100%] !h-[100%] justify-center items-center">
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <img
+          alt="Your Company"
+          src={`${logo}`}
+          className="mx-auto h-24 w-auto"
+
+        />
+      </div>
+      <form action="post" className="space-y-6 w-96 mt-10" onSubmit={handleSubmit(submit)}>
         <label
-          htmlFor="email"
+          htmlFor="otp"
           className="input input-bordered flex items-center gap-2 w-100"
         >
           OTP
@@ -50,7 +61,7 @@ function Emailvalidation() {
         <button
           type="button"
           className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
+        >
           Submit
         </button>
       </form>

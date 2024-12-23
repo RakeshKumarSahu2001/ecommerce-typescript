@@ -53,7 +53,7 @@ function AddNewProduct() {
 
   useEffect(() => {
     if (errorInAddProduct) {
-      // navigate("")
+      navigate("/shopnow/error")
     }
   }, [errorInAddProduct, navigate])
 

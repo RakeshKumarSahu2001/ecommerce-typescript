@@ -12,6 +12,8 @@ import { deleteProductSlice } from "./productsOpt/DeleteSpecificProductById";
 import { EditSpecificProductSlice } from "./productsOpt/EditSpecificProduct";
 import { deleteCartProductSlice } from "./cartOpt/DeleteCartProduct";
 import { EmailValidationSlice } from "./authOpt/EmailValidationApi";
+import { SendResetPasswordOtpSlice } from "./authOpt/SendResetPasswordOtpApi";
+import { VerifyResetOtpSlice } from "./authOpt/VerifyResetOtpApi";
 
 const ecommerceStore = configureStore({
     reducer: {
@@ -23,6 +25,9 @@ const ecommerceStore = configureStore({
         createNewUser: createNewUserSlice.reducer,
         loginSlice: loginSlice.reducer,
         EmailValidationSlice:EmailValidationSlice.reducer,
+        SendResetPasswordOtpSlice:SendResetPasswordOtpSlice.reducer,
+        VerifyResetOtpSlice:VerifyResetOtpSlice.reducer,
+        
         
         //cart
         addProductsToCart: addToCartSlice.reducer,

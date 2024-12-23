@@ -47,13 +47,13 @@ export const SignUp = asyncHandler(async (req, res) => {
         await transporter.sendMail({
             from: process.env.SENDER_EMAIL,
             to: email,
-            subject: "Hello ✔",
-            text: "Hello world?",
+            subject: "Verify Email",
+            text: "Please verify your email",
             html: `<b>${randomNo}</b>`,
         });
 
-        const fetchReGIDQuery="SELECT ID FROM authtable WHERE email=?";
-        const [row]=await connection.execute<RowDataPacket[]>(fetchReGIDQuery,[email]);
+        const fetchReGIDQuery = "SELECT ID FROM authtable WHERE email=?";
+        const [row] = await connection.execute<RowDataPacket[]>(fetchReGIDQuery, [email]);
 
         return res.status(200).json({
             message: "User registered successfully",
@@ -77,6 +77,7 @@ export const validatOTP = asyncHandler(async (req, res) => {
         })
     }
 
+    console.log("otp and id",otp,id)
 
     const pool = await dbConnection();
     const connection = await pool.getConnection();
@@ -87,11 +88,11 @@ export const validatOTP = asyncHandler(async (req, res) => {
             message: "Database connnection error"
         })
     }
-    
+
     try {
         const fetchAuthRecordQuery = "SELECT * FROM authtable WHERE ID=?"
         const [result] = await connection.execute<RowDataPacket[]>(fetchAuthRecordQuery, [id]);
-        
+
         if (!result) {
             throw new ApiErrorHandler({
                 statusCode: 400,
@@ -108,16 +109,16 @@ export const validatOTP = asyncHandler(async (req, res) => {
             });
         }
 
-        if(result[0]?.VerifyOTPExpiryAt<Date.now()){
+        if (result[0]?.VerifyOTPExpiryAt < Date.now()) {
             throw new ApiErrorHandler({
-                statusCode:300,
-                errors:["Otp expired."],
-                message:"Otp expired."
+                statusCode: 300,
+                errors: ["Otp expired."],
+                message: "Otp expired."
             })
         }
 
         const updateAuthTableQuery = "UPDATE authtable SET IsAccountVerified=?,VerifyOTP=?,VerifyOTPExpiryAt=? WHERE ID=?";
-        const updatedInfo = await connection.execute<RowDataPacket[]>(updateAuthTableQuery, [true,null,0, id]);
+        const updatedInfo = await connection.execute<RowDataPacket[]>(updateAuthTableQuery, [true, null, 0, id]);
 
         console.log("updated table info", updatedInfo);
 
@@ -175,11 +176,11 @@ export const Login = asyncHandler(async (req, res) => {
             })
         }
 
-        
+
         //fetch the records if user exist
         const userInfoQuery = "SELECT * FROM `authtable` WHERE `Email` = ?";
         const [rows] = await connection.query<RowDataPacket[]>(userInfoQuery, [body.email]);
-        
+
         // Check if user exists
         if (!rows || rows.length === 0) {
             throw new ApiErrorHandler({
@@ -189,11 +190,11 @@ export const Login = asyncHandler(async (req, res) => {
             });
         }
 
-        if(!rows[0].IsAccountVerified){
+        if (!rows[0].IsAccountVerified) {
             throw new ApiErrorHandler({
-                statusCode:400,
-                errors:["Unverified email."],
-                message:"Verify your email."
+                statusCode: 400,
+                errors: ["Unverified email."],
+                message: "Verify your email."
             })
         }
 
@@ -229,6 +230,123 @@ export const Login = asyncHandler(async (req, res) => {
 
     } finally {
         connection.release()
+    }
+})
+
+//Send reset otp
+export const SendResetPasswordOtp = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    console.log("req body on the function",email)
+
+    const pool = await dbConnection();
+    const connection = await pool.getConnection();
+    if (!connection) {
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while login"],
+            message: "Database connnection error"
+        })
+    }
+    try {
+        const checkEmailQuery = "SELECT ID FROM authtable WHERE Email = ?";
+        const [rows] = await connection.execute<RowDataPacket[]>(checkEmailQuery, [email]);
+        
+        if (!rows || rows.length <= 0) {
+            throw new ApiErrorHandler({
+                statusCode: 404,
+                errors: ["User does not exist."],
+                message: "User does not exist."
+            })
+        }
+        
+        const randomNo = Math.floor(Math.random() * 10000);
+        const verifyOTPExpiryAt = Date.now() + 15 * 60 * 1000;
+        const insertQuery = "UPDATE `authtable` SET VerifyOTP=?,VerifyOTPExpiryAt=? WHERE Email = ? LIMIT 1";
+        const [data]=await connection.execute<RowDataPacket[]>(insertQuery, [randomNo, verifyOTPExpiryAt,email])
+        console.log(randomNo);
+        
+        await transporter.sendMail({
+            from: process.env.SENDER_EMAIL,
+            to: email,
+            subject: "Reset Password.",
+            text: "OTP will be expire after 15 minute.Enter the below otp to reset your password.",
+            html: `<b>${randomNo}</b>`
+        })
+        console.log("connection is build.",data)
+
+        res.status(200).json({
+            message: "Reset OTP send successfully.",
+            success: true,
+            data: {
+                isSended: true
+            }
+        })
+    } finally {
+        connection.release();
+    }
+})
+
+//Update password
+export const verifyResetOtp = asyncHandler(async (req, res) => {
+    const { email, otp, password } = req.body;
+
+    const pool = await dbConnection();
+    const connection = await pool.getConnection();
+    if (!connection) {
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while login"],
+            message: "Database connnection error"
+        })
+    }
+
+    try {
+        const selectOtpQuery = "SELECT VerifyOTP,VerifyOTPExpiryAt,IsAccountVerified FROM authtable WHERE Email= ?";
+        const [rows] = await connection.execute<RowDataPacket[]>(selectOtpQuery, [email]);
+
+        console.log("check fetched result",rows);
+        if(!rows || rows.length===0 || rows === null){
+            throw new ApiErrorHandler({
+                statusCode:500,
+                errors:["otp not found."],
+                message:"otp not found."
+            })
+        }
+
+        if(rows[0].VerifyOTPExpiryAt <Date.now()){
+            throw new ApiErrorHandler({
+                statusCode:400,
+                errors:["OTP expired."],
+                message:"OTP expired."
+            })
+        }
+
+        if(rows[0].VerifyOTP!==otp){
+            throw new ApiErrorHandler({
+                statusCode:400,
+                errors:["Invalid OTP."],
+                message:"Invalid OTP."
+            }) 
+        }
+
+        const hashedPassword= await bcrypt.hash(password,10);
+        if(!rows[0].IsAccountVerified){
+            const updatePasswordQuery="UPDATE authtable SET Password =?,IsAccountVerified=?,VerifyOTP=?,VerifyOTPExpiryAt=? WHERE Email =?";
+            await connection.execute<RowDataPacket[]>(updatePasswordQuery,[hashedPassword,true,null,0,email]);
+        }else{
+            const updatePasswordQuery="UPDATE authtable SET Password =?,VerifyOTP=?,VerifyOTPExpiryAt=? WHERE Email =?"
+            await connection.execute<RowDataPacket[]>(updatePasswordQuery,[hashedPassword,null,0,email]);
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Password updated successfully.",
+            data: {
+                isReseted: true
+            }
+        })
+    } finally {
+        connection.release();
     }
 })
 
@@ -621,7 +739,7 @@ export const fetchProductsInCart = asyncHandler(async (req, res) => {
             return res.status(200).json({
                 message: "Cart data fetched successfully.",
                 success: true,
-                data:[]
+                data: []
             })
         }
 

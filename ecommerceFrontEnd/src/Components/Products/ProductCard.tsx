@@ -29,7 +29,7 @@ function ProductCard({ ProductID, ProductName, ThumbnailImage, Rating, Price, Di
             transition
             className="absolute -right-12 z-10 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
           >
-            <div className="py-1">
+            <div className="py-1 z-10">
               <MenuItem>
                 <Link
                   to={`/shopnow/admin/edit-product/${ProductID}`}
@@ -40,7 +40,7 @@ function ProductCard({ ProductID, ProductName, ThumbnailImage, Rating, Price, Di
               </MenuItem>
             </div>
 
-            <div className="py-1">
+            <div className="py-1 z-10">
               <MenuItem>
                 <button
                   onClick={() => handleDeleteProduct(ProductID)}
