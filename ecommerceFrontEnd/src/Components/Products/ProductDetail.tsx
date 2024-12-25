@@ -72,7 +72,7 @@ export default function ProductDetail() {
     product && <div className="bg-white pb-8">
       <div className="pt-20">
         <nav aria-label="Breadcrumb" className='py-[10px]'>
-          <p className="text-sm font-medium text-gray-500 hover:text-gray-600">
+          <p className="text-sm font-medium text-gray-500 hover:text-gray-600 !ps-10">
             {
               product?.ProductName
             }

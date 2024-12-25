@@ -14,12 +14,16 @@ import { deleteCartProductSlice } from "./cartOpt/DeleteCartProduct";
 import { EmailValidationSlice } from "./authOpt/EmailValidationApi";
 import { SendResetPasswordOtpSlice } from "./authOpt/SendResetPasswordOtpApi";
 import { VerifyResetOtpSlice } from "./authOpt/VerifyResetOtpApi";
+import { FetchCategorySlice } from "./productsOpt/FetchCategoryApi";
+import { FetchProductBrandSlice } from "./productsOpt/FetchProductBrandApi";
 
 const ecommerceStore = configureStore({
     reducer: {
         //product
         products: ProductSlice.reducer,
         productDetails: ProductDetailsSlice.reducer,
+        FetchCategorySlice:FetchCategorySlice.reducer,
+        FetchProductBrandSlice:FetchProductBrandSlice.reducer,
 
         //login & signup
         createNewUser: createNewUserSlice.reducer,

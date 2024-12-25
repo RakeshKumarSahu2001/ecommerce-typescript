@@ -5,7 +5,6 @@ import { emailValidationData } from "../../utils/types";
 export const EmailValidation = createAsyncThunk("users/emailValidation", async (data:emailValidationData) => {
 
     const {otp,id}=data;
-    console.log("and",otp,id)
     try {
         const response = await axios.post(`/api/v1/users/verify-otp/${id}`, {otp})
         return response.data.data;

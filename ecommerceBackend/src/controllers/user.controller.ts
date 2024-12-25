@@ -43,15 +43,21 @@ export const SignUp = asyncHandler(async (req, res) => {
         //insert into database
         const insertQuery = 'INSERT INTO `authtable`(`Email`, `Password`, `VerifyOTP`,`VerifyOTPExpiryAt`) VALUES (?, ?,?,?)';
         await connection.execute<ResultSetHeader>(insertQuery, [email, hashedPassword, randomNo, verifyOTPExpiryAt]);
-
-        await transporter.sendMail({
-            from: process.env.SENDER_EMAIL,
-            to: email,
-            subject: "Verify Email",
-            text: "Please verify your email",
-            html: `<b>${randomNo}</b>`,
-        });
-
+        try {
+            await transporter.sendMail({
+                from: process.env.SENDER_EMAIL,
+                to: email,
+                subject: "Verify Email",
+                text: "Please verify your email",
+                html: `<b>${randomNo}</b>`,
+            });
+        } catch (error) {
+            throw new ApiErrorHandler({
+                statusCode: 500,
+                errors: ["Failed to send verification email."],
+                message: "Failed to send verification email."
+            });
+        }
         const fetchReGIDQuery = "SELECT ID FROM authtable WHERE email=?";
         const [row] = await connection.execute<RowDataPacket[]>(fetchReGIDQuery, [email]);
 
@@ -77,7 +83,6 @@ export const validatOTP = asyncHandler(async (req, res) => {
         })
     }
 
-    console.log("otp and id",otp,id)
 
     const pool = await dbConnection();
     const connection = await pool.getConnection();
@@ -118,9 +123,8 @@ export const validatOTP = asyncHandler(async (req, res) => {
         }
 
         const updateAuthTableQuery = "UPDATE authtable SET IsAccountVerified=?,VerifyOTP=?,VerifyOTPExpiryAt=? WHERE ID=?";
-        const updatedInfo = await connection.execute<RowDataPacket[]>(updateAuthTableQuery, [true, null, 0, id]);
+        await connection.execute<RowDataPacket[]>(updateAuthTableQuery, [true, null, 0, id]);
 
-        console.log("updated table info", updatedInfo);
 
         return res.status(200).json({
             success: true,
@@ -236,7 +240,6 @@ export const Login = asyncHandler(async (req, res) => {
 //Send reset otp
 export const SendResetPasswordOtp = asyncHandler(async (req, res) => {
     const { email } = req.body;
-    console.log("req body on the function",email)
 
     const pool = await dbConnection();
     const connection = await pool.getConnection();
@@ -250,7 +253,7 @@ export const SendResetPasswordOtp = asyncHandler(async (req, res) => {
     try {
         const checkEmailQuery = "SELECT ID FROM authtable WHERE Email = ?";
         const [rows] = await connection.execute<RowDataPacket[]>(checkEmailQuery, [email]);
-        
+
         if (!rows || rows.length <= 0) {
             throw new ApiErrorHandler({
                 statusCode: 404,
@@ -258,13 +261,12 @@ export const SendResetPasswordOtp = asyncHandler(async (req, res) => {
                 message: "User does not exist."
             })
         }
-        
+
         const randomNo = Math.floor(Math.random() * 10000);
         const verifyOTPExpiryAt = Date.now() + 15 * 60 * 1000;
         const insertQuery = "UPDATE `authtable` SET VerifyOTP=?,VerifyOTPExpiryAt=? WHERE Email = ? LIMIT 1";
-        const [data]=await connection.execute<RowDataPacket[]>(insertQuery, [randomNo, verifyOTPExpiryAt,email])
-        console.log(randomNo);
-        
+        await connection.execute<RowDataPacket[]>(insertQuery, [randomNo, verifyOTPExpiryAt, email])
+
         await transporter.sendMail({
             from: process.env.SENDER_EMAIL,
             to: email,
@@ -272,7 +274,6 @@ export const SendResetPasswordOtp = asyncHandler(async (req, res) => {
             text: "OTP will be expire after 15 minute.Enter the below otp to reset your password.",
             html: `<b>${randomNo}</b>`
         })
-        console.log("connection is build.",data)
 
         res.status(200).json({
             message: "Reset OTP send successfully.",
@@ -304,38 +305,37 @@ export const verifyResetOtp = asyncHandler(async (req, res) => {
         const selectOtpQuery = "SELECT VerifyOTP,VerifyOTPExpiryAt,IsAccountVerified FROM authtable WHERE Email= ?";
         const [rows] = await connection.execute<RowDataPacket[]>(selectOtpQuery, [email]);
 
-        console.log("check fetched result",rows);
-        if(!rows || rows.length===0 || rows === null){
+        if (!rows || rows.length === 0 || rows === null) {
             throw new ApiErrorHandler({
-                statusCode:500,
-                errors:["otp not found."],
-                message:"otp not found."
+                statusCode: 500,
+                errors: ["otp not found."],
+                message: "otp not found."
             })
         }
 
-        if(rows[0].VerifyOTPExpiryAt <Date.now()){
+        if (rows[0].VerifyOTPExpiryAt < Date.now()) {
             throw new ApiErrorHandler({
-                statusCode:400,
-                errors:["OTP expired."],
-                message:"OTP expired."
+                statusCode: 400,
+                errors: ["OTP expired."],
+                message: "OTP expired."
             })
         }
 
-        if(rows[0].VerifyOTP!==otp){
+        if (rows[0].VerifyOTP !== otp) {
             throw new ApiErrorHandler({
-                statusCode:400,
-                errors:["Invalid OTP."],
-                message:"Invalid OTP."
-            }) 
+                statusCode: 400,
+                errors: ["Invalid OTP."],
+                message: "Invalid OTP."
+            })
         }
 
-        const hashedPassword= await bcrypt.hash(password,10);
-        if(!rows[0].IsAccountVerified){
-            const updatePasswordQuery="UPDATE authtable SET Password =?,IsAccountVerified=?,VerifyOTP=?,VerifyOTPExpiryAt=? WHERE Email =?";
-            await connection.execute<RowDataPacket[]>(updatePasswordQuery,[hashedPassword,true,null,0,email]);
-        }else{
-            const updatePasswordQuery="UPDATE authtable SET Password =?,VerifyOTP=?,VerifyOTPExpiryAt=? WHERE Email =?"
-            await connection.execute<RowDataPacket[]>(updatePasswordQuery,[hashedPassword,null,0,email]);
+        const hashedPassword = await bcrypt.hash(password, 10);
+        if (!rows[0].IsAccountVerified) {
+            const updatePasswordQuery = "UPDATE authtable SET Password =?,IsAccountVerified=?,VerifyOTP=?,VerifyOTPExpiryAt=? WHERE Email =?";
+            await connection.execute<RowDataPacket[]>(updatePasswordQuery, [hashedPassword, true, null, 0, email]);
+        } else {
+            const updatePasswordQuery = "UPDATE authtable SET Password =?,VerifyOTP=?,VerifyOTPExpiryAt=? WHERE Email =?"
+            await connection.execute<RowDataPacket[]>(updatePasswordQuery, [hashedPassword, null, 0, email]);
         }
 
         res.status(200).json({
@@ -509,6 +509,77 @@ export const fetchProductById = asyncHandler(async (req, res) => {
             })
     } finally {
         connection.release()
+    }
+})
+
+//Fetch product categories
+export const fetchAllProductCategories = asyncHandler(async (req, res) => {
+    const pool = await dbConnection();
+    const connection = await pool.getConnection();
+    if (!connection) {
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while signup"],
+            message: "Database connnection error"
+        });
+    }
+
+    try {
+        const categoriesFetchQuery = "SELECT DISTINCT Category FROM shopnow.products;";
+        const [result] = await connection.execute<RowDataPacket[]>(categoriesFetchQuery);
+        console.log("result value=", result)
+
+        if (!result || result.length === 0) {
+            return res.status(200).json({
+                success: true,
+                data: [],
+                message: "Data fetched successfully."
+            })
+        }
+
+        return res.status(200).json({
+            data: result,
+            success: true,
+            message: "Data fetch successfully."
+        })
+    } finally {
+        connection.release();
+    }
+})
+
+//Fetch product Brands
+export const fetchAllProductBrands = asyncHandler(async (req, res) => {
+    const pool = await dbConnection();
+    const connection = await pool.getConnection();
+    if (!connection) {
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while signup"],
+            message: "Database connnection error"
+        });
+    }
+
+    try {
+        const brandFetchQuery = "SELECT DISTINCT Brand FROM shopnow.products;";
+        const [rows] = await connection.execute<RowDataPacket[]>(brandFetchQuery);
+        console.log("result value=", rows)
+
+        if (!rows || rows.length === 0) {
+            return res.status(200).json({
+                success: true,
+                data: [],
+                message: "Data fetched successfully."
+            })
+        }
+
+        return res.status(200).json({
+            data: rows,
+            success: true,
+            message: "Data fetch successfully."
+        })
+
+    } finally {
+        connection.release();
     }
 })
 

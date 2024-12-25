@@ -78,7 +78,7 @@ function AddNewProduct() {
   }, [watchThumbnail, watchImages])
 
   return (
-    <div className="w-100 flex justify-between items-start pt-24 pb-7 rounded-md shadow-[6px_10px_8px_12px_rgba(0,_0,_0,_0.1)] px-10 py-5">
+    <div className="w-100 flex lg:flex-row flex-col justify-between items-center pt-24 pb-7 rounded-md shadow-[6px_10px_8px_12px_rgba(0,_0,_0,_0.1)] px-10 py-5">
       <div className="!w-[50%] !h-[100%] grid place-content-center gap-2 grid-cols-2 grid-rows-1">
         {
           images.map((image, i) => (

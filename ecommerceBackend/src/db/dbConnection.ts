@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import { authTableCreationQuery, cartTableCreationQuery, dbCreationQuery, productTableCreationQuery } from "../models/user.model";
+import { authTableCreationQuery, cartTableCreationQuery, dbCreationQuery, productTableCreationQuery, userTableCreationQuery } from "../models/user.model";
 
 
 const dbConnection = async () => {
@@ -12,13 +12,11 @@ const dbConnection = async () => {
             port: Number(process.env.DB_PORT),
             password: process.env.DB_PASSWORD,
             // waitForConnections: true,
-
         })
 
         const connection = await pool.getConnection();
         console.log("database connected successfully");
 
-        // try {
             // Create schema if it doesn't exist
             await connection.query(dbCreationQuery);
             
@@ -30,9 +28,10 @@ const dbConnection = async () => {
 
             //create Cart table
             await connection.query(cartTableCreationQuery);
-        // } finally {
-        //     connection.release()
-        // }
+
+            //create user table
+            await connection.query(userTableCreationQuery)
+
         return pool;
     } catch (err) {
         console.log("SQL connection Failed", err);

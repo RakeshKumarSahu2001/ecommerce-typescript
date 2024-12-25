@@ -29,7 +29,6 @@ export const AddNewProductApi = createAsyncThunk("products/addNewProduct",
                 }
             });
 
-            console.log("product data", data);
 
             const response = await axios.post(`/api/v1/admin/add-new-product`, formData, {
                 headers: {

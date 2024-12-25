@@ -3,6 +3,8 @@ import {
     addProductToCart,
     deleteProductFromCart,
     editUserInfoById,
+    fetchAllProductBrands,
+    fetchAllProductCategories,
     fetchAllProducts,
     fetchProductById,
     fetchProductsInCart,
@@ -34,6 +36,8 @@ router.route("/refresh-token").post(refreshAccessToken)
 
 router.route("/fetch-all-products").get(verifyJWT, fetchAllProducts)
 router.route("/fetch-product-by-id/:id").get(verifyJWT, fetchProductById)
+router.route("/all-brand").get(verifyJWT,fetchAllProductBrands)
+router.route("/all-categories").get(verifyJWT,fetchAllProductCategories)
 
 router.route("/add-user-profile-info/:id").post(verifyJWT, insertUserInfoById)
 router.route("/fetch-user-profile-info/:id").get(verifyJWT, fetchUserProfileById)

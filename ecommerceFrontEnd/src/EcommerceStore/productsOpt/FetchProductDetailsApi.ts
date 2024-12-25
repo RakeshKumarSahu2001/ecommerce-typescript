@@ -5,7 +5,6 @@ import { product } from "../../utils/types";
 export const FetchProductDetailsApi = createAsyncThunk("products/fetchProductById", async (id:string,{rejectWithValue}) => {
     try {
         const response = await axios.get(`/api/v1/users/fetch-product-by-id/${id}`)
-        console.log(response)
         return response.data.data.product;
     } catch (err) {
         console.error(err);

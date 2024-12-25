@@ -19,7 +19,6 @@ function Emailvalidation() {
   const isEmailVerified = useECommerceStoreSelector((state) => state.EmailValidationSlice.isEmailVerified)
 
   const submit: SubmitHandler<children> = async ({ otp }) => {
-    console.log("otp",otp,user)
     await dispatch(EmailValidation({ otp: otp, id: user?.id }))
   }
 

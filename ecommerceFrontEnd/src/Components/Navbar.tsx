@@ -287,7 +287,7 @@ function Navbar() {
           <div className="mt-6">
             <div className="flex flex-col space-y-2">
               {isAdminObj.access && <Link
-                to="/add-product"
+                to="/shopnow/admin/add-product"
                 className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
               >
                 {" "}

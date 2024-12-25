@@ -1,8 +1,8 @@
-import { SubmitHandler} from "react-hook-form"
+import { SubmitHandler } from "react-hook-form"
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../../Hooks/ecommerceStoreHooks"
 import { fetchUserProfInfoById } from "../../EcommerceStore/userProf/FetchUserProfInfoApi";
 import { useEffect } from "react";
-import {  useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AddUserProfInfoById } from "../../EcommerceStore/userProf/AddEditUserProfInfoApi";
 import UserProfForm from "./UserProfForm";
 import { userProfileInfoType } from "../../utils/types";
@@ -12,22 +12,23 @@ function UserInfo() {
     const id = useParams<{ id: string }>().id || '';
     const userInfo = useECommerceStoreSelector(state => state.FetchUserProfInfoSlice.userProfileInfo);
     const dispatch = useECommerceStoreDispatch();
-    const navigate=useNavigate();
+    const navigate = useNavigate();
+    const isProfData = useECommerceStoreSelector((state) => state.manageUserProfInfoSlice.isProfData)
 
-    const submit: SubmitHandler<userProfileInfoType> = (formData) => {
-        dispatch(AddUserProfInfoById({ data: formData, id: id }));
+    const submit: SubmitHandler<userProfileInfoType> = async (formData) => {
+        await dispatch(AddUserProfInfoById({ data: formData, id: id }));
     }
 
     useEffect(() => {
-        if(id){
-        dispatch(fetchUserProfInfoById(id))
+        if (id) {
+            dispatch(fetchUserProfInfoById(id))
         }
-    }, [id])
+    }, [id, isProfData])
 
-    const handleRouteToNextPage=()=>{
+    const handleRouteToNextPage = () => {
         navigate(`/shopnow/edit-user-profile/${id}`)
     }
-    
+
     return (
         userInfo ?
             <div className="w-100 h-[100vh] grid place-content-center">
@@ -70,9 +71,9 @@ function UserInfo() {
                         <p className="pr-5 pt-2 border-solid border-b-4 capitalize border-blue-600 hover:border-blue-700">{userInfo?.Gender}</p>
                     </div>
                     <br />
-                    <button 
-                    onClick={handleRouteToNextPage}
-                    className="inline-flex items-center justify-center px-6 py-3 mt-3 font-semibold text-white transition-all duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:bg-blue-700">
+                    <button
+                        onClick={handleRouteToNextPage}
+                        className="inline-flex items-center justify-center px-6 py-3 mt-3 font-semibold text-white transition-all duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:bg-blue-700">
                         Edit</button>
                 </div>
             </div> :

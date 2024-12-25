@@ -7,7 +7,6 @@ type verifyResetOtpDataType={
     password:string;
 }
 export const VerifyResetOtpApi = createAsyncThunk("users/verifyResetOtp", async (data:verifyResetOtpDataType, { rejectWithValue }) => {
-    console.log("Data",data);
     try {
         const response = await axios.post("/api/v1/users/reset-password", data);
         return response.data.data;

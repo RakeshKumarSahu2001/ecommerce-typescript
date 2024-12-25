@@ -27,7 +27,6 @@ function Cart({ handleMoveToProducts }: { handleMoveToProducts: () => void }) {
     const handleDecQuantity = (CartID: string) => {
         dispatch(useraddToCartSlice.actions.decQuantity(CartID))
     }
-    console.log(cartProducts)
     return (
         <>
             <div className='mx-auto max-w-7xl relative !h-[100%]'>

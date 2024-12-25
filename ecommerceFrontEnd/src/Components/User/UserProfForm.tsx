@@ -9,9 +9,7 @@ type UserProfFormProps = {
 
 function UserProfForm({ submit }: UserProfFormProps) {
     const { handleSubmit, register, formState: { errors } } = useForm<userProfileInfoType>();
-    const userInfo = useECommerceStoreSelector(
-        (state) => state.FetchUserProfInfoSlice.userProfileInfo
-    );
+    const userInfo = useECommerceStoreSelector((state) => state.FetchUserProfInfoSlice.userProfileInfo);
 
     return (
         <div className="!w-100 !h-[100vh] flex justify-center items-center !py-96">
