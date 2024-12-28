@@ -8,33 +8,36 @@ import { Dialog, DialogBackdrop, DialogPanel, Disclosure, DisclosureButton, Disc
 import { MinusIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { FetchCategoryApi } from "../../EcommerceStore/productsOpt/FetchCategoryApi";
 import { FetchProductBrandApi } from "../../EcommerceStore/productsOpt/FetchProductBrandApi";
+import { FetchProductByFilterApi } from "../../EcommerceStore/productsOpt/FetchProductByFilterApi";
 
 
 
 export default function Product() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  
+
   const dispatch = useECommerceStoreDispatch();
   const isLoading = useECommerceStoreSelector((state) => state.products.loadingStatus);
   const loadingError = useECommerceStoreSelector(state => state.products.loadingError);
   const navigate = useNavigate();
-  const productCategories= useECommerceStoreSelector((state)=>state.FetchCategorySlice.productCategories);
-  const productBrands=useECommerceStoreSelector((state)=>state.FetchProductBrandSlice.productBrands)
-  
+  const productCategories = useECommerceStoreSelector((state) => state.FetchCategorySlice.productCategories);
+  const productBrands = useECommerceStoreSelector((state) => state.FetchProductBrandSlice.productBrands);
+  const [filterBrand, setFilterBrand] = useState<string[]>([]);
+  const [filterCategory, setFilterCategory] = useState<string[]>([]);
+
   const filters = [
     {
       id: "Brand",
       name: "Brand",
-      options: productBrands?.map((brand)=>{
+      options: productBrands?.map((brand) => {
         return {
-          label:brand.Brand,
-          value:brand.Brand,
+          label: brand?.Brand,
+          value: brand?.Brand,
           checked: false
         }
       })
     },
     {
-      id: "category",
+      id: "Category",
       name: "Category",
       options: productCategories?.map((category) => {
         return {
@@ -45,24 +48,47 @@ export default function Product() {
       })
     }
   ];
-  
+
   const handleDeleteProduct = async (id: string) => {
     await dispatch(DeleteSpecificProductApi(id))
   }
-  
+
   useEffect(() => {
     dispatch(FetchCategoryApi());
     dispatch(FetchProductBrandApi());
     dispatch(ProductApi());
   }, [dispatch])
-  
+
   const products = useECommerceStoreSelector((state) => state.products.allProducts)
-  
+
   useEffect(() => {
     if (loadingError) {
       navigate("/shopnow/error")
     }
   }, [loadingError, navigate])
+
+  const handleFilterOnchange = (e: React.ChangeEvent<HTMLInputElement>, value: string, filterName: string) => {
+    console.log("e",e.target.value)
+    if (filterName === "Brand") {
+      setFilterBrand((prev: string[]) => {
+        return prev.includes(value) ? [...prev] : [...prev, value]
+      })
+    } else {
+      setFilterCategory((prev: string[]) => {
+        return prev.includes(value) ? [...prev] : [...prev, value]
+      })
+    }
+
+    console.log("information", filterBrand, filterCategory)
+  }
+
+
+  useEffect(() => {
+    if(filterBrand.length || filterCategory.length){
+
+      dispatch(FetchProductByFilterApi({ Brand: filterBrand, Category: filterCategory }))
+    }
+  }, [filterBrand, filterCategory,dispatch])
 
   return (
     <div className="bg-white">
@@ -130,6 +156,7 @@ export default function Product() {
                               id={`filter-mobile-${section.id}-${optionIdx}`}
                               name={`${section.id}[]`}
                               type="checkbox"
+                              onChange={(e) => handleFilterOnchange(e, option.value, section.name)}
                               className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                             />
                             <label
@@ -192,6 +219,7 @@ export default function Product() {
                               id={`filter-${section.id}-${optionIdx}`}
                               name={`${section.id}[]`}
                               type="checkbox"
+                              onChange={(e) => handleFilterOnchange(e, option.value, section.name)}
                               className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                             />
                             <label

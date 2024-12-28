@@ -6,6 +6,7 @@ import {
     fetchAllProductBrands,
     fetchAllProductCategories,
     fetchAllProducts,
+    fetchFilteredProducts,
     fetchProductById,
     fetchProductsInCart,
     fetchUserProfileById,
@@ -38,6 +39,7 @@ router.route("/fetch-all-products").get(verifyJWT, fetchAllProducts)
 router.route("/fetch-product-by-id/:id").get(verifyJWT, fetchProductById)
 router.route("/all-brand").get(verifyJWT,fetchAllProductBrands)
 router.route("/all-categories").get(verifyJWT,fetchAllProductCategories)
+router.route("/product-filter").get(verifyJWT,fetchFilteredProducts)
 
 router.route("/add-user-profile-info/:id").post(verifyJWT, insertUserInfoById)
 router.route("/fetch-user-profile-info/:id").get(verifyJWT, fetchUserProfileById)

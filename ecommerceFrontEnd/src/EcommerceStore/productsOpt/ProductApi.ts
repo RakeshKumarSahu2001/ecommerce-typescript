@@ -15,12 +15,12 @@ export const ProductApi = createAsyncThunk("products/fetchAllProducts", async ()
 type initialStateType = {
     loadingStatus: boolean,
     loadingError: boolean,
-    allProducts: product[]
+    allProducts: product[] |null
 }
 let initialState: initialStateType = {
     loadingStatus: false,
     loadingError: false,
-    allProducts: [],
+    allProducts: null,
 }
 
 export const ProductSlice = createSlice(

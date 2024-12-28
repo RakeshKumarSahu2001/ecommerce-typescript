@@ -4,7 +4,6 @@ import axios from "axios";
 export const FetchCategoryApi = createAsyncThunk("products/productCategories", async (_,{ rejectWithValue }) => {
     try {
         const response = await axios.get("/api/v1/users/all-categories");
-        console.log("product meta", response.data.data)
         return response.data.data
     } catch (error) {
         console.log(error);

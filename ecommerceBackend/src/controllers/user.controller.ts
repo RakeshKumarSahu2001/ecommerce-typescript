@@ -527,7 +527,6 @@ export const fetchAllProductCategories = asyncHandler(async (req, res) => {
     try {
         const categoriesFetchQuery = "SELECT DISTINCT Category FROM shopnow.products;";
         const [result] = await connection.execute<RowDataPacket[]>(categoriesFetchQuery);
-        console.log("result value=", result)
 
         if (!result || result.length === 0) {
             return res.status(200).json({
@@ -562,7 +561,6 @@ export const fetchAllProductBrands = asyncHandler(async (req, res) => {
     try {
         const brandFetchQuery = "SELECT DISTINCT Brand FROM shopnow.products;";
         const [rows] = await connection.execute<RowDataPacket[]>(brandFetchQuery);
-        console.log("result value=", rows)
 
         if (!rows || rows.length === 0) {
             return res.status(200).json({
@@ -578,6 +576,72 @@ export const fetchAllProductBrands = asyncHandler(async (req, res) => {
             message: "Data fetch successfully."
         })
 
+    } finally {
+        connection.release();
+    }
+})
+
+//Fetch filtered proucts
+export const fetchFilteredProducts = asyncHandler(async (req, res) => {
+    // type rawCategoryType={
+    //     Category?:string | string[] |undefined
+    // }
+    // type rawBrandType={
+    //     Brand?:string | string[] |undefined
+    // }
+    console.log("hello")
+    const rawCategory = req.query.Category;
+    const rawBrand = req.query.Brand;
+
+    // Ensure category and brand are arrays
+    const category= typeof rawCategory === "string"
+        ? rawCategory.split(",")
+        : Array.isArray(rawCategory)
+            ? rawCategory
+            : [];
+    const brand = typeof rawBrand === "string"
+        ? [rawBrand]
+        : Array.isArray(rawBrand)
+            ? rawBrand
+            : [];
+
+    console.log("query data", brand, category);
+    const pool = await dbConnection();
+    const connection = await pool.getConnection();
+    if (!connection) {
+        throw new ApiErrorHandler({
+            statusCode: 500,
+            errors: ["Database connection not found while signup"],
+            message: "Database connnection error"
+        });
+    }
+
+    try {
+        // let filterationQuery = "SELECT * FROM products";
+        // let queryParams: (string | ParsedQs)[] | string = [];
+
+        // if (brand.length || category.length) {
+        //     filterationQuery += " WHERE";
+        //     if (Array.isArray(brand) && brand.length) {
+        //         filterationQuery += " Brand IN (" + brand.map(() => "?").join(",") + ")";
+        //         queryParams = [...queryParams, ...brand]
+        //     }
+        //     if (Array.isArray(category) && category.length) {
+        //         filterationQuery += (brand.length ? " OR" : "") +
+        //             " Category IN (" + category.map(() => "?").join(",") + ")";
+        //         queryParams = [...queryParams, ...category]
+        //     }
+        // }
+
+        // console.log(filterationQuery);
+        // const [rows] = await connection.execute<RowDataPacket[]>(filterationQuery, queryParams);
+
+        // console.log("rows", rows)
+        return res.status(200).json({
+            success: true,
+            message: "Data fetched successfully",
+            data: category
+        })
     } finally {
         connection.release();
     }
