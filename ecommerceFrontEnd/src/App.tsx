@@ -20,7 +20,6 @@ import EmailPage from "./Pages/AuthPages/EmailPage.tsx";
 import ResetPasswordPage from "./Pages/AuthPages/ResetPasswordPage.tsx";
 
 
-
 function App() {
 
   const router = createBrowserRouter([

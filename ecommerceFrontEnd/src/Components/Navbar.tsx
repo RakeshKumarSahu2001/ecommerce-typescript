@@ -293,8 +293,32 @@ function Navbar() {
                 {" "}
                 Add New Product{" "}
               </Link>}
-
             </div>
+
+            <div className="flex flex-col space-y-2">
+              {isAdminObj.access && <Link
+                to="/shopnow/admin/add-product"
+                className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
+              >
+                {" "}
+                Add New Product{" "}
+              </Link>}
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              <Link to="/" title="" className="text-base font-medium text-black !outline-none focus:outline-none active:outline-none active:border-none">
+                {" "}
+                Home{" "}
+              </Link>
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              {id && <Link to="/shopnow/allproduct" title="" className="text-base font-medium text-black !outline-none focus:outline-none active:outline-none active:border-none">
+                {" "}
+                Products{" "}
+              </Link>}
+              </div>
+
 
             {id && <hr className="my-4 border-gray-200" />
             }

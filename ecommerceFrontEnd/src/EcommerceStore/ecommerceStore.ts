@@ -16,6 +16,7 @@ import { SendResetPasswordOtpSlice } from "./authOpt/SendResetPasswordOtpApi";
 import { VerifyResetOtpSlice } from "./authOpt/VerifyResetOtpApi";
 import { FetchCategorySlice } from "./productsOpt/FetchCategoryApi";
 import { FetchProductBrandSlice } from "./productsOpt/FetchProductBrandApi";
+import { FetchProductByFilterSlice } from "./productsOpt/FetchProductByFilterApi";
 
 const ecommerceStore = configureStore({
     reducer: {
@@ -24,6 +25,7 @@ const ecommerceStore = configureStore({
         productDetails: ProductDetailsSlice.reducer,
         FetchCategorySlice:FetchCategorySlice.reducer,
         FetchProductBrandSlice:FetchProductBrandSlice.reducer,
+        FetchProductByFilterSlice:FetchProductByFilterSlice.reducer,
 
         //login & signup
         createNewUser: createNewUserSlice.reducer,

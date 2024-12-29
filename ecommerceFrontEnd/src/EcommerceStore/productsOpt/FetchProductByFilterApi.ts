@@ -11,7 +11,6 @@ export const FetchProductByFilterApi = createAsyncThunk(
     "products/fetchProductByFilter",
     async (params: paramsType, { rejectWithValue }) => {
         try {
-            // Construct query parameters
             let queryParams = Object.keys(params)
                 .flatMap((key) =>
                     (params[key as keyof paramsType] as string[]).map(
@@ -62,7 +61,7 @@ export const FetchProductByFilterSlice = createSlice({
         })
 
         
-        builder.addCase(FetchProductByFilterApi.pending,(state)=>{
+        builder.addCase(FetchProductByFilterApi.rejected,(state)=>{
             state.fetchingStatus= false
             state.fetchingError= true
             state.allProducts= null

@@ -1,19 +1,22 @@
 import { useEffect, useState } from "react";
-import { ProductApi } from "../../EcommerceStore/productsOpt/ProductApi";
+import { ProductApi, ProductSlice } from "../../EcommerceStore/productsOpt/ProductApi";
 import { useECommerceStoreDispatch, useECommerceStoreSelector } from "../../Hooks/ecommerceStoreHooks";
 import { Link, useNavigate } from "react-router-dom";
 import { DeleteSpecificProductApi } from "../../EcommerceStore/productsOpt/DeleteSpecificProductById";
 import ProductCard from "./ProductCard";
 import { Dialog, DialogBackdrop, DialogPanel, Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
-import { MinusIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { FunnelIcon, MinusIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { FetchCategoryApi } from "../../EcommerceStore/productsOpt/FetchCategoryApi";
 import { FetchProductBrandApi } from "../../EcommerceStore/productsOpt/FetchProductBrandApi";
 import { FetchProductByFilterApi } from "../../EcommerceStore/productsOpt/FetchProductByFilterApi";
-
+import { product } from "../../utils/types";
 
 
 export default function Product() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [filterBrand, setFilterBrand] = useState<string[]>([]);
+  const [filterCategory, setFilterCategory] = useState<string[]>([]);
+  const [productList, setProductList] = useState<product[] | null>(null)
 
   const dispatch = useECommerceStoreDispatch();
   const isLoading = useECommerceStoreSelector((state) => state.products.loadingStatus);
@@ -21,8 +24,6 @@ export default function Product() {
   const navigate = useNavigate();
   const productCategories = useECommerceStoreSelector((state) => state.FetchCategorySlice.productCategories);
   const productBrands = useECommerceStoreSelector((state) => state.FetchProductBrandSlice.productBrands);
-  const [filterBrand, setFilterBrand] = useState<string[]>([]);
-  const [filterCategory, setFilterCategory] = useState<string[]>([]);
 
   const filters = [
     {
@@ -53,22 +54,28 @@ export default function Product() {
     await dispatch(DeleteSpecificProductApi(id))
   }
 
+  const products = useECommerceStoreSelector((state) => state.products.allProducts)
+
   useEffect(() => {
     dispatch(FetchCategoryApi());
     dispatch(FetchProductBrandApi());
     dispatch(ProductApi());
   }, [dispatch])
 
-  const products = useECommerceStoreSelector((state) => state.products.allProducts)
+  useEffect(() => {
+    if (products?.length) {
+      setProductList(products)
+    }
+  }, [products])
 
   useEffect(() => {
     if (loadingError) {
       navigate("/shopnow/error")
+      dispatch(ProductSlice.actions.setToInitValue())
     }
   }, [loadingError, navigate])
 
-  const handleFilterOnchange = (e: React.ChangeEvent<HTMLInputElement>, value: string, filterName: string) => {
-    console.log("e",e.target.value)
+  const handleFilterOnchange = (value: string, filterName: string) => {
     if (filterName === "Brand") {
       setFilterBrand((prev: string[]) => {
         return prev.includes(value) ? [...prev] : [...prev, value]
@@ -82,13 +89,20 @@ export default function Product() {
     console.log("information", filterBrand, filterCategory)
   }
 
+  const filteredProducts = useECommerceStoreSelector((state) => state.FetchProductByFilterSlice.allProducts);
+  useEffect(() => {
+    if (filterBrand.length || filterCategory.length) {
+      const debounce = setTimeout(() => {
+        dispatch(FetchProductByFilterApi({ Brand: filterBrand, Category: filterCategory }))
+        setProductList(filteredProducts)
+      }, 3000)
+      return () => clearTimeout(debounce)
+    }
+  }, [filterBrand, filterCategory, dispatch])
 
   useEffect(() => {
-    if(filterBrand.length || filterCategory.length){
-
-      dispatch(FetchProductByFilterApi({ Brand: filterBrand, Category: filterCategory }))
-    }
-  }, [filterBrand, filterCategory,dispatch])
+    setProductList(filteredProducts)
+  }, [filteredProducts])
 
   return (
     <div className="bg-white">
@@ -156,7 +170,7 @@ export default function Product() {
                               id={`filter-mobile-${section.id}-${optionIdx}`}
                               name={`${section.id}[]`}
                               type="checkbox"
-                              onChange={(e) => handleFilterOnchange(e, option.value, section.name)}
+                              onChange={() => handleFilterOnchange(option.value, section.name)}
                               className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                             />
                             <label
@@ -176,7 +190,17 @@ export default function Product() {
           </div>
         </Dialog>
 
-        <main className="mx-auto max-w-[160rem] sm:px-6 lg:px-8 lg:py-20">
+        <main className="relative mx-auto max-w-[160rem] sm:px-6 lg:px-8 lg:py-20 ">
+          <div className="flex items-center justify-center absolute w-20 h-20 z-30 top-[92%] left-[5%] lg:hidden bg-[#87a7db] rounded-full">
+            <button
+              type="button"
+              onClick={() => setMobileFiltersOpen(true)}
+              className="flex justify-center items-center !w-32 hover:text-gray-500 lg:hidden"
+            >
+              <FunnelIcon aria-hidden="true" className="size-10 text-gray-600" />
+            </button>
+          </div>
+
           <section aria-labelledby="products-heading" className="pb-24 pt-6">
             <h2 id="products-heading" className="sr-only">
               Products
@@ -219,7 +243,7 @@ export default function Product() {
                               id={`filter-${section.id}-${optionIdx}`}
                               name={`${section.id}[]`}
                               type="checkbox"
-                              onChange={(e) => handleFilterOnchange(e, option.value, section.name)}
+                              onChange={() => handleFilterOnchange(option.value, section.name)}
                               className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                             />
                             <label
@@ -246,13 +270,12 @@ export default function Product() {
 
                     <div className="mt-6 grid grid-cols-2 md:gap-x-6 md:gap-y-8 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
                       {/* product mapped here */}
-
                       {isLoading ? (
                         <div className="!w-[100vw] flex justify-center items-center">
                           <span className="loading loading-dots loading-lg"></span>
                         </div>
                       ) : (
-                        products?.map((product) => (
+                        productList?.map((product) => (
                           <Link to={`/shopnow/productDetail/${product?.ProductID}`} key={product?.ProductID}>
                             <ProductCard
                               ProductID={product?.ProductID}

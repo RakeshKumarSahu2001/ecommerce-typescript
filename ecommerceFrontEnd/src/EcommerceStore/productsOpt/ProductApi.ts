@@ -15,7 +15,7 @@ export const ProductApi = createAsyncThunk("products/fetchAllProducts", async ()
 type initialStateType = {
     loadingStatus: boolean,
     loadingError: boolean,
-    allProducts: product[] |null
+    allProducts: product[] | null
 }
 let initialState: initialStateType = {
     loadingStatus: false,
@@ -27,7 +27,13 @@ export const ProductSlice = createSlice(
     {
         name: "allStoreProducts",
         initialState,
-        reducers: {},
+        reducers: {
+            setToInitValue: (state) => {
+                state.loadingStatus = false;
+                state.loadingError = false;
+                state.allProducts = null;
+            }
+        },
         extraReducers: (builder) => {
             builder.addCase(ProductApi.pending, (state) => {
                 state.loadingStatus = true

@@ -5,6 +5,7 @@ import dbConnection from "../db/dbConnection";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import jwt, { Algorithm, JwtPayload } from "jsonwebtoken";
 import { transporter } from "../services/NodeMailer";
+import { RequestHandler } from "express";
 
 
 const secureCookieOption = { secure: true, httpOnly: true, }
@@ -582,27 +583,27 @@ export const fetchAllProductBrands = asyncHandler(async (req, res) => {
 })
 
 //Fetch filtered proucts
-export const fetchFilteredProducts = asyncHandler(async (req, res) => {
-    // type rawCategoryType={
-    //     Category?:string | string[] |undefined
-    // }
-    // type rawBrandType={
-    //     Brand?:string | string[] |undefined
-    // }
-    console.log("hello")
+type Params = {};
+type ResBody = {};
+type ReqBody = {};
+type ReqQuery = {
+    Category: string | string[];
+    Brand: string | string[];
+}
+export const fetchFilteredProducts: RequestHandler<Params, ResBody, ReqBody, ReqQuery> = asyncHandler(async (req, res) => {
     const rawCategory = req.query.Category;
     const rawBrand = req.query.Brand;
 
     // Ensure category and brand are arrays
-    const category= typeof rawCategory === "string"
+    const category = typeof rawCategory === "string"
         ? rawCategory.split(",")
         : Array.isArray(rawCategory)
-            ? rawCategory
+            ? rawCategory.map(String)
             : [];
     const brand = typeof rawBrand === "string"
         ? [rawBrand]
         : Array.isArray(rawBrand)
-            ? rawBrand
+            ? rawBrand.map(String)
             : [];
 
     console.log("query data", brand, category);
@@ -617,30 +618,30 @@ export const fetchFilteredProducts = asyncHandler(async (req, res) => {
     }
 
     try {
-        // let filterationQuery = "SELECT * FROM products";
-        // let queryParams: (string | ParsedQs)[] | string = [];
+        let filterationQuery = "SELECT * FROM products";
+        let queryParams: string[] | string = [];
 
-        // if (brand.length || category.length) {
-        //     filterationQuery += " WHERE";
-        //     if (Array.isArray(brand) && brand.length) {
-        //         filterationQuery += " Brand IN (" + brand.map(() => "?").join(",") + ")";
-        //         queryParams = [...queryParams, ...brand]
-        //     }
-        //     if (Array.isArray(category) && category.length) {
-        //         filterationQuery += (brand.length ? " OR" : "") +
-        //             " Category IN (" + category.map(() => "?").join(",") + ")";
-        //         queryParams = [...queryParams, ...category]
-        //     }
-        // }
+        if (brand.length || category.length) {
+            filterationQuery += " WHERE";
+            if (Array.isArray(brand) && brand.length) {
+                filterationQuery += " Brand IN (" + brand.map(() => "?").join(",") + ")";
+                queryParams = [...queryParams, ...brand]
+            }
+            if (Array.isArray(category) && category.length) {
+                filterationQuery += (brand.length ? " OR" : "") +
+                    " Category IN (" + category.map(() => "?").join(",") + ")";
+                queryParams = [...queryParams, ...category]
+            }
+        }
 
-        // console.log(filterationQuery);
-        // const [rows] = await connection.execute<RowDataPacket[]>(filterationQuery, queryParams);
+        console.log(filterationQuery);
+        const [rows] = await connection.execute<RowDataPacket[]>(filterationQuery, queryParams);
 
-        // console.log("rows", rows)
+        console.log("rows", rows)
         return res.status(200).json({
             success: true,
             message: "Data fetched successfully",
-            data: category
+            data: rows
         })
     } finally {
         connection.release();
