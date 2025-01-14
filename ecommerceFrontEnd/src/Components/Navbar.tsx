@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-  DialogTitle,
-} from "@headlessui/react";
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import { UserCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
@@ -17,16 +12,16 @@ import Cart from "./Cart";
 
 function Navbar() {
   const [toggle, setToggle] = useState<boolean>(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const navigate = useNavigate();
-  const isDeleted=useECommerceStoreSelector((state)=>state.deleteCartProductSlice.isDeleted)
+  const isDeleted = useECommerceStoreSelector((state) => state.deleteCartProductSlice.isDeleted)
   const isAdminObj = new isAdmin();
 
   const id = sessionStorage.getItem("Id");
   const dispatch = useECommerceStoreDispatch()
 
 
-  const handleCartOpen = async() => {
+  const handleCartOpen = async () => {
     setOpen(true)
   }
 
@@ -34,7 +29,7 @@ function Navbar() {
     if (open && id) {
       dispatch(fetchCartProductByUserId(id))
     }
-  }, [id,open,isDeleted, dispatch])
+  }, [id, open, isDeleted, dispatch])
 
 
   const handleLogout = async () => {
@@ -97,7 +92,7 @@ function Navbar() {
             </div>
 
             {/* cart toggle button for Mobile screen */}
-           {id && <button
+            {id && <button
               type="button"
               className="flex items-center justify-center ml-auto text-white bg-black rounded-full w-9 h-9 lg:hidden"
               onClick={() => setOpen(true)}
@@ -286,42 +281,49 @@ function Navbar() {
 
           <div className="mt-6">
             <div className="flex flex-col space-y-2">
-              {isAdminObj.access && <Link
-                to="/shopnow/admin/add-product"
-                className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
-              >
-                {" "}
-                Add New Product{" "}
-              </Link>}
-            </div>
-
-            <div className="flex flex-col space-y-2">
-              {isAdminObj.access && <Link
-                to="/shopnow/admin/add-product"
-                className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
-              >
-                {" "}
-                Add New Product{" "}
-              </Link>}
-            </div>
-
-            <div className="flex flex-col space-y-2">
-              <Link to="/" title="" className="text-base font-medium text-black !outline-none focus:outline-none active:outline-none active:border-none">
+              <Link to="/" title="" className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600">
                 {" "}
                 Home{" "}
               </Link>
             </div>
 
             <div className="flex flex-col space-y-2">
-              {id && <Link to="/shopnow/allproduct" title="" className="text-base font-medium text-black !outline-none focus:outline-none active:outline-none active:border-none">
+              {id && <Link
+                to={`/shopnow/user-info/${id}`}
+                className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
+              >
+                Profile
+              </Link>}
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              {id && <Link to="/shopnow/allproduct" title="" className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600">
                 {" "}
                 Products{" "}
               </Link>}
-              </div>
+            </div>
 
+            <div className="flex flex-col space-y-2">
+              {isAdminObj.access && <Link
+                to="/shopnow/admin/add-product"
+                className="py-2 text-base font-medium text-black transition-all duration-200 focus:text-blue-600"
+              >
+                {" "}
+                Add New Product{" "}
+              </Link>}
+            </div>
 
-            {id && <hr className="my-4 border-gray-200" />
-            }
+            <div className="flex flex-col space-y-2">
+              {
+                id && <button
+                  onClick={handleLogout}
+                  className="!w-[100%] py-2 text-start text-base font-medium text-black transition-all duration-200 focus:text-blue-600">
+                  {" "}
+                  Sign out{" "}
+                </button>
+              }
+            </div>
+
             <div className="flex flex-col space-y-2">
               {!id && <Link
                 to="/auth/signup"

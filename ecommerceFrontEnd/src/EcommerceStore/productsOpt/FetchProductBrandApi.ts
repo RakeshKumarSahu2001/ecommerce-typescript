@@ -4,7 +4,6 @@ import axios from "axios";
 export const FetchProductBrandApi=createAsyncThunk("products/productBrands",async(_,{rejectWithValue})=>{
     try {
         const response=await axios.get("/api/v1/users/all-brand");
-        console.log(response);
         return response.data.data;
     } catch (error) {
         console.error(error);

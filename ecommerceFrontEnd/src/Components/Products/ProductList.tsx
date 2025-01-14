@@ -191,13 +191,13 @@ export default function Product() {
         </Dialog>
 
         <main className="relative mx-auto max-w-[160rem] sm:px-6 lg:px-8 lg:py-20 ">
-          <div className="flex items-center justify-center absolute w-20 h-20 z-30 top-[92%] left-[5%] lg:hidden bg-[#87a7db] rounded-full">
+          <div className="flex items-center justify-center absolute w-16 h-16 z-30 top-[92%] left-[5%] lg:hidden bg-[#87a7db] rounded-full">
             <button
               type="button"
               onClick={() => setMobileFiltersOpen(true)}
               className="flex justify-center items-center !w-32 hover:text-gray-500 lg:hidden"
             >
-              <FunnelIcon aria-hidden="true" className="size-10 text-gray-600" />
+              <FunnelIcon aria-hidden="true" className="size-8 text-gray-600" />
             </button>
           </div>
 

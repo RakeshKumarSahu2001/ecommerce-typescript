@@ -81,7 +81,7 @@ function SignUp() {
               >
                 Password
                 <input
-                  type="text"
+                  type="password"
                   {...register("password", {
                     required: "Password is required",
                     minLength: {
@@ -110,7 +110,7 @@ function SignUp() {
               >
                 Confirm Password
                 <input
-                  type="text"
+                  type="password"
                   {...register("confirmPassword", {
                     required: "Confirm password is required",
                     pattern: {

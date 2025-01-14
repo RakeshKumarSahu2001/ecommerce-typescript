@@ -106,7 +106,7 @@ function Login() {
                   }
                 })}
                 placeholder='Enter Password'
-                type="text"
+                type="password"
                 autoComplete="off"
                 className="grow !focus:outline-none !focus:border-none !border-none !outline-none !border-transparent !ring-0"
               />

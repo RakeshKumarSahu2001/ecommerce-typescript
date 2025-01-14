@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import shopnow from "../assets/images/logo.png";
+import isAdmin from "../Hooks/isAdmin";
 
 function Footer() {
-
+    const id = sessionStorage.getItem("Id");
+    const isAdminObj = new isAdmin();
     return (
         <section className="py-10 bg-gray-50 sm:pt-16">
             <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
@@ -65,7 +67,44 @@ function Footer() {
                             </li>
 
                             <li>
-                                <Link to="/shopnow/allproduct" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600"> Products</Link>
+                                {
+                                    id && <Link to="/shopnow/allproduct" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600"> Products</Link>
+                                }
+                            </li>
+                            <li>
+                                {!id && <Link to="/auth/signup" title="" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600">
+                                    {" "}
+                                    Sign up{" "}
+                                </Link>}
+                            </li>
+                            <li>
+                                {!id && <Link to="/auth/signup" title="" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600">
+                                    {" "}
+                                    Sign up{" "}
+                                </Link>}
+                            </li>
+                            <li>
+                                {id && <Link
+                                    to={`/shopnow/user-info/${id}`}
+                                    className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600"
+                                >
+                                    Profile
+                                </Link>}
+                            </li>
+                            <li>
+                                {id && <Link to="/shopnow/allproduct" title="" className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600">
+                                    {" "}
+                                    Products{" "}
+                                </Link>}
+                            </li>
+                            <li>
+                                {isAdminObj.access && <Link
+                                    to="/shopnow/admin/add-product"
+                                    className="flex text-base text-black transition-all duration-200 hover:text-blue-600 focus:text-blue-600"
+                                >
+                                    {" "}
+                                    Add New Product{" "}
+                                </Link>}
                             </li>
                         </ul>
                     </div>

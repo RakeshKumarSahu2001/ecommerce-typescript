@@ -78,7 +78,7 @@ function ResetPassword() {
                         >
                             Password
                             <input
-                                type="text"
+                                type="password"
                                 {...register("password", {
                                     required: "Password is required",
                                     minLength: {
@@ -107,7 +107,7 @@ function ResetPassword() {
                         >
                             Confirm Password
                             <input
-                                type="text"
+                                type="password"
                                 {...register("confirmPassword", {
                                     required: "Confirm password is required",
                                     pattern: {
